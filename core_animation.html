@@ -1,0 +1,405 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+#Core Animation
+
+Core Animation动画分成两种：一种是隐式动画，一种是显式动画，它们的坐标与UIView的坐标系是相同的，都是左上角是原点，正方向为向下向右（而Core Graphic和open GL是左下角为原点）以下分别介绍隐式动画和显式动画。
+
+##隐式动画
+隐式动画是指改变UIView或CALay的“动画属性”（Animatable Properties），从而触发的动画。
+比如：
+
+```    
+	[UIView animateWithDuration:0.6
+                          delay:0
+         usingSpringWithDamping:1
+          initialSpringVelocity:40
+                        options:0
+                     animations:^{
+                         _myPortraitView.alpha = 1.0;
+                         _myPortraitView.transform = CGAffineTransformIdentity;
+                         _matchedPersonPortraitView.alpha = 1.0;
+                         _matchedPersonPortraitView.transform = CGAffineTransformIdentity;
+                         _itIsAMatchImageView.alpha = 1.0;
+                         _itIsAMatchImageView.transform = CGAffineTransformIdentity;
+                     }
+                     completion:nil];
+```
+使用这样的接口可以创建出模拟物理运动效果的动画。动画结束后，属性的值也改变到动画结束时的值。如果要使用这种方法改变其Timing Function，可以使用CATransaction类的setAnimationTimingFunction:方法。以下提供一个nested animation的例子，注意nested animation中的option中的UIViewAnimationOptionOverrideInheritedCurve和UIViewAnimationOptionOverrideInheritedDuration
+
+```    
+[UIView animateWithDuration:1.0
+        delay: 1.0
+        options:UIViewAnimationOptionCurveEaseOut
+        animations:^{
+            aView.alpha = 0.0;
+            // Create a nested animation that has a different
+            // duration, timing curve, and configuration.
+            [UIView animateWithDuration:0.2
+                 delay:0.0
+                 options: UIViewAnimationOptionOverrideInheritedCurve |
+                          UIViewAnimationOptionCurveLinear |
+                          UIViewAnimationOptionOverrideInheritedDuration |
+                          UIViewAnimationOptionRepeat |
+                          UIViewAnimationOptionAutoreverse
+                 animations:^{
+                      [UIView setAnimationRepeatCount:2.5];
+                      anotherView.alpha = 0.0;
+                 }
+                 completion:nil];
+        }
+        completion:nil];
+
+```
+
+
+**注意：对UIView的backing layers的“动画属性”（Animatable Properties）进行操作是不会触发隐式动画的,必须得在view-based animation block中才行**
+
+
+
+##显式动画
+
+要显式的对一个“动画属性”（Animatable Properties）进行动画，需要创建一个Core Animation’s animation类的实例，并且将它加到想到动画的layer中，需要注意，**显式动画是不会更改layer的属性值的**，显式动画对动画属性的控制更加精细。
+
+### CABasicAnimation 
+CABasicAnimation是CAAnimation的一个子类，用于创建简单的动画：
+
+```
+CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+opacityAnimation.autoreverses = NO;
+opacityAnimation.fromValue = [NSNumber numberWithFloat:1.0];
+opacityAnimation.toValue = [NSNumber numberWithFloat:0.0];
+[layer addAnimation:opacityAnimation forKey:@"opacityAnimation"];
+```
+
+### CAKeyframeAnimation  
+CAKeyframeAnimation 是CAAnimation的一个子类，用于关键帧动画，它可以创建各种缓冲函数驱动的动画：
+
+```
+float bounceEaseOut(float t)
+{
+    if (t < 4/11.0) {
+        return (121 * t * t)/16.0;
+    } else if (t < 8/11.0) {
+        return (363/40.0 * t * t) - (99/10.0 * t) + 17/5.0;
+    } else if (t < 9/10.0) {
+        return (4356/361.0 * t * t) - (35442/1805.0 * t) + 16061/1805.0;
+    }
+    return (54/5.0 * t * t) - (513/25.0 * t) + 268/25.0;
+}
+
+float interpolate(float from, float to, float time)
+{
+    return (to - from) * time + from;
+}
+
+- (id)interpolateFromValue:(id)fromValue toValue:(id)toValue time:(float)time
+{
+    if ([fromValue isKindOfClass:[NSValue class]]) {
+        //get type
+        const char *type = [fromValue objCType];
+        if (strcmp(type, @encode(CGPoint)) == 0) {
+            CGPoint from = [fromValue CGPointValue];
+            CGPoint to = [toValue CGPointValue];
+            CGPoint result = CGPointMake(interpolate(from.x, to.x, time), interpolate(from.y, to.y, time));
+            return [NSValue valueWithCGPoint:result];
+        }
+    }
+    //provide safe default implementation
+    return (time < 0.5)? fromValue: toValue;
+}
+
+- (void)animate
+{
+    //reset ball to top of screen
+    self.ballView.center = CGPointMake(150, 32);
+    //set up animation parameters
+    NSValue *fromValue = [NSValue valueWithCGPoint:CGPointMake(150, 32)];
+    NSValue *toValue = [NSValue valueWithCGPoint:CGPointMake(150, 268)];
+    CFTimeInterval duration = 1.0;
+    //generate keyframes
+    NSInteger numFrames = duration * 60;
+    NSMutableArray *frames = [NSMutableArray array];
+    for (int i = 0; i < numFrames; i++) {
+        float time = 1 / (float)numFrames * i;
+        //apply easing
+        time = bounceEaseOut(time);
+        [frames addObject:[self interpolateFromValue:fromValue toValue:toValue time:time]];
+    }
+    //create keyframe animation
+    CAKeyframeAnimation *animation = [CAKeyframeAnimation animation];
+    animation.keyPath = @"position";
+    animation.duration = 1.0;
+    animation.delegate = self;
+    animation.values = frames;
+    //apply animation
+    [self.ballView.layer addAnimation:animation forKey:nil];
+}
+```
+
+程序中使用interpolate()函数将当前时间的值内插入初始值和终值之间，这样就形成了关键帧。如果使用缓冲函数，只需将时间输入缓冲函数中，将输出的时当作现在的时间使用即可。
+
+
+### CAAnimationGroup
+可以将多个CAAnimation对象加入到一个CAAnimationGroup的对象中，此时，当CAAnimationGroup对象加入layer时，所有动画会同时开始执行。CAAnimationGroup是组织动画的一种好方法。
+
+###CATransition
+除了上述类，CAAnimation还有一个CATransition，用于制做不同View的变换效果，使用和CABasicAnimation类类似。具体可参考Apple的programming guide。
+
+
+
+#其他
+Core Animation类除了做动画，还有一些其它功能，比如制作圆角、阴影、图层蒙板等功能，有机会再一一介绍。
+
+
+#后记
+iOS中还有另一个动画系统，用于模拟物理效果比如重力，吸附等，叫UIDynamicAnimator，等有机会深入学习的时候再总结下。
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<h1 id="coreanimation">Core Animation</h1>
+
+<p>Core Animation动画分成两种：一种是隐式动画，一种是显式动画，它们的坐标与UIView的坐标系是相同的，都是左上角是原点，正方向为向下向右（而Core Graphic和open GL是左下角为原点）以下分别介绍隐式动画和显式动画。</p>
+
+<h2 id="">隐式动画</h2>
+
+<p>隐式动画是指改变UIView或CALay的“动画属性”（Animatable Properties），从而触发的动画。
+比如：</p>
+
+<pre><code class="    ">    [UIView animateWithDuration:0.6
+                          delay:0
+         usingSpringWithDamping:1
+          initialSpringVelocity:40
+                        options:0
+                     animations:^{
+                         _myPortraitView.alpha = 1.0;
+                         _myPortraitView.transform = CGAffineTransformIdentity;
+                         _matchedPersonPortraitView.alpha = 1.0;
+                         _matchedPersonPortraitView.transform = CGAffineTransformIdentity;
+                         _itIsAMatchImageView.alpha = 1.0;
+                         _itIsAMatchImageView.transform = CGAffineTransformIdentity;
+                     }
+                     completion:nil];
+</code></pre>
+
+<p>使用这样的接口可以创建出模拟物理运动效果的动画。动画结束后，属性的值也改变到动画结束时的值。如果要使用这种方法改变其Timing Function，可以使用CATransaction类的setAnimationTimingFunction:方法。以下提供一个nested animation的例子，注意nested animation中的option中的UIViewAnimationOptionOverrideInheritedCurve和UIViewAnimationOptionOverrideInheritedDuration</p>
+
+<pre><code class="    ">[UIView animateWithDuration:1.0
+        delay: 1.0
+        options:UIViewAnimationOptionCurveEaseOut
+        animations:^{
+            aView.alpha = 0.0;
+            // Create a nested animation that has a different
+            // duration, timing curve, and configuration.
+            [UIView animateWithDuration:0.2
+                 delay:0.0
+                 options: UIViewAnimationOptionOverrideInheritedCurve |
+                          UIViewAnimationOptionCurveLinear |
+                          UIViewAnimationOptionOverrideInheritedDuration |
+                          UIViewAnimationOptionRepeat |
+                          UIViewAnimationOptionAutoreverse
+                 animations:^{
+                      [UIView setAnimationRepeatCount:2.5];
+                      anotherView.alpha = 0.0;
+                 }
+                 completion:nil];
+        }
+        completion:nil];
+</code></pre>
+
+<p><strong>注意：对UIView的backing layers的“动画属性”（Animatable Properties）进行操作是不会触发隐式动画的,必须得在view-based animation block中才行</strong></p>
+
+<h2 id="">显式动画</h2>
+
+<p>要显式的对一个“动画属性”（Animatable Properties）进行动画，需要创建一个Core Animation’s animation类的实例，并且将它加到想到动画的layer中，需要注意，<strong>显式动画是不会更改layer的属性值的</strong>，显式动画对动画属性的控制更加精细。</p>
+
+<h3 id="cabasicanimation">CABasicAnimation</h3>
+
+<p>CABasicAnimation是CAAnimation的一个子类，用于创建简单的动画：</p>
+
+<pre><code>CABasicAnimation *opacityAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
+opacityAnimation.autoreverses = NO;
+opacityAnimation.fromValue = [NSNumber numberWithFloat:1.0];
+opacityAnimation.toValue = [NSNumber numberWithFloat:0.0];
+[layer addAnimation:opacityAnimation forKey:@"opacityAnimation"];
+</code></pre>
+
+<h3 id="cakeyframeanimation">CAKeyframeAnimation</h3>
+
+<p>CAKeyframeAnimation 是CAAnimation的一个子类，用于关键帧动画，它可以创建各种缓冲函数驱动的动画：</p>
+
+<pre><code>float bounceEaseOut(float t)
+{
+    if (t &lt; 4/11.0) {
+        return (121 * t * t)/16.0;
+    } else if (t &lt; 8/11.0) {
+        return (363/40.0 * t * t) - (99/10.0 * t) + 17/5.0;
+    } else if (t &lt; 9/10.0) {
+        return (4356/361.0 * t * t) - (35442/1805.0 * t) + 16061/1805.0;
+    }
+    return (54/5.0 * t * t) - (513/25.0 * t) + 268/25.0;
+}
+
+float interpolate(float from, float to, float time)
+{
+    return (to - from) * time + from;
+}
+
+- (id)interpolateFromValue:(id)fromValue toValue:(id)toValue time:(float)time
+{
+    if ([fromValue isKindOfClass:[NSValue class]]) {
+        //get type
+        const char *type = [fromValue objCType];
+        if (strcmp(type, @encode(CGPoint)) == 0) {
+            CGPoint from = [fromValue CGPointValue];
+            CGPoint to = [toValue CGPointValue];
+            CGPoint result = CGPointMake(interpolate(from.x, to.x, time), interpolate(from.y, to.y, time));
+            return [NSValue valueWithCGPoint:result];
+        }
+    }
+    //provide safe default implementation
+    return (time &lt; 0.5)? fromValue: toValue;
+}
+
+- (void)animate
+{
+    //reset ball to top of screen
+    self.ballView.center = CGPointMake(150, 32);
+    //set up animation parameters
+    NSValue *fromValue = [NSValue valueWithCGPoint:CGPointMake(150, 32)];
+    NSValue *toValue = [NSValue valueWithCGPoint:CGPointMake(150, 268)];
+    CFTimeInterval duration = 1.0;
+    //generate keyframes
+    NSInteger numFrames = duration * 60;
+    NSMutableArray *frames = [NSMutableArray array];
+    for (int i = 0; i &lt; numFrames; i++) {
+        float time = 1 / (float)numFrames * i;
+        //apply easing
+        time = bounceEaseOut(time);
+        [frames addObject:[self interpolateFromValue:fromValue toValue:toValue time:time]];
+    }
+    //create keyframe animation
+    CAKeyframeAnimation *animation = [CAKeyframeAnimation animation];
+    animation.keyPath = @"position";
+    animation.duration = 1.0;
+    animation.delegate = self;
+    animation.values = frames;
+    //apply animation
+    [self.ballView.layer addAnimation:animation forKey:nil];
+}
+</code></pre>
+
+<p>程序中使用interpolate()函数将当前时间的值内插入初始值和终值之间，这样就形成了关键帧。如果使用缓冲函数，只需将时间输入缓冲函数中，将输出的时当作现在的时间使用即可。</p>
+
+<h3 id="caanimationgroup">CAAnimationGroup</h3>
+
+<p>可以将多个CAAnimation对象加入到一个CAAnimationGroup的对象中，此时，当CAAnimationGroup对象加入layer时，所有动画会同时开始执行。CAAnimationGroup是组织动画的一种好方法。</p>
+
+<h3 id="catransition">CATransition</h3>
+
+<p>除了上述类，CAAnimation还有一个CATransition，用于制做不同View的变换效果，使用和CABasicAnimation类类似。具体可参考Apple的programming guide。</p>
+
+<h1 id="">其他</h1>
+
+<p>Core Animation类除了做动画，还有一些其它功能，比如制作圆角、阴影、图层蒙板等功能，有机会再一一介绍。</p>
+
+<h1 id="">后记</h1>
+
+<p>iOS中还有另一个动画系统，用于模拟物理效果比如重力，吸附等，叫UIDynamicAnimator，等有机会深入学习的时候再总结下。</p>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "core_animation.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
