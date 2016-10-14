@@ -19,9 +19,9 @@
     	</ul>
     </div>
 	<div class="wrap-header">
-			<h1>
-            <a href="/" id="title"></a>
-			</h1>
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
@@ -32,7 +32,9 @@
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<h1 id="">这是我的第一篇博客</h1>
 
+<p>毕业后，从事了三年雷达信号处理、目标识别方面的工作，目前主要从事iOS开发工作，以后在这分享记录我的技术经历。</p>
 <!-- content end -->
 </div>
 <br>
@@ -67,23 +69,17 @@ $(document).ready(function() {
         dataType: "json",
         success: function(data) {
             $("#title").html(data.name);
-            var pages = [];
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
             //path
             var path = "intro.html";
             //path end
             var now = 0;
-            for (var i = 0; i < data.pages.length; ++i)
-                if (path == data.pages[i].path) {
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
                     now = i;
-                    pages.push({"select": true, "path": data.pages[i].path, "title": data.pages[i].title});
-                }
-                else {
-                    pages.push({"select": false, "path": data.pages[i].path, "title": data.pages[i].title});
-                }
-            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
-            var pagesHtml = pagesTemplate.render({"pages": pages});
-            $("#pages").append(pagesHtml);
-            var post = data.pages[now];
+            var post = data.posts[now];
             var tmp = post.tags.split(" ");
             var tags = [];
             for (var i = 0; i < tmp.length; ++i)
