@@ -34,9 +34,9 @@ Local Notificaiton和remote notification从用户角度看并没有什么不同�
 
 #配置
 
-##local notificaiton
+##Local notificaiton
 使用registerUserNotificationSettings注册，使用application:didRegisterUserNotificationSettings:方法得到当前的notification配置。
-##remote notification
+##Remote notification
 1. 使用registerForRemoteNotifications注册
 2. 如果成功，在application:didRegisterForRemoteNotificationsWithDeviceToken: 中接收device token,并把它发送给服务器；
 3. 如果失败，在application:didFailToRegisterForRemoteNotificationsWithError: 中处理错误。
@@ -171,11 +171,11 @@ With content-available disabled (key removed):
 
 <h1 id="">配置</h1>
 
-<h2 id="localnotificaiton">local notificaiton</h2>
+<h2 id="localnotificaiton">Local notificaiton</h2>
 
 <p>使用registerUserNotificationSettings注册，使用application:didRegisterUserNotificationSettings:方法得到当前的notification配置。</p>
 
-<h2 id="remotenotification">remote notification</h2>
+<h2 id="remotenotification">Remote notification</h2>
 
 <ol>
 <li>使用registerForRemoteNotifications注册</li>
