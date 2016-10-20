@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+# UIScrollView contentInset
+
+## contentSize
+
+首先来看看官方文档的说明：
+`The contentSize property is the size of the content that you need to display in the scroll view.`
+应该已经比较明确了，我们经常管它叫content view's size。
+
+![contentSize](https://developer.apple.com/library/content/documentation/WindowsViews/Conceptual/UIScrollView_pg/Art/contentSize.jpg)
+
+## contentInset
+同样，看看官方文档是怎么说的：
+> You may want to add padding around the edges of the scroll view content, typically at the top and bottom so controllers and toolbars don’t interfere with the content. To add padding, use the contentInset property to specify a buffer area around the content of the scroll view. One way of thinking of it is that it makes the scroll view content area larger without changing the size of the subview or the size of the view’s content.
+
+![contentInset](https://developer.apple.com/library/content/documentation/WindowsViews/Conceptual/UIScrollView_pg/Art/contentSize_contentInset.jpg)
+
+这个就让人看得云里雾里的了，看下图，当没有设置这个属性时，此时其实是UIEdgeInsetsZero，此时contentOffset只能到（0，0），即向上时content view最多到scroll view的顶端而不能再向下了；
+
+![](/Users/tongwang/Desktop/UIEdgeInsetsZero.png)
+
+如果将contentInset的上、下、左、右都设置为正值，contentOffset的值就可以到达（-left, -top），content view的size却没有变，此时多出来的空间就是这个contentInset设置的,而图中的空白就是显示navigation bar等的位置；
+
+![](/Users/tongwang/Desktop/UIEdgeInsetsTop.png)
+
+如果将contentInset的上、下、左、右都设置为负值，contentOffset的值就只能到达（left, top），content view的size没有变，但此时并不是所有的content view都能显示了，只有一部分可以显示，下图表示此时contentOffset能到达的最上最左的部分；
+
+![](/Users/tongwang/Desktop/UIEdgeInsetsNegative.png)
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<h1 id="uiscrollviewcontentinset">UIScrollView contentInset</h1>
+
+<h2 id="contentsize">contentSize</h2>
+
+<p>首先来看看官方文档的说明：
+<code>The contentSize property is the size of the content that you need to display in the scroll view.</code>
+应该已经比较明确了，我们经常管它叫content view's size。</p>
+
+<p><img src="https://developer.apple.com/library/content/documentation/WindowsViews/Conceptual/UIScrollView_pg/Art/contentSize.jpg" alt="contentSize" title=""></p>
+
+<h2 id="contentinset">contentInset</h2>
+
+<p>同样，看看官方文档是怎么说的：</p>
+
+<blockquote>
+  <p>You may want to add padding around the edges of the scroll view content, typically at the top and bottom so controllers and toolbars don’t interfere with the content. To add padding, use the contentInset property to specify a buffer area around the content of the scroll view. One way of thinking of it is that it makes the scroll view content area larger without changing the size of the subview or the size of the view’s content.</p>
+</blockquote>
+
+<p><img src="https://developer.apple.com/library/content/documentation/WindowsViews/Conceptual/UIScrollView_pg/Art/contentSize_contentInset.jpg" alt="contentInset" title=""></p>
+
+<p>这个就让人看得云里雾里的了，看下图，当没有设置这个属性时，此时其实是UIEdgeInsetsZero，此时contentOffset只能到（0，0），即向上时content view最多到scroll view的顶端而不能再向下了；</p>
+
+<p><img src="/Users/tongwang/Desktop/UIEdgeInsetsZero.png" alt="" title=""></p>
+
+<p>如果将contentInset的上、下、左、右都设置为正值，contentOffset的值就可以到达（-left, -top），content view的size却没有变，此时多出来的空间就是这个contentInset设置的,而图中的空白就是显示navigation bar等的位置；</p>
+
+<p><img src="/Users/tongwang/Desktop/UIEdgeInsetsTop.png" alt="" title=""></p>
+
+<p>如果将contentInset的上、下、左、右都设置为负值，contentOffset的值就只能到达（left, top），content view的size没有变，但此时并不是所有的content view都能显示了，只有一部分可以显示，下图表示此时contentOffset能到达的最上最左的部分；</p>
+
+<p><img src="/Users/tongwang/Desktop/UIEdgeInsetsNegative.png" alt="" title=""></p>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "UIScrollView_contentInset.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
