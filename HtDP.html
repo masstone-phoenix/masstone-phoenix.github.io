@@ -1,0 +1,174 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+#How to Design Programs
+从8月中旬开始阅读《How to Design Programs, Second Edition》,读到国庆节，把这本书读完了，做了书中大部分的习题([已上传到github](https://github.com/asdemon/How-To-Design-Programs-solutions))，在此做一下总结：
+
+##本书主要讲什么
+这本书主要是程序设计的入门教材，在编程工作了四年后再读这本书，我的目的是什么？
+
+主要是想提升一下自己的抽象设计能力，这本书用的是Scheme的一个方言，但学习起来没有什么难度，学习这本书的目的也不在于要学会这个语言，而是面对一个问题，重新设计数据，程序的一种套路和思维方式，就像武功中的“内功”，而这是有一种套路的，目标就是学习这个套路。
+
+##套路
+1. 分析问题——用什么样的数据表示问题中的各种信息
+2. 设计函数完成所需要的功能，一个函数只做一件事，改变只由一个点即可更改所有
+3. 按照函数设计的步骤完成各个函数的设计，这是根数据的结构息息相关的，甚至可以说是一一对应的
+4. 测试程序
+
+###设计函数的步骤
+1. 数据表示
+2. 写出函数的signature,purpose statement, header
+3. 举出函数的一些预期例子，这个步骤会对实现函数带来帮助，不可忽略
+4. 写出函数的模板，比如structure,list的递归，generitive的递归，accumulator或使用map,filter,foldr等
+5. 实现出函数
+6. 测试
+
+
+##一些心得
+1. 学习完成后，对递归的理解更加深刻了，大多数的程序都是递归，对于递归到最底层的理解更深刻了，比如树的递归递归到NONE,表示是空树。
+2. Incremental Refinement：The basic idea is that the first program implements only a fraction of the desired behavior, the next one a bit more, and so on
+3. Functions are values, and they can represent information.对舰队那里用函数表示在攻击范围的例子印象深刻。
+4. lexical scope，bound occurrences，binding occurrence
+
+
+目前，下在读SICP，等读完后再分享心得。
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<h1 id="howtodesignprograms">How to Design Programs</h1>
+
+<p>从8月中旬开始阅读《How to Design Programs, Second Edition》,读到国庆节，把这本书读完了，做了书中大部分的习题(<a href="https://github.com/asdemon/How-To-Design-Programs-solutions">已上传到github</a>)，在此做一下总结：</p>
+
+<h2 id="">本书主要讲什么</h2>
+
+<p>这本书主要是程序设计的入门教材，在编程工作了四年后再读这本书，我的目的是什么？</p>
+
+<p>主要是想提升一下自己的抽象设计能力，这本书用的是Scheme的一个方言，但学习起来没有什么难度，学习这本书的目的也不在于要学会这个语言，而是面对一个问题，重新设计数据，程序的一种套路和思维方式，就像武功中的“内功”，而这是有一种套路的，目标就是学习这个套路。</p>
+
+<h2 id="">套路</h2>
+
+<ol>
+<li>分析问题——用什么样的数据表示问题中的各种信息</li>
+<li>设计函数完成所需要的功能，一个函数只做一件事，改变只由一个点即可更改所有</li>
+<li>按照函数设计的步骤完成各个函数的设计，这是根数据的结构息息相关的，甚至可以说是一一对应的</li>
+<li>测试程序</li>
+</ol>
+
+<h3 id="">设计函数的步骤</h3>
+
+<ol>
+<li>数据表示</li>
+<li>写出函数的signature,purpose statement, header</li>
+<li>举出函数的一些预期例子，这个步骤会对实现函数带来帮助，不可忽略</li>
+<li>写出函数的模板，比如structure,list的递归，generitive的递归，accumulator或使用map,filter,foldr等</li>
+<li>实现出函数</li>
+<li>测试</li>
+</ol>
+
+<h2 id="">一些心得</h2>
+
+<ol>
+<li>学习完成后，对递归的理解更加深刻了，大多数的程序都是递归，对于递归到最底层的理解更深刻了，比如树的递归递归到NONE,表示是空树。</li>
+<li>Incremental Refinement：The basic idea is that the first program implements only a fraction of the desired behavior, the next one a bit more, and so on</li>
+<li>Functions are values, and they can represent information.对舰队那里用函数表示在攻击范围的例子印象深刻。</li>
+<li>lexical scope，bound occurrences，binding occurrence</li>
+</ol>
+
+<p>目前，下在读SICP，等读完后再分享心得。</p>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "HtDP.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
