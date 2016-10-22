@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+#win10 使用电脑共享热点
+
+1.  右键系统徽标，选择“命令提示符（管理员）”
+
+![](http://masstone-phoenix.github.io/image/win10_wifi_share/step1.png)
+
+2.  输入命令：netsh wlan set hostednetwork mode=allow ssid=abcdefg key=12345678 ——
+其中ssid是你的wifi的名字，可以随便设置，最好英文，key是你的wifi的密码，必须8位以上
+3.  输入命令：netsh wlan start hostednetwork —— 启动网络
+4.  此时打开“控制面板\网络和 Internet\网络连接”，可以看到刚才设置的网络连接，其中ssid显示在第二行
+5.  在“网络连接”中右键点击电脑的有线连接，选择“共享”，勾选其中的“允许其他网络用户通过此计算机的Internet连接来连接”。并且家庭网络连接选择虚拟wifi“Microsoft Virtual WIFI Miniport Adapter ”，单机“确定”。
+
+![](http://masstone-phoenix.github.io/image/win10_wifi_share/step2.png)
+
+6.  此时可以使用手机等连接刚刚设置好的wifi上网了
+7.  如果要停止使用，输入命令：netsh wlan stop hostednetwork
+
+注：不要禁用这个网络，否则，需要到“设备管理器”中的"网络适配器"中启用“Microsoft Host Network Virtual  Adapter ”
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<h1 id="win10">win10 使用电脑共享热点</h1>
+
+<ol>
+<li>右键系统徽标，选择“命令提示符（管理员）”</li>
+</ol>
+
+<p><img src="http://masstone-phoenix.github.io/image/win10_wifi_share/step1.png" alt="" title=""></p>
+
+<ol>
+<li>输入命令：netsh wlan set hostednetwork mode=allow ssid=abcdefg key=12345678 ——
+其中ssid是你的wifi的名字，可以随便设置，最好英文，key是你的wifi的密码，必须8位以上</li>
+<li>输入命令：netsh wlan start hostednetwork —— 启动网络</li>
+<li>此时打开“控制面板\网络和 Internet\网络连接”，可以看到刚才设置的网络连接，其中ssid显示在第二行</li>
+<li>在“网络连接”中右键点击电脑的有线连接，选择“共享”，勾选其中的“允许其他网络用户通过此计算机的Internet连接来连接”。并且家庭网络连接选择虚拟wifi“Microsoft Virtual WIFI Miniport Adapter ”，单机“确定”。</li>
+</ol>
+
+<p><img src="http://masstone-phoenix.github.io/image/win10_wifi_share/step2.png" alt="" title=""></p>
+
+<ol>
+<li>此时可以使用手机等连接刚刚设置好的wifi上网了</li>
+<li>如果要停止使用，输入命令：netsh wlan stop hostednetwork</li>
+</ol>
+
+<p>注：不要禁用这个网络，否则，需要到“设备管理器”中的"网络适配器"中启用“Microsoft Host Network Virtual  Adapter ”</p>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "win10_wifi_share.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
