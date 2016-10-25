@@ -117,7 +117,11 @@ If the new information you’ve gathered allows you to reconfigure the server to
 If you are unable to reconfigure the server, use the information you’ve gathered using the TLSTool app to define an appropriate NSExceptionDomains dictionary for that server.
 
 
-###数字形式的IP在打开ATS是不能访问的
+##小知识
+1.  数字形式的IP在打开ATS是不能访问的
+2.  While it’s not yet documented, ATS exceptions can in fact be nested in this way. Any exceptions specified without the NSIncludesSubdomains key will be evaluated before exceptions with the key, meaning that domain-specific exceptions can override “wildcard” any-subdomain exceptions. (As with all undocumented behavior, this is subject to change in future OS releases.)
+3.  Using CFNetwork Diagnostics, we can set the environment variable **CFNETWORK_DIAGNOSTICS** to 1 in order to get more information on the console about the failure
+4.  Using nscurl. While CFNETWORK_DIAGNOSTICS can be quite handy, its output can also be somewhat cryptic, and it’s a bit of a hassle to pull the log file off an iOS device. If you have access to an OS X machine running 10.11 or later, the command-line utility **nscurl** *provides some basic ATS debugging capabilities*. Simply open a Terminal and run:`nscurl --ats-diagnostics https://example.com`
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -215,7 +219,14 @@ If the new information you’ve gathered allows you to reconfigure the server to
 
 <p>If you are unable to reconfigure the server, use the information you’ve gathered using the TLSTool app to define an appropriate NSExceptionDomains dictionary for that server.</p>
 
-<h3 id="ipats">数字形式的IP在打开ATS是不能访问的</h3>
+<h2 id="">小知识</h2>
+
+<ol>
+<li>数字形式的IP在打开ATS是不能访问的</li>
+<li>While it’s not yet documented, ATS exceptions can in fact be nested in this way. Any exceptions specified without the NSIncludesSubdomains key will be evaluated before exceptions with the key, meaning that domain-specific exceptions can override “wildcard” any-subdomain exceptions. (As with all undocumented behavior, this is subject to change in future OS releases.)</li>
+<li>Using CFNetwork Diagnostics, we can set the environment variable <strong>CFNETWORK_DIAGNOSTICS</strong> to 1 in order to get more information on the console about the failure</li>
+<li>Using nscurl. While CFNETWORK_DIAGNOSTICS can be quite handy, its output can also be somewhat cryptic, and it’s a bit of a hassle to pull the log file off an iOS device. If you have access to an OS X machine running 10.11 or later, the command-line utility <strong>nscurl</strong> <em>provides some basic ATS debugging capabilities</em>. Simply open a Terminal and run:<code>nscurl --ats-diagnostics https://example.com</code></li>
+</ol>
 <!-- content end -->
 </div>
 <br>
