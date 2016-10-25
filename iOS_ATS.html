@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+今天，做了一个iOS10 App Transport Security适配的工作，总结一下适配的心得。
+
+#怎么做
+在info.plist中加入App Transport Security Settings，在这项下加入Exception Domains，这是一个dictionary，其Item是以域名为key的字典，其中key的解释见[官方](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW44)。
+
+	NSAppTransportSecurity : Dictionary {
+	    NSAllowsArbitraryLoads : Boolean //Default value is NO
+	    NSAllowsArbitraryLoadsInMedia : Boolean // Default value is NO
+	    NSAllowsArbitraryLoadsInWebContent : Boolean // Default value is NO
+	    NSAllowsLocalNetworking : Boolean // Default value is NO
+	    NSExceptionDomains : Dictionary {
+	        <domain-name-string> : Dictionary {
+	            NSIncludesSubdomains : Boolean // Default value is NO
+	            NSExceptionAllowsInsecureHTTPLoads : Boolean //Default value is NO
+	            NSExceptionMinimumTLSVersion : String //Default value is TLSv1.2
+	            NSExceptionRequiresForwardSecrecy : Boolean   // Default value is YES
+	            NSRequiresCertificateTransparency : Boolean   // Default value is NO
+	        }
+	    }
+	}
+
+以下是我做的一个例子
+
+
+plist文本：
+
+```
+<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>s3.amazonaws.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+			<key>cloudfront.net</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+			<key>facebook.com</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
+```
+
+#经验
+
+以下官方文档介绍的方法在我的调试过程中给予我很大的帮助：
+##Debugging ATS Connections
+If you are seeing Internet connection problems that you suspect are related to ATS, try the following troubleshooting approach:
+
+1.Disable ATS entirely to confirm that ATS is involved with the connection problem. Do this by using the following configuration pattern:
+
+```
+NSAppTransportSecurity
+    NSAllowsArbitraryLoads = YES
+```
+
+2.If entirely disabling ATS solves your connection problem, proceed with step 2. (If you still cannot connect with ATS disabled, the problem lies somewhere other than with ATS.)
+Test whether a specific domain under your control is causing the connection problem. Do this by reenabling ATS except on that specific domain, using the following configuration pattern:
+
+```
+NSAppTransportSecurity
+    NSAllowsArbitraryLoads = NO  // Shown for clarity; this is the default
+    NSExceptionDomains
+        "secure-server-i-control.example.com"
+            NSExceptionAllowsInsecureHTTPLoads = YES
+            NSExceptionRequiresForwardSecrecy = NO
+            NSExceptionMinimumTLSVersion = "TLSv1.0"
+```
+If connection continues to work with this configuration, it is likely that the problem lies with the specific domain named in your NSExceptionDomains dictionary.
+
+If connection fails with this configuration, the problem is likely one of two things:
+1.  An ATS misconfiguration on the server named in the NSExceptionDomains dictionary
+2.  An ATS misconfiguration on another server that the connection is redirected to
+
+3.Once you have pinpointed the server at blame for the connection problem, proceed with step 3.
+Use the TLSTool sample code project to investigate the details of the TLS version, server certificate, and cipher suite the problematic server is using.
+If the new information you’ve gathered allows you to reconfigure the server to support ATS, do so.
+
+If you are unable to reconfigure the server, use the information you’ve gathered using the TLSTool app to define an appropriate NSExceptionDomains dictionary for that server.
+
+
+###数字形式的IP在打开ATS是不能访问的
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<p>今天，做了一个iOS10 App Transport Security适配的工作，总结一下适配的心得。</p>
+
+<h1 id="">怎么做</h1>
+
+<p>在info.plist中加入App Transport Security Settings，在这项下加入Exception Domains，这是一个dictionary，其Item是以域名为key的字典，其中key的解释见<a href="https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW44">官方</a>。</p>
+
+<pre><code>NSAppTransportSecurity : Dictionary {
+    NSAllowsArbitraryLoads : Boolean //Default value is NO
+    NSAllowsArbitraryLoadsInMedia : Boolean // Default value is NO
+    NSAllowsArbitraryLoadsInWebContent : Boolean // Default value is NO
+    NSAllowsLocalNetworking : Boolean // Default value is NO
+    NSExceptionDomains : Dictionary {
+        &lt;domain-name-string&gt; : Dictionary {
+            NSIncludesSubdomains : Boolean // Default value is NO
+            NSExceptionAllowsInsecureHTTPLoads : Boolean //Default value is NO
+            NSExceptionMinimumTLSVersion : String //Default value is TLSv1.2
+            NSExceptionRequiresForwardSecrecy : Boolean   // Default value is YES
+            NSRequiresCertificateTransparency : Boolean   // Default value is NO
+        }
+    }
+}
+</code></pre>
+
+<p>以下是我做的一个例子</p>
+
+<p>plist文本：</p>
+
+<pre><code>&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;
+    &lt;dict&gt;
+        &lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;
+        &lt;false/&gt;
+        &lt;key&gt;NSExceptionDomains&lt;/key&gt;
+        &lt;dict&gt;
+            &lt;key&gt;s3.amazonaws.com&lt;/key&gt;
+            &lt;dict&gt;
+                &lt;key&gt;NSExceptionAllowsInsecureHTTPLoads&lt;/key&gt;
+                &lt;true/&gt;
+                &lt;key&gt;NSIncludesSubdomains&lt;/key&gt;
+                &lt;true/&gt;
+            &lt;/dict&gt;
+            &lt;key&gt;cloudfront.net&lt;/key&gt;
+            &lt;dict&gt;
+                &lt;key&gt;NSIncludesSubdomains&lt;/key&gt;
+                &lt;true/&gt;
+            &lt;/dict&gt;
+            &lt;key&gt;facebook.com&lt;/key&gt;
+            &lt;dict&gt;
+                &lt;key&gt;NSIncludesSubdomains&lt;/key&gt;
+                &lt;true/&gt;
+            &lt;/dict&gt;
+        &lt;/dict&gt;
+    &lt;/dict&gt;
+</code></pre>
+
+<h1 id="">经验</h1>
+
+<p>以下官方文档介绍的方法在我的调试过程中给予我很大的帮助：</p>
+
+<h2 id="debuggingatsconnections">Debugging ATS Connections</h2>
+
+<p>If you are seeing Internet connection problems that you suspect are related to ATS, try the following troubleshooting approach:</p>
+
+<p>1.Disable ATS entirely to confirm that ATS is involved with the connection problem. Do this by using the following configuration pattern:</p>
+
+<pre><code>NSAppTransportSecurity
+    NSAllowsArbitraryLoads = YES
+</code></pre>
+
+<p>2.If entirely disabling ATS solves your connection problem, proceed with step 2. (If you still cannot connect with ATS disabled, the problem lies somewhere other than with ATS.)
+Test whether a specific domain under your control is causing the connection problem. Do this by reenabling ATS except on that specific domain, using the following configuration pattern:</p>
+
+<pre><code>NSAppTransportSecurity
+    NSAllowsArbitraryLoads = NO  // Shown for clarity; this is the default
+    NSExceptionDomains
+        "secure-server-i-control.example.com"
+            NSExceptionAllowsInsecureHTTPLoads = YES
+            NSExceptionRequiresForwardSecrecy = NO
+            NSExceptionMinimumTLSVersion = "TLSv1.0"
+</code></pre>
+
+<p>If connection continues to work with this configuration, it is likely that the problem lies with the specific domain named in your NSExceptionDomains dictionary.</p>
+
+<p>If connection fails with this configuration, the problem is likely one of two things:
+1.  An ATS misconfiguration on the server named in the NSExceptionDomains dictionary
+2.  An ATS misconfiguration on another server that the connection is redirected to</p>
+
+<p>3.Once you have pinpointed the server at blame for the connection problem, proceed with step 3.
+Use the TLSTool sample code project to investigate the details of the TLS version, server certificate, and cipher suite the problematic server is using.
+If the new information you’ve gathered allows you to reconfigure the server to support ATS, do so.</p>
+
+<p>If you are unable to reconfigure the server, use the information you’ve gathered using the TLSTool app to define an appropriate NSExceptionDomains dictionary for that server.</p>
+
+<h3 id="ipats">数字形式的IP在打开ATS是不能访问的</h3>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "iOS_ATS.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
