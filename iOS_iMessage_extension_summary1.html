@@ -1,0 +1,284 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+最近为公司的一个APP开发了一个iMessage extension，开发过程中用到UISearchBar，UICollectionView,UITableView等，这里总结一下开发过程中遇到的问题（即各种坑），以下总结未涉及到MSMessage、MSSession类相关的东西，想看这部分的可以不用往下看了。
+
+众所周知，要实现一个小程序，就是各处VC的跳转以及信息的传递（我们这个程序与网络打交道很少，而且已经封装好了，就不用我们自己写相应的代码了），我的这个iMessage extension需要在几个VC之间进行跳转，由于是个extension，我的实现方法是在MSMessageViewController中加入或删除VC来达到跳转的目的。以下分几个部分来进行总结:1.iMessage extension在compact和expanded之间的切换；2.UISearchBar以及键盘的协调。
+
+#iMessage extension在compact和expanded之间的切换
+
+##切换
+开始时，切换的位置会在切换时显示的不正确；在位置正确后又出现了闪动的情况，以下分别进行说明。
+
+###切换时位置的不正确
+此时，正确的想法是调整VC的frame使之位置正确，
+开时始，我是在willTransitionToPresentationStyle:方法中实现位置的调整，但在切换时，在expanded时位置是正确的，但在切换回compact时，VC的位置就下移了，这个原因是未知的，因为在这里我们是对显示的UI进行准备，我已经将UI正确显示的位置计算了出来，但结果是不对的；所以进行了多次实验后，我将这个操作放在了didTransitionToPresentationStyle:中，位置不显示不正确的问题就解决了，来回切换位置是正确了。
+
+###切换时的“闪动”
+完成程序编写后，我就找来真机进行测试，发现在从compact到expanded切换时，VC的显示是先上升到iMessage navigationbar的后面，然后再下降到iMessage navigationbar的下面的正确位置（模拟器是看不出来的，因为这时的模拟器上是一片空白），这就造成了一点“闪动”，会让用户觉得不是很舒服，于是我又开始对这个问题进行调试，前面已经说了，位置最终的位置是正确的，只是过程中先上后下，这个不对，要改为一直平缓上升到正确的位置就完美了，又对程序进行了多次尝试，最终通过以下tweak的方法解决了问题，具体的原因还待分析。
+***其中主要的改动是在willTransitionToPresentationStyle:方法中处理由compact变成expanded的位置控制，在didTransitionToPresentationStyle:中处理由expanded变成compact的位置控制。***
+
+```
+-(void)willTransitionToPresentationStyle:(MSMessagesAppPresentationStyle)presentationStyle {
+    // Called before the extension transitions to a new presentation style.
+    
+    // Use this method to prepare for the change in presentation style.
+    if (presentationStyle == MSMessagesAppPresentationStyleExpanded) {
+        //[NSThread sleepForTimeInterval: 0.06];
+        [self presentVC:presentationStyle];
+    }
+}
+
+-(void)didTransitionToPresentationStyle:(MSMessagesAppPresentationStyle)presentationStyle {
+    // Called after the extension transitions to a new presentation style.
+    
+    // Use this method to finalize any behaviors associated with the change in presentation style.
+    if (presentationStyle == MSMessagesAppPresentationStyleCompact) {
+        [self presentVC:presentationStyle];
+    }
+}
+```
+
+####上升时的闪动
+通过以上我认为已经解决了页面闪动的问题，但是在测试时由compact过渡到expanded的开始有一点卡动，这个经过调试，使用了另一个tweak——去除上面的`[NSThread sleepForTimeInterval: 0.06];`的注释，这个动画就很平缓了。
+
+
+##UIScrollView的frame的调整
+这个是根据extension的模式是compact还是expanded来分别进行frame的设置，而直接读取self.view.frame来设置子VC的frame并不能达到目标，这个也是一个坑。
+
+```
+[self.childViewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj willMoveToParentViewController:nil];
+        [obj.view removeFromSuperview];
+        [obj removeFromParentViewController];
+    }];
+    
+    [self addChildViewController:childVC];
+    if (presentationStyle == MSMessagesAppPresentationStyleCompact) {
+        childVC.view.frame = CGRectMake(0, 44,
+                                                self.view.bounds.size.width,
+                                                self.view.bounds.size.height - 44 - self.bottomLayoutGuide.length);
+    }
+    else {
+        childVC.view.frame = CGRectMake(0, 86 + 44,
+                                                self.view.bounds.size.width,
+                                                self.view.bounds.size.height - 86 - 44 - self.bottomLayoutGuide.length);
+    }
+    [self.view addSubview:childVC.view];
+    [childVC didMoveToParentViewController:self];
+```
+
+
+
+#UISearchBar以及键盘的协调
+UISearchBar在compact模式下不能进行键盘的输入，必须先到expanded模式才能输入键盘，但从compact到expanded是有一个时间的，不能立刻调用`[self.searchBar becomeFirstResponder];`，所以我在程序中用了一个异步延时的操作，这点也不是太好，但是目前没有找到一个合适有效的方法，如果有请联系我（asdemon235b@126.com）。
+
+附：UISearchBar的清除按钮显示mode的更改：
+
+```
+	UITextField *textField = nil;
+    for (UIView* v in [self.searchBar.subviews firstObject].subviews) {
+        if ( [v isKindOfClass: [UITextField class]] ) {
+            textField = (UITextField *)v;
+            break;
+        }
+    }
+    textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+```
+
+或
+
+```
+	UITextField *textField = [self.searchBar valueForKey:@"_searchField"];
+ 	textField.clearButtonMode = UITextFieldViewModeNever;
+```
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<p>最近为公司的一个APP开发了一个iMessage extension，开发过程中用到UISearchBar，UICollectionView,UITableView等，这里总结一下开发过程中遇到的问题（即各种坑），以下总结未涉及到MSMessage、MSSession类相关的东西，想看这部分的可以不用往下看了。</p>
+
+<p>众所周知，要实现一个小程序，就是各处VC的跳转以及信息的传递（我们这个程序与网络打交道很少，而且已经封装好了，就不用我们自己写相应的代码了），我的这个iMessage extension需要在几个VC之间进行跳转，由于是个extension，我的实现方法是在MSMessageViewController中加入或删除VC来达到跳转的目的。以下分几个部分来进行总结:1.iMessage extension在compact和expanded之间的切换；2.UISearchBar以及键盘的协调。</p>
+
+<h1 id="imessageextensioncompactexpanded">iMessage extension在compact和expanded之间的切换</h1>
+
+<h2 id="">切换</h2>
+
+<p>开始时，切换的位置会在切换时显示的不正确；在位置正确后又出现了闪动的情况，以下分别进行说明。</p>
+
+<h3 id="">切换时位置的不正确</h3>
+
+<p>此时，正确的想法是调整VC的frame使之位置正确，
+开时始，我是在willTransitionToPresentationStyle:方法中实现位置的调整，但在切换时，在expanded时位置是正确的，但在切换回compact时，VC的位置就下移了，这个原因是未知的，因为在这里我们是对显示的UI进行准备，我已经将UI正确显示的位置计算了出来，但结果是不对的；所以进行了多次实验后，我将这个操作放在了didTransitionToPresentationStyle:中，位置不显示不正确的问题就解决了，来回切换位置是正确了。</p>
+
+<h3 id="">切换时的“闪动”</h3>
+
+<p>完成程序编写后，我就找来真机进行测试，发现在从compact到expanded切换时，VC的显示是先上升到iMessage navigationbar的后面，然后再下降到iMessage navigationbar的下面的正确位置（模拟器是看不出来的，因为这时的模拟器上是一片空白），这就造成了一点“闪动”，会让用户觉得不是很舒服，于是我又开始对这个问题进行调试，前面已经说了，位置最终的位置是正确的，只是过程中先上后下，这个不对，要改为一直平缓上升到正确的位置就完美了，又对程序进行了多次尝试，最终通过以下tweak的方法解决了问题，具体的原因还待分析。
+<strong><em>其中主要的改动是在willTransitionToPresentationStyle:方法中处理由compact变成expanded的位置控制，在didTransitionToPresentationStyle:中处理由expanded变成compact的位置控制。</em></strong></p>
+
+<pre><code>-(void)willTransitionToPresentationStyle:(MSMessagesAppPresentationStyle)presentationStyle {
+    // Called before the extension transitions to a new presentation style.
+
+    // Use this method to prepare for the change in presentation style.
+    if (presentationStyle == MSMessagesAppPresentationStyleExpanded) {
+        //[NSThread sleepForTimeInterval: 0.06];
+        [self presentVC:presentationStyle];
+    }
+}
+
+-(void)didTransitionToPresentationStyle:(MSMessagesAppPresentationStyle)presentationStyle {
+    // Called after the extension transitions to a new presentation style.
+
+    // Use this method to finalize any behaviors associated with the change in presentation style.
+    if (presentationStyle == MSMessagesAppPresentationStyleCompact) {
+        [self presentVC:presentationStyle];
+    }
+}
+</code></pre>
+
+<h4 id="">上升时的闪动</h4>
+
+<p>通过以上我认为已经解决了页面闪动的问题，但是在测试时由compact过渡到expanded的开始有一点卡动，这个经过调试，使用了另一个tweak——去除上面的<code>[NSThread sleepForTimeInterval: 0.06];</code>的注释，这个动画就很平缓了。</p>
+
+<h2 id="uiscrollviewframe">UIScrollView的frame的调整</h2>
+
+<p>这个是根据extension的模式是compact还是expanded来分别进行frame的设置，而直接读取self.view.frame来设置子VC的frame并不能达到目标，这个也是一个坑。</p>
+
+<pre><code>[self.childViewControllers enumerateObjectsUsingBlock:^(__kindof UIViewController * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [obj willMoveToParentViewController:nil];
+        [obj.view removeFromSuperview];
+        [obj removeFromParentViewController];
+    }];
+
+    [self addChildViewController:childVC];
+    if (presentationStyle == MSMessagesAppPresentationStyleCompact) {
+        childVC.view.frame = CGRectMake(0, 44,
+                                                self.view.bounds.size.width,
+                                                self.view.bounds.size.height - 44 - self.bottomLayoutGuide.length);
+    }
+    else {
+        childVC.view.frame = CGRectMake(0, 86 + 44,
+                                                self.view.bounds.size.width,
+                                                self.view.bounds.size.height - 86 - 44 - self.bottomLayoutGuide.length);
+    }
+    [self.view addSubview:childVC.view];
+    [childVC didMoveToParentViewController:self];
+</code></pre>
+
+<h1 id="uisearchbar">UISearchBar以及键盘的协调</h1>
+
+<p>UISearchBar在compact模式下不能进行键盘的输入，必须先到expanded模式才能输入键盘，但从compact到expanded是有一个时间的，不能立刻调用<code>[self.searchBar becomeFirstResponder];</code>，所以我在程序中用了一个异步延时的操作，这点也不是太好，但是目前没有找到一个合适有效的方法，如果有请联系我（asdemon235b@126.com）。</p>
+
+<p>附：UISearchBar的清除按钮显示mode的更改：</p>
+
+<pre><code>    UITextField *textField = nil;
+    for (UIView* v in [self.searchBar.subviews firstObject].subviews) {
+        if ( [v isKindOfClass: [UITextField class]] ) {
+            textField = (UITextField *)v;
+            break;
+        }
+    }
+    textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+</code></pre>
+
+<p>或</p>
+
+<pre><code>    UITextField *textField = [self.searchBar valueForKey:@"_searchField"];
+     textField.clearButtonMode = UITextFieldViewModeNever;
+</code></pre>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "iOS_iMessage_extension_summary1.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
