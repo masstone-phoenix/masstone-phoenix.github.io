@@ -34,6 +34,19 @@
 #八
 一个好的计划应当附有某些应变措施，即对付意外困难的某种适应性。
 *一种证明线段相等的方法——用计算的方法证明相等*
+
+#九
+辅助问题有两种：双向化归和单向化归。其中单向化归又分为两类：强化归和弱化归。
+
+##强化归
+比如我们要知道或证明A，而我们得到一个问题B，通过B的解我们可以推导出A的解，我们就是B强于A。
+
+##弱化归
+通过上面强化归的说明，我想我们可以理解弱化归的意思。以下我们举一个例子：
+证明球的表面积公式$S = \pi r^2$。
+我们可以将这个问题化归成两个较弱的问题：i.$S <=  \pi r^2$；ii.$S >=  \pi r^2$。证明完上述两个软弱的问题，我们就证明了原来较强的问题。
+
+#十
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -48,6 +61,22 @@
 
 <p>一个好的计划应当附有某些应变措施，即对付意外困难的某种适应性。
 <em>一种证明线段相等的方法——用计算的方法证明相等</em></p>
+
+<h1 id="">九</h1>
+
+<p>辅助问题有两种：双向化归和单向化归。其中单向化归又分为两类：强化归和弱化归。</p>
+
+<h2 id="">强化归</h2>
+
+<p>比如我们要知道或证明A，而我们得到一个问题B，通过B的解我们可以推导出A的解，我们就是B强于A。</p>
+
+<h2 id="">弱化归</h2>
+
+<p>通过上面强化归的说明，我想我们可以理解弱化归的意思。以下我们举一个例子：
+证明球的表面积公式<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-361-Frame" tabindex="0" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>S</mi><mo>=</mo><mi>&amp;#x03C0;</mi><msup><mi>r</mi><mn>2</mn></msup></math>" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-2473" style="width: 4.402em; display: inline-block;"><span style="display: inline-block; position: relative; width: 3.502em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.302em 1003.5em 2.452em -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-2474"><span class="mi" id="MathJax-Span-2475" style="font-family: MathJax_Math-italic;">S<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span class="mo" id="MathJax-Span-2476" style="font-family: MathJax_Main; padding-left: 0.302em;">=</span><span class="mi" id="MathJax-Span-2477" style="font-family: MathJax_Math-italic; padding-left: 0.302em;">π<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="msubsup" id="MathJax-Span-2478"><span style="display: inline-block; position: relative; width: 0.903em; height: 0px;"><span style="position: absolute; clip: rect(3.402em 1000.45em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-2479" style="font-family: MathJax_Math-italic;">r</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.348em; left: 0.453em;"><span class="mn" id="MathJax-Span-2480" style="font-size: 70.7%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 1.191em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>S</mi><mo>=</mo><mi>π</mi><msup><mi>r</mi><mn>2</mn></msup></math></span></span><script type="math/tex" id="MathJax-Element-361">S = \pi r^2</script>。
+我们可以将这个问题化归成两个较弱的问题：i.<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-362-Frame" tabindex="0" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>S</mi><mo>&amp;lt;=</mo><mi>&amp;#x03C0;</mi><msup><mi>r</mi><mn>2</mn></msup></math>" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-2481" style="width: 5.402em; display: inline-block;"><span style="display: inline-block; position: relative; width: 4.303em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.302em 1004.3em 2.502em -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-2482"><span class="mi" id="MathJax-Span-2483" style="font-family: MathJax_Math-italic;">S<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span class="mo" id="MathJax-Span-2484" style="font-family: MathJax_Main; padding-left: 0.302em;">&lt;<span style="font-family: MathJax_Main;">=</span></span><span class="mi" id="MathJax-Span-2485" style="font-family: MathJax_Math-italic; padding-left: 0.302em;">π<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="msubsup" id="MathJax-Span-2486"><span style="display: inline-block; position: relative; width: 0.903em; height: 0px;"><span style="position: absolute; clip: rect(3.402em 1000.45em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-2487" style="font-family: MathJax_Math-italic;">r</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.348em; left: 0.453em;"><span class="mn" id="MathJax-Span-2488" style="font-size: 70.7%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.122em; border-left: 0px solid; width: 0px; height: 1.191em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>S</mi><mo>&lt;=</mo><mi>π</mi><msup><mi>r</mi><mn>2</mn></msup></math></span></span><script type="math/tex" id="MathJax-Element-362">S <=  \pi r^2</script>；ii.<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-363-Frame" tabindex="0" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mi>S</mi><mo>&amp;gt;=</mo><mi>&amp;#x03C0;</mi><msup><mi>r</mi><mn>2</mn></msup></math>" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-2489" style="width: 5.402em; display: inline-block;"><span style="display: inline-block; position: relative; width: 4.303em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.302em 1004.3em 2.502em -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-2490"><span class="mi" id="MathJax-Span-2491" style="font-family: MathJax_Math-italic;">S<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span class="mo" id="MathJax-Span-2492" style="font-family: MathJax_Main; padding-left: 0.302em;">&gt;<span style="font-family: MathJax_Main;">=</span></span><span class="mi" id="MathJax-Span-2493" style="font-family: MathJax_Math-italic; padding-left: 0.302em;">π<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="msubsup" id="MathJax-Span-2494"><span style="display: inline-block; position: relative; width: 0.903em; height: 0px;"><span style="position: absolute; clip: rect(3.402em 1000.45em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-2495" style="font-family: MathJax_Math-italic;">r</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.348em; left: 0.453em;"><span class="mn" id="MathJax-Span-2496" style="font-size: 70.7%; font-family: MathJax_Main;">2</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.122em; border-left: 0px solid; width: 0px; height: 1.191em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>S</mi><mo>&gt;=</mo><mi>π</mi><msup><mi>r</mi><mn>2</mn></msup></math></span></span><script type="math/tex" id="MathJax-Element-363">S >=  \pi r^2</script>。证明完上述两个软弱的问题，我们就证明了原来较强的问题。</p>
+
+<h1 id="">十</h1>
 <!-- content end -->
 </div>
 <br>
