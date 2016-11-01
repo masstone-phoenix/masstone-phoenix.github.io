@@ -27,7 +27,15 @@
 <!-- markdown -->
 以前的Crashlytics只在release时用来观察crash，修复bug的，现实需求改变，要求debug时也要观察到crash信息，但是不希望和release的信息混在一起，于是就建了两个组，在debug时和release时使用的API KEY不同以区分开，而这在程序中也要加以区别，以下记录下：
 
-1.  
+1.  增加自定义项XXX
+2.  将自定义项写到Target -> Info -> Custom iOS Target Propertyies -> Fabric -> APIKey中
+3.  在Target -> Build Phases -> Run Script中增加判别debug和release
+
+
+
+如果还没有出现crash report，看看dSYM文件是否自动上传了，如果没有需要找到它并手动上传。
+
+![](http://i.stack.imgur.com/tnv4H.png)
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -35,8 +43,14 @@
 <p>以前的Crashlytics只在release时用来观察crash，修复bug的，现实需求改变，要求debug时也要观察到crash信息，但是不希望和release的信息混在一起，于是就建了两个组，在debug时和release时使用的API KEY不同以区分开，而这在程序中也要加以区别，以下记录下：</p>
 
 <ol>
-<li></li>
+<li>增加自定义项XXX</li>
+<li>将自定义项写到Target -&gt; Info -&gt; Custom iOS Target Propertyies -&gt; Fabric -&gt; APIKey中</li>
+<li>在Target -&gt; Build Phases -&gt; Run Script中增加判别debug和release</li>
 </ol>
+
+<p>如果还没有出现crash report，看看dSYM文件是否自动上传了，如果没有需要找到它并手动上传。</p>
+
+<p><img src="http://i.stack.imgur.com/tnv4H.png" alt="" title=""></p>
 <!-- content end -->
 </div>
 <br>
