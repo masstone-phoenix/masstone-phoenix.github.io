@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+Xcode8的AutoLayout做了一些更新，这里只介绍适配的部分。
+
+在Xcode8之前，我们通过在storyboard中的width Any height Any布局在每种设备上都相同的布局，使用width compact(or Regular) height compact (or Regular)适配某种设备，但在Xcode8中，Apple更改了使用的方法，概念是不变的，但是使用的方法变了。
+
+
+1.  在不进行选择时，对应原来的 Any Any，即对任意设备都有效。
+2.  如果要只在某种size class上更改某个View的属性，在“View as ...”这选中这种设备，在Attributes Inspector的左边有一个“+”，点击进行设置即可。
+![](http://i.stack.imgur.com/PHT7h.png)
+3.  如果要在某个设备中加入某个View，这个在“View as ...”这选中这种设备，点击“Vary for Traits”,其中选中Width的意思是只与选中这种设备的size class的width相同的设备应用；不选就是Any。之后正常加入View,点击Done varying就完成了
+![](http://i.stack.imgur.com/PHT7h.png)
+4.  对于约束同样可按上面的方法添加只对某些设备起作用的约束
+
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<p>Xcode8的AutoLayout做了一些更新，这里只介绍适配的部分。</p>
+
+<p>在Xcode8之前，我们通过在storyboard中的width Any height Any布局在每种设备上都相同的布局，使用width compact(or Regular) height compact (or Regular)适配某种设备，但在Xcode8中，Apple更改了使用的方法，概念是不变的，但是使用的方法变了。</p>
+
+<ol>
+<li>在不进行选择时，对应原来的 Any Any，即对任意设备都有效。</li>
+<li>如果要只在某种size class上更改某个View的属性，在“View as ...”这选中这种设备，在Attributes Inspector的左边有一个“+”，点击进行设置即可。
+<img src="http://i.stack.imgur.com/PHT7h.png" alt="" title=""></li>
+<li>如果要在某个设备中加入某个View，这个在“View as ...”这选中这种设备，点击“Vary for Traits”,其中选中Width的意思是只与选中这种设备的size class的width相同的设备应用；不选就是Any。之后正常加入View,点击Done varying就完成了
+<img src="http://i.stack.imgur.com/PHT7h.png" alt="" title=""></li>
+<li>对于约束同样可按上面的方法添加只对某些设备起作用的约束</li>
+</ol>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "Xcode8_size_class.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
