@@ -32,12 +32,12 @@ Xcode8的AutoLayout做了一些更新，这里只介绍适配的部分。
 
 1.  在不进行选择时，对应原来的 Any Any，即对任意设备都有效。
 2.  如果要只在某种size class上更改某个View的属性，在“View as ...”这选中这种设备，在Attributes Inspector的左边有一个“+”，点击进行设置即可。
-![](http://i.stack.imgur.com/PHT7h.png)
+![](http://masstone-phoenix.github.io/image/xcode8_autolayout/plus_sign.png)
 3.  如果要在某个设备中加入某个View，这个在“View as ...”这选中这种设备，点击“Vary for Traits”,其中选中Width的意思是只与选中这种设备的size class的width相同的设备应用；不选就是Any。之后正常加入View,点击Done varying就完成了
 ![](http://i.stack.imgur.com/PHT7h.png)
+![](http://masstone-phoenix.github.io/image/xcode8_autolayout/view_add_to_some_device.png)
+
 4.  对于约束同样可按上面的方法添加只对某些设备起作用的约束
-
-
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -49,10 +49,11 @@ Xcode8的AutoLayout做了一些更新，这里只介绍适配的部分。
 <ol>
 <li>在不进行选择时，对应原来的 Any Any，即对任意设备都有效。</li>
 <li>如果要只在某种size class上更改某个View的属性，在“View as ...”这选中这种设备，在Attributes Inspector的左边有一个“+”，点击进行设置即可。
-<img src="http://i.stack.imgur.com/PHT7h.png" alt="" title=""></li>
-<li>如果要在某个设备中加入某个View，这个在“View as ...”这选中这种设备，点击“Vary for Traits”,其中选中Width的意思是只与选中这种设备的size class的width相同的设备应用；不选就是Any。之后正常加入View,点击Done varying就完成了
-<img src="http://i.stack.imgur.com/PHT7h.png" alt="" title=""></li>
-<li>对于约束同样可按上面的方法添加只对某些设备起作用的约束</li>
+<img src="http://masstone-phoenix.github.io/image/xcode8_autolayout/plus_sign.png" alt="" title=""></li>
+<li><p>如果要在某个设备中加入某个View，这个在“View as ...”这选中这种设备，点击“Vary for Traits”,其中选中Width的意思是只与选中这种设备的size class的width相同的设备应用；不选就是Any。之后正常加入View,点击Done varying就完成了
+<img src="http://i.stack.imgur.com/PHT7h.png" alt="" title="">
+<img src="http://masstone-phoenix.github.io/image/xcode8_autolayout/view_add_to_some_device.png" alt="" title=""></p></li>
+<li><p>对于约束同样可按上面的方法添加只对某些设备起作用的约束</p></li>
 </ol>
 <!-- content end -->
 </div>
