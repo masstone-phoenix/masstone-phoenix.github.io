@@ -25,6 +25,47 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
+#Traits System
+Traits describe the environment that your application is running in.
+
+UITraitCollection interface.
+
+##Coarse grain
+So size classes is two traits, there's a horizontalSizeClass and there's verticalSizeClass and there's two possible values, compact and regular.
+
+Be different between iPad and iPhone think primarily about the differences **horizontally**.
+
+##Fine grain
+I just want to say one note about this and that's within the same size class you're going to want to use Auto Layout to react to the available space changing.
+
+##Medium grain
+
+
+#Propagation
+Now each stop along the way here is a class that conforms to UITraitEnvironment and the UITraitEnvironment has a key method called *traitCollectionDidChange*.
+
+A example:
+
+~~~~{swift}
+override func traitCollectionDidChange(_ previousTraits: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraits)
+    if previousTraits?.horizontalSizeClass != traitCollection.horizontalSizeClass {
+        switch traitCollection.horizontalSizeClass {
+        case .compact:
+            setupConstraintsForCompactEnvironment()
+        case .unspecified: fallthrough
+        case .regular:
+            setupConstraintsForRegularEnvironment()
+        }
+} }
+~~~~
+
+So again, this is going to get called for anything that conforms to UITraitEnvironment. And this is where you're going to do your adaptivity.
+
+
+
+
+#应用
 Xcode8的AutoLayout做了一些更新，这里只介绍适配的部分。
 
 在Xcode8之前，我们通过在storyboard中的width Any height Any布局在每种设备上都相同的布局，使用width compact(or Regular) height compact (or Regular)适配某种设备，但在Xcode8中，Apple更改了使用的方法，概念是不变的，但是使用的方法变了。
@@ -42,6 +83,47 @@ Xcode8的AutoLayout做了一些更新，这里只介绍适配的部分。
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<h1 id="traitssystem">Traits System</h1>
+
+<p>Traits describe the environment that your application is running in.</p>
+
+<p>UITraitCollection interface.</p>
+
+<h2 id="coarsegrain">Coarse grain</h2>
+
+<p>So size classes is two traits, there's a horizontalSizeClass and there's verticalSizeClass and there's two possible values, compact and regular.</p>
+
+<p>Be different between iPad and iPhone think primarily about the differences <strong>horizontally</strong>.</p>
+
+<h2 id="finegrain">Fine grain</h2>
+
+<p>I just want to say one note about this and that's within the same size class you're going to want to use Auto Layout to react to the available space changing.</p>
+
+<h2 id="mediumgrain">Medium grain</h2>
+
+<h1 id="propagation">Propagation</h1>
+
+<p>Now each stop along the way here is a class that conforms to UITraitEnvironment and the UITraitEnvironment has a key method called <em>traitCollectionDidChange</em>.</p>
+
+<p>A example:</p>
+
+<pre><code class="language-swift">override func traitCollectionDidChange(_ previousTraits: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraits)
+    if previousTraits?.horizontalSizeClass != traitCollection.horizontalSizeClass {
+        switch traitCollection.horizontalSizeClass {
+        case .compact:
+            setupConstraintsForCompactEnvironment()
+        case .unspecified: fallthrough
+        case .regular:
+            setupConstraintsForRegularEnvironment()
+        }
+} }
+</code></pre>
+
+<p>So again, this is going to get called for anything that conforms to UITraitEnvironment. And this is where you're going to do your adaptivity.</p>
+
+<h1 id="">应用</h1>
+
 <p>Xcode8的AutoLayout做了一些更新，这里只介绍适配的部分。</p>
 
 <p>在Xcode8之前，我们通过在storyboard中的width Any height Any布局在每种设备上都相同的布局，使用width compact(or Regular) height compact (or Regular)适配某种设备，但在Xcode8中，Apple更改了使用的方法，概念是不变的，但是使用的方法变了。</p>
