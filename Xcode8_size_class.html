@@ -98,6 +98,49 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
     verticalAppearance.setBackgroundImage(UIImage(), for: .default)
 }
 ```
+
+#Design
+##Design for Basic
+1.  Design for all combinations of device, orientation, and size 
+2.  Implement each design and change between them 
+3.  Use reusable elements
+
+##Design your app for diﬀerent adaptations
+1.  Consider the possible combinations of device, orientation, and size 
+2.  Make designs 
+3.  Deﬁne rules for which design to use
+
+
+
+##Do things in
+
+```
+override func viewWillLayoutSubviews() {       
+    // Add code here   
+ }
+```
+1.   Do as little work as possible 
+1.   Find out what has changed since last time 
+1.   Don’t cause a layout loop
+
+旋转动画的例子：
+```
+ override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {        
+     super.viewWillTransition(to: size, with: coordinator) 
+     coordinator.animate(alongsideTransition:             
+     { _ in                 
+               stackView.transform = CGAffineTransform(scaleX: 1.4, y: 1.4)
+    },
+                            completion:
+      { _ in                 
+               UIView.animate(withDuration: 0.5, animations: {     
+                                            stackView.transform = CGAffineTransform.identity   
+               })            
+       }        
+    )    
+ } 
+```
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -172,6 +215,55 @@ func application(_ application: UIApplication, didFinishLaunchingWithOptions lau
     let verticalAppearance = UINavigationBar.forTraitCollection(verticalRegularTrait)
     verticalAppearance.setBackgroundImage(UIImage(), for: .default)
 }
+</code></pre>
+
+<h1 id="design">Design</h1>
+
+<h2 id="designforbasic">Design for Basic</h2>
+
+<ol>
+<li>Design for all combinations of device, orientation, and size </li>
+<li>Implement each design and change between them </li>
+<li>Use reusable elements</li>
+</ol>
+
+<h2 id="designyourappfordierentadaptations">Design your app for diﬀerent adaptations</h2>
+
+<ol>
+<li>Consider the possible combinations of device, orientation, and size </li>
+<li>Make designs </li>
+<li>Deﬁne rules for which design to use</li>
+</ol>
+
+<h2 id="dothingsin">Do things in</h2>
+
+<pre><code>override func viewWillLayoutSubviews() {       
+    // Add code here   
+ }
+</code></pre>
+
+<ol>
+<li>Do as little work as possible </li>
+<li>Find out what has changed since last time </li>
+<li>Don’t cause a layout loop</li>
+</ol>
+
+<p>旋转动画的例子：</p>
+
+<pre><code> override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {        
+     super.viewWillTransition(to: size, with: coordinator) 
+     coordinator.animate(alongsideTransition:             
+     { _ in                 
+               stackView.transform = CGAffineTransform(scaleX: 1.4, y: 1.4)
+    },
+                            completion:
+      { _ in                 
+               UIView.animate(withDuration: 0.5, animations: {     
+                                            stackView.transform = CGAffineTransform.identity   
+               })            
+       }        
+    )    
+ } 
 </code></pre>
 <!-- content end -->
 </div>
