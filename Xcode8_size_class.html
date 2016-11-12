@@ -79,6 +79,25 @@ Xcode8的AutoLayout做了一些更新，这里只介绍适配的部分。
 ![](http://masstone-phoenix.github.io/image/xcode8_autolayout/view_add_to_some_device.png)
 
 4.  对于约束同样可按上面的方法添加只对某些设备起作用的约束
+
+
+#AutoLayout Guides
+UIView.layoutMarginsGuide
+
+UIView.readableContentGuide
+
+
+```
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool { 
+    let verticalCompactTrait = UITraitCollection(verticalSizeClass: .compact)       
+    let compactAppearance = UINavigationBar.forTraitCollection(verticalCompactTrait)          
+    compactAppearance.setBackgroundImage(nil, for: .default)
+
+    let verticalRegularTrait = UITraitCollection(verticalSizeClass: .regular)       
+    let verticalAppearance = UINavigationBar.forTraitCollection(verticalRegularTrait)
+    verticalAppearance.setBackgroundImage(UIImage(), for: .default)
+}
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -137,6 +156,23 @@ Xcode8的AutoLayout做了一些更新，这里只介绍适配的部分。
 <img src="http://masstone-phoenix.github.io/image/xcode8_autolayout/view_add_to_some_device.png" alt="" title=""></p></li>
 <li><p>对于约束同样可按上面的方法添加只对某些设备起作用的约束</p></li>
 </ol>
+
+<h1 id="autolayoutguides">AutoLayout Guides</h1>
+
+<p>UIView.layoutMarginsGuide</p>
+
+<p>UIView.readableContentGuide</p>
+
+<pre><code>func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -&gt; Bool { 
+    let verticalCompactTrait = UITraitCollection(verticalSizeClass: .compact)       
+    let compactAppearance = UINavigationBar.forTraitCollection(verticalCompactTrait)          
+    compactAppearance.setBackgroundImage(nil, for: .default)
+
+    let verticalRegularTrait = UITraitCollection(verticalSizeClass: .regular)       
+    let verticalAppearance = UINavigationBar.forTraitCollection(verticalRegularTrait)
+    verticalAppearance.setBackgroundImage(UIImage(), for: .default)
+}
+</code></pre>
 <!-- content end -->
 </div>
 <br>
