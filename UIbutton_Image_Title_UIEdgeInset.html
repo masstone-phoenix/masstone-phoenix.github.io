@@ -25,38 +25,125 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-#基本概念
-Problem -> Model -> Solution
+(转载)不知道有没有人和我一样一直对这两个属性比较迷惑，其实官方文档也没有对此作太详细的解释，有时候自己凭感觉调出个数值看似界面没什么大问题但是心里还老是担心会有问题，有时候搞似乎明白了但是下次遇到又忘记这两个属性是怎么回事了。今天在此记录一下。
 
-##一个解决问题的算法也有三个基本概念
-Represent -> The Objective -> The evlution function
+imageEdgeInsets(top,left,bottom,right) 和 titleEdgeInsets(top,left,bottom,right)的值就是我们想要的最终结果与按钮初始状态比较图片和标题的位置分别在上下左右位移的值：
 
-###Represent 
-搜索空间的大小并不是由问题决定的，是由问题是如何被表示的以及处理这种表示的方式来决定的。（It is determined by your represent and the manner in which you handle this encoding)
+首先
 
-###The Objective
-数学语言的描述，不是一个函数。比如：满足。。。。条件
+CGFloat imageViewWidth = CGRectGetWidth(button.imageView.frame);
 
-###The evalution function
-这是一个从候选解的空间映射到实数的一个函数，每个候选解被映射成一个反映它“质量”的实数。
+CGFloat labelWidth = CGRectGetWidth(button.titleLabel.frame);
 
-*Adopt surrogate evalution function the represent we choose, and operators that we emply to go from one solution to next*
+CGFloat buttonWidth = CGRectGetWidth(button.frame);
 
-The concept of generating improvements in the quality of a solution is intrinsic to a great many classic and modern methods of  optimization.
+默认状态UIButton 的  imageEdgeInsets ＝ UIEdgeInsetsMake(0,0,0,0);
+
+titleEdgeInsets ＝ UIEdgeInsetsMake(0,0,0,0);
+
+比如按钮的初始位置是这样
+
+![](http://upload-images.jianshu.io/upload_images/284517-c8d3f8b8185b5d02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240/q/100)
+
+如果我们希望按钮最终是这样
+
+![](http://upload-images.jianshu.io/upload_images/284517-02e5e32f48c16edb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240/q/100)
+
+也就是最终我们希望图片上下位置不变top = 0, bottom = 0;向右位移一个label的宽度
+
+同时标题上下位置不变top = 0, bottom = 0;向左位移一个图片的宽度
+
+即 imageEdgeInsets = UIEdgeInsetsMake(0,0 + labelWidth,0,0 - labelWidth); 图片相对初始状态左边距加了labelWidth，右边减labelWidth，以及titleEdgeInsets ＝ UIEdgeInsetsMake(0,0 - imageViewWidth,0, 0 + imageViewWidth);
 
 
-#Traditional Methods
 
-##Complete Solutions
+如果希望图片和标题都居中，即相对于初始位置图片右移，标题左移
+![](http://upload-images.jianshu.io/upload_images/284517-efa29bc5a41aeaaf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240/q/100)
 
-###Exhaustive Search
 
-##InComplete Solutions
+
+CGFloat  button_centerX =CGRectGetMidX(self.bounds);// bounds哦
+
+CGFloat titleLabel_centerX =CGRectGetMidX(self.titleLabel.frame);
+
+CGFloat imageView_centerX =CGRectGetMidX(self.imageView.frame);
+
+imageEdgeInsets = UIEdgeInsetsMake(0,0 + (button_centerX - imageView_centerX),0,0 - (button_centerX - imageView_centerX));
+
+以及titleEdgeInsets ＝ UIEdgeInsetsMake(0,0 - (titleLabel_centerX - button_centerX),0, 0 + (titleLabel_centerX - button_centerX)); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+文／0卖女孩的小火柴（简书作者）
+原文链接：http://www.jianshu.com/p/62850b201049
+著作权归作者所有，转载请联系作者获得授权，并标注“简书作者”。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>(转载)不知道有没有人和我一样一直对这两个属性比较迷惑，其实官方文档也没有对此作太详细的解释，有时候自己凭感觉调出个数值看似界面没什么大问题但是心里还老是担心会有问题，有时候搞似乎明白了但是下次遇到又忘记这两个属性是怎么回事了。今天在此记录一下。</p>
 
+<p>imageEdgeInsets(top,left,bottom,right) 和 titleEdgeInsets(top,left,bottom,right)的值就是我们想要的最终结果与按钮初始状态比较图片和标题的位置分别在上下左右位移的值：</p>
+
+<p>首先</p>
+
+<p>CGFloat imageViewWidth = CGRectGetWidth(button.imageView.frame);</p>
+
+<p>CGFloat labelWidth = CGRectGetWidth(button.titleLabel.frame);</p>
+
+<p>CGFloat buttonWidth = CGRectGetWidth(button.frame);</p>
+
+<p>默认状态UIButton 的 &nbsp;imageEdgeInsets ＝ UIEdgeInsetsMake(0,0,0,0);</p>
+
+<p>titleEdgeInsets ＝ UIEdgeInsetsMake(0,0,0,0);</p>
+
+<p>比如按钮的初始位置是这样</p>
+
+<p><img src="http://upload-images.jianshu.io/upload_images/284517-c8d3f8b8185b5d02.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240/q/100" alt="" title=""></p>
+
+<p>如果我们希望按钮最终是这样</p>
+
+<p><img src="http://upload-images.jianshu.io/upload_images/284517-02e5e32f48c16edb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240/q/100" alt="" title=""></p>
+
+<p>也就是最终我们希望图片上下位置不变top = 0, bottom = 0;向右位移一个label的宽度</p>
+
+<p>同时标题上下位置不变top = 0, bottom = 0;向左位移一个图片的宽度</p>
+
+<p>即 imageEdgeInsets = UIEdgeInsetsMake(0,0 + labelWidth,0,0 - labelWidth); 图片相对初始状态左边距加了labelWidth，右边减labelWidth，以及titleEdgeInsets ＝ UIEdgeInsetsMake(0,0 - imageViewWidth,0, 0 + imageViewWidth);</p>
+
+<p>如果希望图片和标题都居中，即相对于初始位置图片右移，标题左移
+<img src="http://upload-images.jianshu.io/upload_images/284517-efa29bc5a41aeaaf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240/q/100" alt="" title=""></p>
+
+<p>CGFloat &nbsp;button_centerX =CGRectGetMidX(self.bounds);// bounds哦</p>
+
+<p>CGFloat titleLabel_centerX =CGRectGetMidX(self.titleLabel.frame);</p>
+
+<p>CGFloat imageView_centerX =CGRectGetMidX(self.imageView.frame);</p>
+
+<p>imageEdgeInsets = UIEdgeInsetsMake(0,0 + (button<em>centerX - imageView</em>centerX),0,0 - (button<em>centerX - imageView</em>centerX));</p>
+
+<p>以及titleEdgeInsets ＝ UIEdgeInsetsMake(0,0 - (titleLabel<em>centerX - button</em>centerX),0, 0 + (titleLabel<em>centerX - button</em>centerX)); </p>
+
+<p>文／0卖女孩的小火柴（简书作者）
+原文链接：http://www.jianshu.com/p/62850b201049
+著作权归作者所有，转载请联系作者获得授权，并标注“简书作者”。</p>
 <!-- content end -->
 </div>
 <br>
