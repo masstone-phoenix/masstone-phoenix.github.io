@@ -51,6 +51,17 @@ The concept of generating improvements in the quality of a solution is intrinsic
 
 ###Exhaustive Search
 
+1. branch and bound,将搜索空间划分成树状结构，然后使用有向图的depth-first search算法。当达到某些节点时，当我们能确定这个分支达不到最优的结果，就可以放弃这个分支，采用backtrack。
+
+```
+procedure depth-first(v)
+begin
+    visit v
+    for each child w of v do
+        depth-first(w)
+end
+```
+
 ##InComplete Solutions
 <!-- markdown end -->
 </div>
@@ -85,6 +96,18 @@ The concept of generating improvements in the quality of a solution is intrinsic
 <h2 id="completesolutions">Complete Solutions</h2>
 
 <h3 id="exhaustivesearch">Exhaustive Search</h3>
+
+<ol>
+<li>branch and bound,将搜索空间划分成树状结构，然后使用有向图的depth-first search算法。当达到某些节点时，当我们能确定这个分支达不到最优的结果，就可以放弃这个分支，采用backtrack。</li>
+</ol>
+
+<pre><code>procedure depth-first(v)
+begin
+    visit v
+    for each child w of v do
+        depth-first(w)
+end
+</code></pre>
 
 <h2 id="incompletesolutions">InComplete Solutions</h2>
 <!-- content end -->
