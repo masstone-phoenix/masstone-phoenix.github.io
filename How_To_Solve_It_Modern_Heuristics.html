@@ -45,11 +45,9 @@ Represent -> The Objective -> The evlution function
 The concept of generating improvements in the quality of a solution is intrinsic to a great many classic and modern methods of  optimization.
 
 
-#Traditional Methods
+#Traditional Methods Complete Solutions
 
-##Complete Solutions
-
-###Exhaustive Search
+##Exhaustive Search
 
 1. branch and bound,将搜索空间划分成树状结构，然后使用有向图的depth-first search算法。当达到某些节点时，当我们能确定这个分支达不到最优的结果，就可以放弃这个分支，采用backtrack。
 
@@ -63,7 +61,7 @@ end
 ```
 这里书中介绍了一个生成permutation的算法。
 
-###Local Search
+##Local Search
 1.  Pick a solution from the search space and evaluate the merit.This is current solution
 2.  Apply a transform to current solution to generate a new solution and evaluate the merit.
 3.  If the new solution is better than current solution, then exchange it with current solution;otherwise discard the new solution
@@ -78,11 +76,16 @@ algorithm:
 - NLP: 1,Newton‘s method.
 Find a g(s) s.t. f(x) = 0 <-> g(x) = x, there are some contrains to g: it must map [a,b] -> [a,b], and it is continuous. iterat s_next = g(s);2 Brent's method
 
-###Linear Programming
+##Linear Programming
 
-##InComplete Solutions
-###Greedy algorithm
-Greedy algorithm attack a problem by constructing the complete solution in a series of steps
+#Traditional Methods InComplete Solutions
+##Greedy algorithm
+Greedy algorithm attack a problem by constructing the complete solution in a series of steps.
+
+For interating parameters, greedy algorithm may not provide good solutions.
+
+##Dvide and conquer
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -111,11 +114,9 @@ Greedy algorithm attack a problem by constructing the complete solution in a ser
 
 <p>The concept of generating improvements in the quality of a solution is intrinsic to a great many classic and modern methods of  optimization.</p>
 
-<h1 id="traditionalmethods">Traditional Methods</h1>
+<h1 id="traditionalmethodscompletesolutions">Traditional Methods Complete Solutions</h1>
 
-<h2 id="completesolutions">Complete Solutions</h2>
-
-<h3 id="exhaustivesearch">Exhaustive Search</h3>
+<h2 id="exhaustivesearch">Exhaustive Search</h2>
 
 <ol>
 <li>branch and bound,将搜索空间划分成树状结构，然后使用有向图的depth-first search算法。当达到某些节点时，当我们能确定这个分支达不到最优的结果，就可以放弃这个分支，采用backtrack。</li>
@@ -131,7 +132,7 @@ end
 
 <p>这里书中介绍了一个生成permutation的算法。</p>
 
-<h3 id="localsearch">Local Search</h3>
+<h2 id="localsearch">Local Search</h2>
 
 <ol>
 <li>Pick a solution from the search space and evaluate the merit.This is current solution</li>
@@ -151,13 +152,17 @@ end
 Find a g(s) s.t. f(x) = 0 &lt;-&gt; g(x) = x, there are some contrains to g: it must map [a,b] -&gt; [a,b], and it is continuous. iterat s_next = g(s);2 Brent's method</li>
 </ul>
 
-<h3 id="linearprogramming">Linear Programming</h3>
+<h2 id="linearprogramming">Linear Programming</h2>
 
-<h2 id="incompletesolutions">InComplete Solutions</h2>
+<h1 id="traditionalmethodsincompletesolutions">Traditional Methods InComplete Solutions</h1>
 
-<h3 id="greedyalgorithm">Greedy algorithm</h3>
+<h2 id="greedyalgorithm">Greedy algorithm</h2>
 
-<p>Greedy algorithm attack a problem by constructing the complete solution in a series of steps</p>
+<p>Greedy algorithm attack a problem by constructing the complete solution in a series of steps.</p>
+
+<p>For interating parameters, greedy algorithm may not provide good solutions.</p>
+
+<h2 id="dvideandconquer">Dvide and conquer</h2>
 <!-- content end -->
 </div>
 <br>
