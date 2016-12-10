@@ -85,7 +85,19 @@ Greedy algorithm attack a problem by constructing the complete solution in a ser
 For interating parameters, greedy algorithm may not provide good solutions.
 
 ##Dvide and conquer
+一般步骤：分解问题，解决分解后的问题，将分解后问题的解组合起来得到原问题的解。只有当上述做法的代价小于直接解决问题的代价，divide and conquer才有意义。
 
+```
+procedure D&C(P)
+begin
+    split the problem P into subproblems P1,P2.....Pk
+    for i=1 to k do
+        if size(Pi) < $mu$ 
+            then solve Pi (get si)
+        else 
+            si <- D&C(Pi)
+    combine si's into the final solution
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -163,6 +175,19 @@ Find a g(s) s.t. f(x) = 0 &lt;-&gt; g(x) = x, there are some contrains to g: it 
 <p>For interating parameters, greedy algorithm may not provide good solutions.</p>
 
 <h2 id="dvideandconquer">Dvide and conquer</h2>
+
+<p>一般步骤：分解问题，解决分解后的问题，将分解后问题的解组合起来得到原问题的解。只有当上述做法的代价小于直接解决问题的代价，divide and conquer才有意义。</p>
+
+<pre><code>procedure D&amp;C(P)
+begin
+    split the problem P into subproblems P1,P2.....Pk
+    for i=1 to k do
+        if size(Pi) &lt; $mu$ 
+            then solve Pi (get si)
+        else 
+            si &lt;- D&amp;C(Pi)
+    combine si's into the final solution
+</code></pre>
 <!-- content end -->
 </div>
 <br>
