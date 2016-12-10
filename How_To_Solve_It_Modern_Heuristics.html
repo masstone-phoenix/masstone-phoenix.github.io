@@ -70,6 +70,12 @@ end
 4.  Repeats 2 and 3 until no transformation in the given set improves current solution
 
 *The transform selected is very important*
+
+algorithm:
+SAT:GSAT
+TSP: Lin-Kernighan
+NLP:Newton‘s method
+find a g(s) s.t. f(x) = 0 <-> g(x) = x, there are some contrains to g: it must map [a,b] -> [a,b], and it is continuous. iterat s_next = g(s)
 ##InComplete Solutions
 <!-- markdown end -->
 </div>
@@ -129,6 +135,12 @@ end
 </ol>
 
 <p><em>The transform selected is very important</em></p>
+
+<p>algorithm:
+SAT:GSAT
+TSP: Lin-Kernighan
+NLP:Newton‘s method
+find a g(s) s.t. f(x) = 0 &lt;-&gt; g(x) = x, there are some contrains to g: it must map [a,b] -&gt; [a,b], and it is continuous. iterat s_next = g(s)</p>
 
 <h2 id="incompletesolutions">InComplete Solutions</h2>
 <!-- content end -->
