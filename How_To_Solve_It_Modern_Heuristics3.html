@@ -1,0 +1,214 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+#基本概念
+Problem -> Model -> Solution
+
+##一个解决问题的算法也有三个基本概念
+Represent -> The Objective -> The evlution function
+
+###Represent 
+搜索空间的大小并不是由问题决定的，是由问题是如何被表示的以及处理这种表示的方式来决定的。（It is determined by your represent and the manner in which you handle this encoding)
+
+###The Objective
+数学语言的描述，不是一个函数。比如：满足。。。。条件
+
+###The evalution function
+这是一个从候选解的空间映射到实数的一个函数，每个候选解被映射成一个反映它“质量”的实数。
+
+*Adopt surrogate evalution function the represent we choose, and operators that we emply to go from one solution to next*
+
+The concept of generating improvements in the quality of a solution is intrinsic to a great many classic and modern methods of  optimization.
+
+
+#Traditional Methods Complete Solutions
+
+##Exhaustive Search
+
+1. branch and bound,将搜索空间划分成树状结构，然后使用有向图的depth-first search算法。当达到某些节点时，当我们能确定这个分支达不到最优的结果，就可以放弃这个分支，采用backtrack。
+
+```
+procedure depth-first(v)
+begin
+    visit v
+    for each child w of v do
+        depth-first(w)
+end
+```
+这里书中介绍了一个生成permutation的算法。
+
+##Local Search
+1.  Pick a solution from the search space and evaluate the merit.This is current solution
+2.  Apply a transform to current solution to generate a new solution and evaluate the merit.
+3.  If the new solution is better than current solution, then exchange it with current solution;otherwise discard the new solution
+4.  Repeats 2 and 3 until no transformation in the given set improves current solution
+
+*The transform selected is very important*
+
+algorithm:
+
+-  SAT:GSAT
+- TSP: Lin-Kernighan
+- NLP: 1,Newton‘s method.
+Find a g(s) s.t. f(x) = 0 <-> g(x) = x, there are some contrains to g: it must map [a,b] -> [a,b], and it is continuous. iterat s_next = g(s);2 Brent's method
+
+##Linear Programming
+
+#Traditional Methods InComplete Solutions
+##Greedy algorithm
+Greedy algorithm attack a problem by constructing the complete solution in a series of steps.
+
+For interating parameters, greedy algorithm may not provide good solutions.
+
+##Dvide and conquer
+一般步骤：分解问题，解决分解后的问题，将分解后问题的解组合起来得到原问题的解。只有当上述做法的代价小于直接解决问题的代价，divide and conquer才有意义。
+
+```
+procedure D&C(P)
+begin
+    split the problem P into subproblems P1,P2.....Pk
+    for i=1 to k do
+        if size(Pi) < $mu$ 
+            then solve Pi (get si)
+        else 
+            si <- D&C(Pi)
+    combine si's into the final solution
+end
+```
+
+棋盘上有一个洞，用tile覆盖完棋盘这个例子真是让我印象深刻啊！
+
+##Dynamic Programming
+Dynamic Programming works on the principle of finding an overall solution by operating on an intermediate point that lies between where you are now and where you  want to go.A prototypical problem that is suitable for dynamic programming has:
+
+1. the problem can be decomposed into a sequence of decisions made at various stages
+2.  Each stage has a number  of possible states
+3.  A decision takes you from a state at one stage to some state at next stage
+4.  The best sequence of decisions at any stage is independent of the decisions made at prior stages
+5.  There is a well-defined cost for travering from state to state across stages.Moreover, there is a recursive relationship for choosing the best decisions to make
+
+##Branch and Bound
+Find some means for obtaining a lower bound on the cost for any particular solution.The idea is if we have a solution with a cost of say, c units, we know that the next solution to try has a lower bound is greater than c , and we are minimizing, we don't have to compute how bad it is actually is.
+
+##A* algorithm
+Best-first algorithm:
+```
+procedure best-first(v)
+begin
+    visit v
+    for each available w do
+        assign a heuristic value for w
+    q <- the best available node
+    best-first(q)
+end
+```
+
+The key issue is hidden in the concept of available nodes.The algorithm maintains two lists of nodes: open and closed.The former indicates all the available nodes, whereas the latter indicates those nodes that have already been processed.
+
+eval(q) = c(q) + h(q), c(q) is the merit of the desicions already made, h(q) is the potential inherent to the remaining desicions.h*(q) is the actual merit, for which we don't know.
+
+when  h(q) <= h*(q), for all the nodes q,the best-first algorithm is always admissble, and is called A * algorithm.
+
+[第二部分](https://masstone-phoenix.github.io/How_To_Solve_It_Modern_Heuristics2.html)
+
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "How_To_Solve_It_Modern_Heuristics3.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
