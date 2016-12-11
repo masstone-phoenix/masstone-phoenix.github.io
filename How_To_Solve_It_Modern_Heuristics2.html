@@ -40,6 +40,47 @@ end
 ```
 这里有三点需要注意：1，终止条件；2，improve?不一定返回的是一个更好的点，只是一个可接受的点，这个可接受是基于T的；3，周期性的更新温度T。
 
+stochastic hill-climb
+
+```
+procedure stochastic hill-climb
+begin
+    t <- 0
+    select a current point v_c randomly
+    evaluate v_c
+    repeat
+        select the v_n form neighborhood of v_c
+        select v_n with probability P
+        t = t + 1
+    until t = MAX
+end
+```
+其中P = $\frac{1}{1+e^\frac{eval(v_c) - eval(v _n)}{T}}$
+
+具体的 simulated annealing：
+```
+procedure simulated annealing
+begin
+    t <- 0
+    initialize T
+    select a current point v_c randomly
+    evaluate v_c
+    repeat
+        repeat
+            select the v_n form neighborhood of v_c
+            if eval(v_c) < eval(v_n)
+                then v_c <- v_n
+            else
+                if random(0,1) < P'
+                    then  v_c <- v_n
+        until (terminate-condition)
+        T = g(T, t)
+        t = t + 1
+    until  (halting-condition)
+end
+```
+其中P' = $e^\frac{eval(v_n) - eval(v _c)}{T}$
+
 ##Tabu search
 ```
 procedure tabu search
@@ -143,6 +184,48 @@ end
 </code></pre>
 
 <p>这里有三点需要注意：1，终止条件；2，improve?不一定返回的是一个更好的点，只是一个可接受的点，这个可接受是基于T的；3，周期性的更新温度T。</p>
+
+<p>stochastic hill-climb</p>
+
+<pre><code>procedure stochastic hill-climb
+begin
+    t &lt;- 0
+    select a current point v_c randomly
+    evaluate v_c
+    repeat
+        select the v_n form neighborhood of v_c
+        select v_n with probability P
+        t = t + 1
+    until t = MAX
+end
+</code></pre>
+
+<p>其中P = <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-723-Frame" tabindex="0" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mfrac><mrow><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy=&quot;false&quot;>(</mo><msub><mi>v</mi><mi>c</mi></msub><mo stretchy=&quot;false&quot;>)</mo><mo>&amp;#x2212;</mo><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy=&quot;false&quot;>(</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy=&quot;false&quot;>)</mo></mrow><mi>T</mi></mfrac></msup></mrow></mfrac></math>" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-15053" style="width: 7.503em; display: inline-block;"><span style="display: inline-block; position: relative; width: 6.002em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.302em 1006em 3.652em -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-15054"><span class="mfrac" id="MathJax-Span-15055"><span style="display: inline-block; position: relative; width: 5.803em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em 1000.3em 4.152em -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-15056" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(2.652em 1005.65em 4.202em -999.998em); top: -2.848em; left: 50%; margin-left: -2.848em;"><span class="mrow" id="MathJax-Span-15057"><span class="mn" id="MathJax-Span-15058" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span class="mo" id="MathJax-Span-15059" style="font-size: 70.7%; font-family: MathJax_Main;">+</span><span class="msubsup" id="MathJax-Span-15060"><span style="display: inline-block; position: relative; width: 4.752em; height: 0px;"><span style="position: absolute; clip: rect(3.552em 1000.3em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15061" style="font-size: 70.7%; font-family: MathJax_Math-italic;">e</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.447em; left: 0.352em;"><span class="mfrac" id="MathJax-Span-15062"><span style="display: inline-block; position: relative; width: 4.152em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.502em 1003.95em 4.303em -999.998em); top: -4.397em; left: 50%; margin-left: -1.998em;"><span class="mrow" id="MathJax-Span-15063"><span class="mi" id="MathJax-Span-15064" style="font-size: 50%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-15065" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-15066" style="font-size: 50%; font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-15067" style="font-size: 50%; font-family: MathJax_Math-italic;">l</span><span class="mo" id="MathJax-Span-15068" style="font-size: 50%; font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-15069"><span style="display: inline-block; position: relative; width: 0.503em; height: 0px;"><span style="position: absolute; clip: rect(3.652em 1000.25em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15070" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.897em; left: 0.253em;"><span class="mi" id="MathJax-Span-15071" style="font-size: 50%; font-family: MathJax_Math-italic;">c</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-15072" style="font-size: 50%; font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-15073" style="font-size: 50%; font-family: MathJax_Main;">−</span><span class="mi" id="MathJax-Span-15074" style="font-size: 50%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-15075" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-15076" style="font-size: 50%; font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-15077" style="font-size: 50%; font-family: MathJax_Math-italic;">l</span><span class="mo" id="MathJax-Span-15078" style="font-size: 50%; font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-15079"><span style="display: inline-block; position: relative; width: 0.603em; height: 0px;"><span style="position: absolute; clip: rect(3.652em 1000.25em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15080" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.897em; left: 0.253em;"><span class="mi" id="MathJax-Span-15081" style="font-size: 50%; font-family: MathJax_Math-italic;">n</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-15082" style="font-size: 50%; font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.502em 1000.35em 4.152em -999.998em); top: -3.647em; left: 50%; margin-left: -0.198em;"><span class="mi" id="MathJax-Span-15083" style="font-size: 50%; font-family: MathJax_Math-italic;">T<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em 1004.15em 1.203em -999.998em); top: -1.147em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 4.152em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em 1005.8em 1.203em -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 5.803em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -1.559em; border-left: 0px solid; width: 0px; height: 2.691em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mfrac><mrow><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy="false">(</mo><msub><mi>v</mi><mi>c</mi></msub><mo stretchy="false">)</mo><mo>−</mo><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy="false">(</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow><mi>T</mi></mfrac></msup></mrow></mfrac></math></span></span><script type="math/tex" id="MathJax-Element-723">\frac{1}{1+e^\frac{eval(v_c) - eval(v _n)}{T}}</script></p>
+
+<p>具体的 simulated annealing：</p>
+
+<pre><code>procedure simulated annealing
+begin
+    t &lt;- 0
+    initialize T
+    select a current point v_c randomly
+    evaluate v_c
+    repeat
+        repeat
+            select the v_n form neighborhood of v_c
+            if eval(v_c) &lt; eval(v_n)
+                then v_c &lt;- v_n
+            else
+                if random(0,1) &lt; P'
+                    then  v_c &lt;- v_n
+        until (terminate-condition)
+        T = g(T, t)
+        t = t + 1
+    until  (halting-condition)
+end
+</code></pre>
+
+<p>其中P' = <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-724-Frame" tabindex="0" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><msup><mi>e</mi><mfrac><mrow><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy=&quot;false&quot;>(</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy=&quot;false&quot;>)</mo><mo>&amp;#x2212;</mo><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy=&quot;false&quot;>(</mo><msub><mi>v</mi><mi>c</mi></msub><mo stretchy=&quot;false&quot;>)</mo></mrow><mi>T</mi></mfrac></msup></math>" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-15084" style="width: 6.152em; display: inline-block;"><span style="display: inline-block; position: relative; width: 4.902em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(0.903em 1004.9em 2.452em -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-15085"><span class="msubsup" id="MathJax-Span-15086"><span style="display: inline-block; position: relative; width: 4.902em; height: 0px;"><span style="position: absolute; clip: rect(3.402em 1000.45em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15087" style="font-family: MathJax_Math-italic;">e</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.397em; left: 0.453em;"><span class="mfrac" id="MathJax-Span-15088"><span style="display: inline-block; position: relative; width: 4.152em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.502em 1003.95em 4.303em -999.998em); top: -4.447em; left: 50%; margin-left: -1.998em;"><span class="mrow" id="MathJax-Span-15089"><span class="mi" id="MathJax-Span-15090" style="font-size: 50%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-15091" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-15092" style="font-size: 50%; font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-15093" style="font-size: 50%; font-family: MathJax_Math-italic;">l</span><span class="mo" id="MathJax-Span-15094" style="font-size: 50%; font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-15095"><span style="display: inline-block; position: relative; width: 0.603em; height: 0px;"><span style="position: absolute; clip: rect(3.652em 1000.25em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15096" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.897em; left: 0.253em;"><span class="mi" id="MathJax-Span-15097" style="font-size: 50%; font-family: MathJax_Math-italic;">n</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-15098" style="font-size: 50%; font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-15099" style="font-size: 50%; font-family: MathJax_Main;">−</span><span class="mi" id="MathJax-Span-15100" style="font-size: 50%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-15101" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-15102" style="font-size: 50%; font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-15103" style="font-size: 50%; font-family: MathJax_Math-italic;">l</span><span class="mo" id="MathJax-Span-15104" style="font-size: 50%; font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-15105"><span style="display: inline-block; position: relative; width: 0.503em; height: 0px;"><span style="position: absolute; clip: rect(3.652em 1000.25em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15106" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.897em; left: 0.253em;"><span class="mi" id="MathJax-Span-15107" style="font-size: 50%; font-family: MathJax_Math-italic;">c</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-15108" style="font-size: 50%; font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.502em 1000.35em 4.152em -999.998em); top: -3.698em; left: 50%; margin-left: -0.198em;"><span class="mi" id="MathJax-Span-15109" style="font-size: 50%; font-family: MathJax_Math-italic;">T<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em 1004.15em 1.203em -999.998em); top: -1.198em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 4.152em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 1.691em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mi>e</mi><mfrac><mrow><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy="false">(</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo>−</mo><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy="false">(</mo><msub><mi>v</mi><mi>c</mi></msub><mo stretchy="false">)</mo></mrow><mi>T</mi></mfrac></msup></math></span></span><script type="math/tex" id="MathJax-Element-724">e^\frac{eval(v_n) - eval(v _c)}{T}</script></p>
 
 <h2 id="tabusearch">Tabu search</h2>
 
