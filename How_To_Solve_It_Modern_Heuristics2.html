@@ -54,8 +54,10 @@ begin
         t = t + 1
     until t = MAX
 end
+P = $\frac{1}{1+e^\frac{eval(v_c) - eval(v _n)}{T}}$
 ```
-其中P = $\frac{1}{1+e^\frac{eval(v_c) - eval(v _n)}{T}}$
+其中
+![](http://masstone-phoenix.github.io/image/modern_heuristics/20161211153456.png)
 
 具体的 simulated annealing：
 ```
@@ -78,8 +80,10 @@ begin
         t = t + 1
     until  (halting-condition)
 end
+P' = $e^\frac{eval(v_n) - eval(v _c)}{T}$
 ```
-其中P' = $e^\frac{eval(v_n) - eval(v _c)}{T}$
+其中
+![](http://masstone-phoenix.github.io/image/modern_heuristics/20161211153517.png)
 
 ##Tabu search
 ```
@@ -93,77 +97,6 @@ begin
 end
 ```
 
-##Local Search
-1.  Pick a solution from the search space and evaluate the merit.This is current solution
-2.  Apply a transform to current solution to generate a new solution and evaluate the merit.
-3.  If the new solution is better than current solution, then exchange it with current solution;otherwise discard the new solution
-4.  Repeats 2 and 3 until no transformation in the given set improves current solution
-
-*The transform selected is very important*
-
-algorithm:
-
--  SAT:GSAT
-- TSP: Lin-Kernighan
-- NLP: 1,Newton‘s method.
-Find a g(s) s.t. f(x) = 0 <-> g(x) = x, there are some contrains to g: it must map [a,b] -> [a,b], and it is continuous. iterat s_next = g(s);2 Brent's method
-
-##Linear Programming
-
-#Traditional Methods InComplete Solutions
-##Greedy algorithm
-Greedy algorithm attack a problem by constructing the complete solution in a series of steps.
-
-For interating parameters, greedy algorithm may not provide good solutions.
-
-##Dvide and conquer
-一般步骤：分解问题，解决分解后的问题，将分解后问题的解组合起来得到原问题的解。只有当上述做法的代价小于直接解决问题的代价，divide and conquer才有意义。
-
-```
-procedure D&C(P)
-begin
-    split the problem P into subproblems P1,P2.....Pk
-    for i=1 to k do
-        if size(Pi) < $mu$ 
-            then solve Pi (get si)
-        else 
-            si <- D&C(Pi)
-    combine si's into the final solution
-end
-```
-
-棋盘上有一个洞，用tile覆盖完棋盘这个例子真是让我印象深刻啊！
-
-##Dynamic Programming
-Dynamic Programming works on the principle of finding an overall solution by operating on an intermediate point that lies between where you are now and where you  want to go.A prototypical problem that is suitable for dynamic programming has:
-
-1. the problem can be decomposed into a sequence of decisions made at various stages
-2.  Each stage has a number  of possible states
-3.  A decision takes you from a state at one stage to some state at next stage
-4.  The best sequence of decisions at any stage is independent of the decisions made at prior stages
-5.  There is a well-defined cost for travering from state to state across stages.Moreover, there is a recursive relationship for choosing the best decisions to make
-
-##Branch and Bound
-Find some means for obtaining a lower bound on the cost for any particular solution.The idea is if we have a solution with a cost of say, c units, we know that the next solution to try has a lower bound is greater than c , and we are minimizing, we don't have to compute how bad it is actually is.
-
-##A* algorithm
-Best-first algorithm:
-```
-procedure best-first(v)
-begin
-    visit v
-    for each available w do
-        assign a heuristic value for w
-    q <- the best available node
-    best-first(q)
-end
-```
-
-The key issue is hidden in the concept of available nodes.The algorithm maintains two lists of nodes: open and closed.The former indicates all the available nodes, whereas the latter indicates those nodes that have already been processed.
-
-eval(q) = c(q) + h(q), c(q) is the merit of the desicions already made, h(q) is the potential inherent to the remaining desicions.h*(q) is the actual merit, for which we don't know.
-
-when  h(q) <= h*(q), for all the nodes q,the best-first algorithm is always admissble, and is called A * algorithm.
 
 <!-- markdown end -->
 </div>
@@ -198,9 +131,11 @@ begin
         t = t + 1
     until t = MAX
 end
+P = $\frac{1}{1+e^\frac{eval(v_c) - eval(v _n)}{T}}$
 </code></pre>
 
-<p>其中P = <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-723-Frame" tabindex="0" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mfrac><mrow><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy=&quot;false&quot;>(</mo><msub><mi>v</mi><mi>c</mi></msub><mo stretchy=&quot;false&quot;>)</mo><mo>&amp;#x2212;</mo><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy=&quot;false&quot;>(</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy=&quot;false&quot;>)</mo></mrow><mi>T</mi></mfrac></msup></mrow></mfrac></math>" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-15053" style="width: 7.503em; display: inline-block;"><span style="display: inline-block; position: relative; width: 6.002em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(1.302em 1006em 3.652em -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-15054"><span class="mfrac" id="MathJax-Span-15055"><span style="display: inline-block; position: relative; width: 5.803em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.402em 1000.3em 4.152em -999.998em); top: -4.397em; left: 50%; margin-left: -0.198em;"><span class="mn" id="MathJax-Span-15056" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(2.652em 1005.65em 4.202em -999.998em); top: -2.848em; left: 50%; margin-left: -2.848em;"><span class="mrow" id="MathJax-Span-15057"><span class="mn" id="MathJax-Span-15058" style="font-size: 70.7%; font-family: MathJax_Main;">1</span><span class="mo" id="MathJax-Span-15059" style="font-size: 70.7%; font-family: MathJax_Main;">+</span><span class="msubsup" id="MathJax-Span-15060"><span style="display: inline-block; position: relative; width: 4.752em; height: 0px;"><span style="position: absolute; clip: rect(3.552em 1000.3em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15061" style="font-size: 70.7%; font-family: MathJax_Math-italic;">e</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.447em; left: 0.352em;"><span class="mfrac" id="MathJax-Span-15062"><span style="display: inline-block; position: relative; width: 4.152em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.502em 1003.95em 4.303em -999.998em); top: -4.397em; left: 50%; margin-left: -1.998em;"><span class="mrow" id="MathJax-Span-15063"><span class="mi" id="MathJax-Span-15064" style="font-size: 50%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-15065" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-15066" style="font-size: 50%; font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-15067" style="font-size: 50%; font-family: MathJax_Math-italic;">l</span><span class="mo" id="MathJax-Span-15068" style="font-size: 50%; font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-15069"><span style="display: inline-block; position: relative; width: 0.503em; height: 0px;"><span style="position: absolute; clip: rect(3.652em 1000.25em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15070" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.897em; left: 0.253em;"><span class="mi" id="MathJax-Span-15071" style="font-size: 50%; font-family: MathJax_Math-italic;">c</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-15072" style="font-size: 50%; font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-15073" style="font-size: 50%; font-family: MathJax_Main;">−</span><span class="mi" id="MathJax-Span-15074" style="font-size: 50%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-15075" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-15076" style="font-size: 50%; font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-15077" style="font-size: 50%; font-family: MathJax_Math-italic;">l</span><span class="mo" id="MathJax-Span-15078" style="font-size: 50%; font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-15079"><span style="display: inline-block; position: relative; width: 0.603em; height: 0px;"><span style="position: absolute; clip: rect(3.652em 1000.25em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15080" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.897em; left: 0.253em;"><span class="mi" id="MathJax-Span-15081" style="font-size: 50%; font-family: MathJax_Math-italic;">n</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-15082" style="font-size: 50%; font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.502em 1000.35em 4.152em -999.998em); top: -3.647em; left: 50%; margin-left: -0.198em;"><span class="mi" id="MathJax-Span-15083" style="font-size: 50%; font-family: MathJax_Math-italic;">T<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em 1004.15em 1.203em -999.998em); top: -1.147em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 4.152em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em 1005.8em 1.203em -999.998em); top: -1.248em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 5.803em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -1.559em; border-left: 0px solid; width: 0px; height: 2.691em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mfrac><mrow><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy="false">(</mo><msub><mi>v</mi><mi>c</mi></msub><mo stretchy="false">)</mo><mo>−</mo><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy="false">(</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">)</mo></mrow><mi>T</mi></mfrac></msup></mrow></mfrac></math></span></span><script type="math/tex" id="MathJax-Element-723">\frac{1}{1+e^\frac{eval(v_c) - eval(v _n)}{T}}</script></p>
+<p>其中
+<img src="http://masstone-phoenix.github.io/image/modern_heuristics/20161211153456.png" alt="" title=""></p>
 
 <p>具体的 simulated annealing：</p>
 
@@ -223,9 +158,11 @@ begin
         t = t + 1
     until  (halting-condition)
 end
+P' = $e^\frac{eval(v_n) - eval(v _c)}{T}$
 </code></pre>
 
-<p>其中P' = <span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-724-Frame" tabindex="0" data-mathml="<math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;><msup><mi>e</mi><mfrac><mrow><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy=&quot;false&quot;>(</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy=&quot;false&quot;>)</mo><mo>&amp;#x2212;</mo><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy=&quot;false&quot;>(</mo><msub><mi>v</mi><mi>c</mi></msub><mo stretchy=&quot;false&quot;>)</mo></mrow><mi>T</mi></mfrac></msup></math>" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-15084" style="width: 6.152em; display: inline-block;"><span style="display: inline-block; position: relative; width: 4.902em; height: 0px; font-size: 125%;"><span style="position: absolute; clip: rect(0.903em 1004.9em 2.452em -999.998em); top: -2.298em; left: 0em;"><span class="mrow" id="MathJax-Span-15085"><span class="msubsup" id="MathJax-Span-15086"><span style="display: inline-block; position: relative; width: 4.902em; height: 0px;"><span style="position: absolute; clip: rect(3.402em 1000.45em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15087" style="font-family: MathJax_Math-italic;">e</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -4.397em; left: 0.453em;"><span class="mfrac" id="MathJax-Span-15088"><span style="display: inline-block; position: relative; width: 4.152em; height: 0px; margin-right: 0.102em; margin-left: 0.102em;"><span style="position: absolute; clip: rect(3.502em 1003.95em 4.303em -999.998em); top: -4.447em; left: 50%; margin-left: -1.998em;"><span class="mrow" id="MathJax-Span-15089"><span class="mi" id="MathJax-Span-15090" style="font-size: 50%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-15091" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-15092" style="font-size: 50%; font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-15093" style="font-size: 50%; font-family: MathJax_Math-italic;">l</span><span class="mo" id="MathJax-Span-15094" style="font-size: 50%; font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-15095"><span style="display: inline-block; position: relative; width: 0.603em; height: 0px;"><span style="position: absolute; clip: rect(3.652em 1000.25em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15096" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.897em; left: 0.253em;"><span class="mi" id="MathJax-Span-15097" style="font-size: 50%; font-family: MathJax_Math-italic;">n</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-15098" style="font-size: 50%; font-family: MathJax_Main;">)</span><span class="mo" id="MathJax-Span-15099" style="font-size: 50%; font-family: MathJax_Main;">−</span><span class="mi" id="MathJax-Span-15100" style="font-size: 50%; font-family: MathJax_Math-italic;">e</span><span class="mi" id="MathJax-Span-15101" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span class="mi" id="MathJax-Span-15102" style="font-size: 50%; font-family: MathJax_Math-italic;">a</span><span class="mi" id="MathJax-Span-15103" style="font-size: 50%; font-family: MathJax_Math-italic;">l</span><span class="mo" id="MathJax-Span-15104" style="font-size: 50%; font-family: MathJax_Main;">(</span><span class="msubsup" id="MathJax-Span-15105"><span style="display: inline-block; position: relative; width: 0.503em; height: 0px;"><span style="position: absolute; clip: rect(3.652em 1000.25em 4.152em -999.998em); top: -3.998em; left: 0em;"><span class="mi" id="MathJax-Span-15106" style="font-size: 50%; font-family: MathJax_Math-italic;">v</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; top: -3.897em; left: 0.253em;"><span class="mi" id="MathJax-Span-15107" style="font-size: 50%; font-family: MathJax_Math-italic;">c</span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span><span class="mo" id="MathJax-Span-15108" style="font-size: 50%; font-family: MathJax_Main;">)</span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(3.502em 1000.35em 4.152em -999.998em); top: -3.698em; left: 50%; margin-left: -0.198em;"><span class="mi" id="MathJax-Span-15109" style="font-size: 50%; font-family: MathJax_Math-italic;">T<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.053em;"></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span><span style="position: absolute; clip: rect(0.853em 1004.15em 1.203em -999.998em); top: -1.198em; left: 0em;"><span style="display: inline-block; overflow: hidden; vertical-align: 0em; border-top: 1.3px solid; width: 4.152em; height: 0px;"></span><span style="display: inline-block; width: 0px; height: 1.052em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.002em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.302em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.059em; border-left: 0px solid; width: 0px; height: 1.691em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mi>e</mi><mfrac><mrow><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy="false">(</mo><msub><mi>v</mi><mi>n</mi></msub><mo stretchy="false">)</mo><mo>−</mo><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mo stretchy="false">(</mo><msub><mi>v</mi><mi>c</mi></msub><mo stretchy="false">)</mo></mrow><mi>T</mi></mfrac></msup></math></span></span><script type="math/tex" id="MathJax-Element-724">e^\frac{eval(v_n) - eval(v _c)}{T}</script></p>
+<p>其中
+<img src="http://masstone-phoenix.github.io/image/modern_heuristics/20161211153517.png" alt="" title=""></p>
 
 <h2 id="tabusearch">Tabu search</h2>
 
@@ -238,90 +175,6 @@ begin
     return x
 end
 </code></pre>
-
-<h2 id="localsearch">Local Search</h2>
-
-<ol>
-<li>Pick a solution from the search space and evaluate the merit.This is current solution</li>
-<li>Apply a transform to current solution to generate a new solution and evaluate the merit.</li>
-<li>If the new solution is better than current solution, then exchange it with current solution;otherwise discard the new solution</li>
-<li>Repeats 2 and 3 until no transformation in the given set improves current solution</li>
-</ol>
-
-<p><em>The transform selected is very important</em></p>
-
-<p>algorithm:</p>
-
-<ul>
-<li>SAT:GSAT</li>
-<li>TSP: Lin-Kernighan</li>
-<li>NLP: 1,Newton‘s method.
-Find a g(s) s.t. f(x) = 0 &lt;-&gt; g(x) = x, there are some contrains to g: it must map [a,b] -&gt; [a,b], and it is continuous. iterat s_next = g(s);2 Brent's method</li>
-</ul>
-
-<h2 id="linearprogramming">Linear Programming</h2>
-
-<h1 id="traditionalmethodsincompletesolutions">Traditional Methods InComplete Solutions</h1>
-
-<h2 id="greedyalgorithm">Greedy algorithm</h2>
-
-<p>Greedy algorithm attack a problem by constructing the complete solution in a series of steps.</p>
-
-<p>For interating parameters, greedy algorithm may not provide good solutions.</p>
-
-<h2 id="dvideandconquer">Dvide and conquer</h2>
-
-<p>一般步骤：分解问题，解决分解后的问题，将分解后问题的解组合起来得到原问题的解。只有当上述做法的代价小于直接解决问题的代价，divide and conquer才有意义。</p>
-
-<pre><code>procedure D&amp;C(P)
-begin
-    split the problem P into subproblems P1,P2.....Pk
-    for i=1 to k do
-        if size(Pi) &lt; $mu$ 
-            then solve Pi (get si)
-        else 
-            si &lt;- D&amp;C(Pi)
-    combine si's into the final solution
-end
-</code></pre>
-
-<p>棋盘上有一个洞，用tile覆盖完棋盘这个例子真是让我印象深刻啊！</p>
-
-<h2 id="dynamicprogramming">Dynamic Programming</h2>
-
-<p>Dynamic Programming works on the principle of finding an overall solution by operating on an intermediate point that lies between where you are now and where you  want to go.A prototypical problem that is suitable for dynamic programming has:</p>
-
-<ol>
-<li>the problem can be decomposed into a sequence of decisions made at various stages</li>
-<li>Each stage has a number  of possible states</li>
-<li>A decision takes you from a state at one stage to some state at next stage</li>
-<li>The best sequence of decisions at any stage is independent of the decisions made at prior stages</li>
-<li>There is a well-defined cost for travering from state to state across stages.Moreover, there is a recursive relationship for choosing the best decisions to make</li>
-</ol>
-
-<h2 id="branchandbound">Branch and Bound</h2>
-
-<p>Find some means for obtaining a lower bound on the cost for any particular solution.The idea is if we have a solution with a cost of say, c units, we know that the next solution to try has a lower bound is greater than c , and we are minimizing, we don't have to compute how bad it is actually is.</p>
-
-<h2 id="aalgorithm">A* algorithm</h2>
-
-<p>Best-first algorithm:</p>
-
-<pre><code>procedure best-first(v)
-begin
-    visit v
-    for each available w do
-        assign a heuristic value for w
-    q &lt;- the best available node
-    best-first(q)
-end
-</code></pre>
-
-<p>The key issue is hidden in the concept of available nodes.The algorithm maintains two lists of nodes: open and closed.The former indicates all the available nodes, whereas the latter indicates those nodes that have already been processed.</p>
-
-<p>eval(q) = c(q) + h(q), c(q) is the merit of the desicions already made, h(q) is the potential inherent to the remaining desicions.h*(q) is the actual merit, for which we don't know.</p>
-
-<p>when  h(q) &lt;= h*(q), for all the nodes q,the best-first algorithm is always admissble, and is called A * algorithm.</p>
 <!-- content end -->
 </div>
 <br>
