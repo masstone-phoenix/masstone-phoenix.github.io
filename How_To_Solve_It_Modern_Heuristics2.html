@@ -25,41 +25,32 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-#基本概念
-Problem -> Model -> Solution
+#Escape local optima
 
-##一个解决问题的算法也有三个基本概念
-Represent -> The Objective -> The evlution function
-
-###Represent 
-搜索空间的大小并不是由问题决定的，是由问题是如何被表示的以及处理这种表示的方式来决定的。（It is determined by your represent and the manner in which you handle this encoding)
-
-###The Objective
-数学语言的描述，不是一个函数。比如：满足。。。。条件
-
-###The evalution function
-这是一个从候选解的空间映射到实数的一个函数，每个候选解被映射成一个反映它“质量”的实数。
-
-*Adopt surrogate evalution function the represent we choose, and operators that we emply to go from one solution to next*
-
-The concept of generating improvements in the quality of a solution is intrinsic to a great many classic and modern methods of  optimization.
-
-
-#Traditional Methods Complete Solutions
-
-##Exhaustive Search
-
-1. branch and bound,将搜索空间划分成树状结构，然后使用有向图的depth-first search算法。当达到某些节点时，当我们能确定这个分支达不到最优的结果，就可以放弃这个分支，采用backtrack。
-
+##Simulated annealing
 ```
-procedure depth-first(v)
+procedure simulated annealing
 begin
-    visit v
-    for each child w of v do
-        depth-first(w)
+    x = some initial starting point in S
+    while not terminate-condition do
+        x = improve?(x, T)
+        update(T)
+    return x
 end
 ```
-这里书中介绍了一个生成permutation的算法。
+这里有三点需要注意：1，终止条件；2，improve?不一定返回的是一个更好的点，只是一个可接受的点，这个可接受是基于T的；3，周期性的更新温度T。
+
+##Tabu search
+```
+procedure tabu search
+begin
+    x = some initial starting point in S
+    while not terminate-condition do
+        x = improve?(x, H)
+        update(H)
+    return x
+end
+```
 
 ##Local Search
 1.  Pick a solution from the search space and evaluate the merit.This is current solution
@@ -137,47 +128,33 @@ when  h(q) <= h*(q), for all the nodes q,the best-first algorithm is always admi
 </div>
 <div class="entry" id="main">
 <!-- content -->
-<h1 id="">基本概念</h1>
+<h1 id="escapelocaloptima">Escape local optima</h1>
 
-<p>Problem -&gt; Model -&gt; Solution</p>
+<h2 id="simulatedannealing">Simulated annealing</h2>
 
-<h2 id="">一个解决问题的算法也有三个基本概念</h2>
-
-<p>Represent -&gt; The Objective -&gt; The evlution function</p>
-
-<h3 id="represent">Represent</h3>
-
-<p>搜索空间的大小并不是由问题决定的，是由问题是如何被表示的以及处理这种表示的方式来决定的。（It is determined by your represent and the manner in which you handle this encoding)</p>
-
-<h3 id="theobjective">The Objective</h3>
-
-<p>数学语言的描述，不是一个函数。比如：满足。。。。条件</p>
-
-<h3 id="theevalutionfunction">The evalution function</h3>
-
-<p>这是一个从候选解的空间映射到实数的一个函数，每个候选解被映射成一个反映它“质量”的实数。</p>
-
-<p><em>Adopt surrogate evalution function the represent we choose, and operators that we emply to go from one solution to next</em></p>
-
-<p>The concept of generating improvements in the quality of a solution is intrinsic to a great many classic and modern methods of  optimization.</p>
-
-<h1 id="traditionalmethodscompletesolutions">Traditional Methods Complete Solutions</h1>
-
-<h2 id="exhaustivesearch">Exhaustive Search</h2>
-
-<ol>
-<li>branch and bound,将搜索空间划分成树状结构，然后使用有向图的depth-first search算法。当达到某些节点时，当我们能确定这个分支达不到最优的结果，就可以放弃这个分支，采用backtrack。</li>
-</ol>
-
-<pre><code>procedure depth-first(v)
+<pre><code>procedure simulated annealing
 begin
-    visit v
-    for each child w of v do
-        depth-first(w)
+    x = some initial starting point in S
+    while not terminate-condition do
+        x = improve?(x, T)
+        update(T)
+    return x
 end
 </code></pre>
 
-<p>这里书中介绍了一个生成permutation的算法。</p>
+<p>这里有三点需要注意：1，终止条件；2，improve?不一定返回的是一个更好的点，只是一个可接受的点，这个可接受是基于T的；3，周期性的更新温度T。</p>
+
+<h2 id="tabusearch">Tabu search</h2>
+
+<pre><code>procedure tabu search
+begin
+    x = some initial starting point in S
+    while not terminate-condition do
+        x = improve?(x, H)
+        update(H)
+    return x
+end
+</code></pre>
 
 <h2 id="localsearch">Local Search</h2>
 
