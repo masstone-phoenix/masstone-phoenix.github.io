@@ -109,6 +109,21 @@ The implement recipe:
 3.  introduce some selective pressure to promote better individuals
 4.  apply some variation operators that generate new solutions to be tested
 then repeat steps 2 ~ 4 
+
+```
+procedure evolutionary algorithm
+begin
+    t <- 0
+    init the population P(t)
+    evaluate the population P(t)
+    while (not termination-condition) do
+        t = t + 1
+        select P(t) from P(t-1)
+        alter P(t)
+        evaluate P(t)
+    end
+end
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -202,6 +217,20 @@ end
 <li>apply some variation operators that generate new solutions to be tested
 then repeat steps 2 ~ 4 </li>
 </ol>
+
+<pre><code>procedure evolutionary algorithm
+begin
+    t &lt;- 0
+    init the population P(t)
+    evaluate the population P(t)
+    while (not termination-condition) do
+        t = t + 1
+        select P(t) from P(t-1)
+        alter P(t)
+        evaluate P(t)
+    end
+end
+</code></pre>
 <!-- content end -->
 </div>
 <br>
