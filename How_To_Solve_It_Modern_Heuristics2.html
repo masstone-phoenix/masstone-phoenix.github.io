@@ -129,7 +129,14 @@ end
 ##Representation
 ##Evaluation Function
 Consider the interaction of the representation with search operators in light of evaluation function.
-
+##Variable operators
+**以下仅是举例，还有其它的做法：**
+###Binary String
+uniparent：随机翻转
+multiparent：异或运算
+###Permutation
+uniparent：随机选两点，两点之间的逆序
+multiparent：1.P1,P2 -> O1:在P1中随机取两点，这两点中间的当成是O1的开始，然后从P2中顺序取出不在P1中两间之间的元素，放到O1的后面，生成O1；2随机从P2中取出几点，当成O1的开始，从P1中删除这些点，剩余的加入O1中
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -245,6 +252,20 @@ end
 <h2 id="evaluationfunction">Evaluation Function</h2>
 
 <p>Consider the interaction of the representation with search operators in light of evaluation function.</p>
+
+<h2 id="variableoperators">Variable operators</h2>
+
+<p><strong>以下仅是举例，还有其它的做法：</strong></p>
+
+<h3 id="binarystring">Binary String</h3>
+
+<p>uniparent：随机翻转
+multiparent：异或运算</p>
+
+<h3 id="permutation">Permutation</h3>
+
+<p>uniparent：随机选两点，两点之间的逆序
+multiparent：1.P1,P2 -&gt; O1:在P1中随机取两点，这两点中间的当成是O1的开始，然后从P2中顺序取出不在P1中两间之间的元素，放到O1的后面，生成O1；2随机从P2中取出几点，当成O1的开始，从P1中删除这些点，剩余的加入O1中</p>
 <!-- content end -->
 </div>
 <br>
