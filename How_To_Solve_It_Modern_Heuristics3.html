@@ -28,11 +28,14 @@
 #TSP
 Think broadly about how to construct variable operators that are appropriate for your task at hand.A variable operator that has a high probability of generating illegal solutions also has a high probability of not being the operator you are looking for.
 
-##一个解决问题的算法也有三个基本概念
-Represent -> The Objective -> The evlution function
+##Represent 
+###Adjacent Represent
+Index i's value is j means moving form city i to city j.
+这种方法的效果书上讲是一般的。
 
-###Represent 
-搜索空间的大小并不是由问题决定的，是由问题是如何被表示的以及处理这种表示的方式来决定的。（It is determined by your represent and the manner in which you handle this encoding)
+###Ordinal Represent
+这种方法是将city排序，以city的index（从1开始）做为list中的元素，并且一旦经过此city，就将其从city的排序中排队出去。
+比如，city的排序C={1，2，3，4，5，6，7，8，9}，list l={1，2.......}的解释是先将index为1的city从C中拿出来，经过1，然后从C中拿出3，经过3，此时C={2，4，5，6，7，8，9}，然后依次解析list l。
 
 ###The Objective
 数学语言的描述，不是一个函数。比如：满足。。。。条件
@@ -144,13 +147,17 @@ when  h(q) <= h*(q), for all the nodes q,the best-first algorithm is always admi
 
 <p>Think broadly about how to construct variable operators that are appropriate for your task at hand.A variable operator that has a high probability of generating illegal solutions also has a high probability of not being the operator you are looking for.</p>
 
-<h2 id="">一个解决问题的算法也有三个基本概念</h2>
+<h2 id="represent">Represent</h2>
 
-<p>Represent -&gt; The Objective -&gt; The evlution function</p>
+<h3 id="adjacentrepresent">Adjacent Represent</h3>
 
-<h3 id="represent">Represent</h3>
+<p>Index i's value is j means moving form city i to city j.
+这种方法的效果书上讲是一般的。</p>
 
-<p>搜索空间的大小并不是由问题决定的，是由问题是如何被表示的以及处理这种表示的方式来决定的。（It is determined by your represent and the manner in which you handle this encoding)</p>
+<h3 id="ordinalrepresent">Ordinal Represent</h3>
+
+<p>这种方法是将city排序，以city的index（从1开始）做为list中的元素，并且一旦经过此city，就将其从city的排序中排队出去。
+比如，city的排序C={1，2，3，4，5，6，7，8，9}，list l={1，2.......}的解释是先将index为1的city从C中拿出来，经过1，然后从C中拿出3，经过3，此时C={2，4，5，6，7，8，9}，然后依次解析list l。</p>
 
 <h3 id="theobjective">The Objective</h3>
 
