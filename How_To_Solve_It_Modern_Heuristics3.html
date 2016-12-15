@@ -37,6 +37,7 @@ Index i's value is j means moving form city i to city j.
 这种方法是将city排序，以city的index（从1开始）做为list中的元素，并且一旦经过此city，就将其从city的排序中排队出去。
 比如，city的排序C={1，2，3，4，5，6，7，8，9}，list l={1，2.......}的解释是先将index为1的city从C中拿出来，经过1，然后从C中拿出3，经过3，此时C={2，4，5，6，7，8，9}，然后依次解析list l。
 
+***仅生成legal的variable operator是不够的，需要能够从上一代继承良好结果，这种继承能够通过简单的随机搜索就能够得到是最好的***
 ###The Objective
 数学语言的描述，不是一个函数。比如：满足。。。。条件
 
@@ -158,6 +159,8 @@ when  h(q) <= h*(q), for all the nodes q,the best-first algorithm is always admi
 
 <p>这种方法是将city排序，以city的index（从1开始）做为list中的元素，并且一旦经过此city，就将其从city的排序中排队出去。
 比如，city的排序C={1，2，3，4，5，6，7，8，9}，list l={1，2.......}的解释是先将index为1的city从C中拿出来，经过1，然后从C中拿出3，经过3，此时C={2，4，5，6，7，8，9}，然后依次解析list l。</p>
+
+<p><strong><em>仅生成legal的variable operator是不够的，需要能够从上一代继承良好结果，这种继承能够通过简单的随机搜索就能够得到是最好的</em></strong></p>
 
 <h3 id="theobjective">The Objective</h3>
 
