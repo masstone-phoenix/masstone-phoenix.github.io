@@ -38,8 +38,8 @@ Index i's value is j means moving form city i to city j.
 比如，city的排序C={1，2，3，4，5，6，7，8，9}，list l={1，2.......}的解释是先将index为1的city从C中拿出来，经过1，然后从C中拿出3，经过3，此时C={2，4，5，6，7，8，9}，然后依次解析list l。
 
 ***仅生成legal的variable operator是不够的，需要能够从上一代继承良好结果，这种继承能够通过简单的随机搜索就能够得到是最好的***
-###The Objective
-数学语言的描述，不是一个函数。比如：满足。。。。条件
+###Path Represent
+最自然的表示方式——一个排列。有三种variable operator:partially-mapped, ordered, cycle crossover.
 
 ###The evalution function
 这是一个从候选解的空间映射到实数的一个函数，每个候选解被映射成一个反映它“质量”的实数。
@@ -162,9 +162,9 @@ when  h(q) <= h*(q), for all the nodes q,the best-first algorithm is always admi
 
 <p><strong><em>仅生成legal的variable operator是不够的，需要能够从上一代继承良好结果，这种继承能够通过简单的随机搜索就能够得到是最好的</em></strong></p>
 
-<h3 id="theobjective">The Objective</h3>
+<h3 id="pathrepresent">Path Represent</h3>
 
-<p>数学语言的描述，不是一个函数。比如：满足。。。。条件</p>
+<p>最自然的表示方式——一个排列。有三种variable operator:partially-mapped, ordered, cycle crossover.</p>
 
 <h3 id="theevalutionfunction">The evalution function</h3>
 
