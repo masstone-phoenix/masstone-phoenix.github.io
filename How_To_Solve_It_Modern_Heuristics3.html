@@ -44,26 +44,25 @@ Index i's value is j means moving form city i to city j.
 ###Matrix Represent
 这是一个从候选解的空间映射到实数的一个函数，每个候选解被映射成一个反映它“质量”的实数。
 
-*Adopt surrogate evalution function the represent we choose, and operators that we emply to go from one solution to next*
 
-The concept of generating improvements in the quality of a solution is intrinsic to a great many classic and modern methods of  optimization.
-
-
-#Traditional Methods Complete Solutions
-
-##Exhaustive Search
-
-1. branch and bound,将搜索空间划分成树状结构，然后使用有向图的depth-first search算法。当达到某些节点时，当我们能确定这个分支达不到最优的结果，就可以放弃这个分支，采用backtrack。
+##Incorporating local search methods
 
 ```
-procedure depth-first(v)
+procedure evolutionary algorithm*
 begin
-    visit v
-    for each child w of v do
-        depth-first(w)
+    t <- 0
+    init the population P(t)
+    apply local optimizer to P(t)
+    evaluate the population P(t)
+    while (not termination-condition) do
+        t = t + 1
+        select P(t) from P(t-1)
+        alter P(t)
+        apply local optimizer to P(t)
+        evaluate P(t)
+    end
 end
 ```
-这里书中介绍了一个生成permutation的算法。
 
 ##Local Search
 1.  Pick a solution from the search space and evaluate the merit.This is current solution
@@ -172,27 +171,23 @@ when  h(q) <= h*(q), for all the nodes q,the best-first algorithm is always admi
 
 <p>这是一个从候选解的空间映射到实数的一个函数，每个候选解被映射成一个反映它“质量”的实数。</p>
 
-<p><em>Adopt surrogate evalution function the represent we choose, and operators that we emply to go from one solution to next</em></p>
+<h2 id="incorporatinglocalsearchmethods">Incorporating local search methods</h2>
 
-<p>The concept of generating improvements in the quality of a solution is intrinsic to a great many classic and modern methods of  optimization.</p>
-
-<h1 id="traditionalmethodscompletesolutions">Traditional Methods Complete Solutions</h1>
-
-<h2 id="exhaustivesearch">Exhaustive Search</h2>
-
-<ol>
-<li>branch and bound,将搜索空间划分成树状结构，然后使用有向图的depth-first search算法。当达到某些节点时，当我们能确定这个分支达不到最优的结果，就可以放弃这个分支，采用backtrack。</li>
-</ol>
-
-<pre><code>procedure depth-first(v)
+<pre><code>procedure evolutionary algorithm*
 begin
-    visit v
-    for each child w of v do
-        depth-first(w)
+    t &lt;- 0
+    init the population P(t)
+    apply local optimizer to P(t)
+    evaluate the population P(t)
+    while (not termination-condition) do
+        t = t + 1
+        select P(t) from P(t-1)
+        alter P(t)
+        apply local optimizer to P(t)
+        evaluate P(t)
+    end
 end
 </code></pre>
-
-<p>这里书中介绍了一个生成permutation的算法。</p>
 
 <h2 id="localsearch">Local Search</h2>
 
