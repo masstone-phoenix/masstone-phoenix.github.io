@@ -80,8 +80,7 @@ Fuzziness and probability have two distinctly different interpretations.
 ## Fuzzy Set Operation
 
 - A fuzzy set is said to be  empty  if and only if its membership function is
-identically zero on the entire universe of discourse  X  ( all possible argu-
-ments to the function )  . .
+identically zero on the entire universe of discourse  X  ( all possible arguments to the function )  . .
 - Two fuzzy sets  A  and  B  are  equal,  A  =
 B,
 if and only if mA ( x )  =  mB ( x )
@@ -90,16 +89,13 @@ for all x  in  X.  For convenience, this can be written as mA  =  mB .
 1 - mA .
 - The fuzzy set  A  is  contained in  or is a  subset of B  if and only if mA<=mB.
 - The  union  of two fuzzy sets  A  and  B  is a fuzzy set  C  =  A  U  B  with a
-membership function mc ( x )  =  max { mA ( x ) , mB ( x )} , x  in  X.
+membership function  mc ( x )  =  max { mA ( x ) , mB ( x )} , x  in  X.
 - The  intersection  of two fuzzy sets  A  and  B  is a fuzzy set  C  =  A n  B  with
 a membership function mc ( x )  =  min { mA ( x ) ,mB ( x )} , x  in X
-##Linear Programming
+##Relationship
+A——（a，ma(a)）；B——（b，mb(b)）
+R is define for each pair (a,b) equals min{ma(a),mb(b) }
 
-#Traditional Methods InComplete Solutions
-##Greedy algorithm
-Greedy algorithm attack a problem by constructing the complete solution in a series of steps.
-
-For interating parameters, greedy algorithm may not provide good solutions.
 
 ##Dvide and conquer
 一般步骤：分解问题，解决分解后的问题，将分解后问题的解组合起来得到原问题的解。只有当上述做法的代价小于直接解决问题的代价，divide and conquer才有意义。
@@ -222,8 +218,7 @@ be described as a membership function,  mA ( x ) , where the function takes on t
 
 <ul>
 <li>A fuzzy set is said to be  empty  if and only if its membership function is
-identically zero on the entire universe of discourse  X  ( all possible argu-
-ments to the function )  . .</li>
+identically zero on the entire universe of discourse  X  ( all possible arguments to the function )  . .</li>
 <li>Two fuzzy sets  A  and  B  are  equal,  A  =
 B,
 if and only if mA ( x )  =  mB ( x )
@@ -232,20 +227,15 @@ for all x  in  X.  For convenience, this can be written as mA  =  mB .</li>
 1 - mA .</li>
 <li>The fuzzy set  A  is  contained in  or is a  subset of B  if and only if mA&lt;=mB.</li>
 <li>The  union  of two fuzzy sets  A  and  B  is a fuzzy set  C  =  A  U  B  with a
-membership function mc ( x )  =  max { mA ( x ) , mB ( x )} , x  in  X.</li>
+membership function  mc ( x )  =  max { mA ( x ) , mB ( x )} , x  in  X.</li>
 <li>The  intersection  of two fuzzy sets  A  and  B  is a fuzzy set  C  =  A n  B  with
 a membership function mc ( x )  =  min { mA ( x ) ,mB ( x )} , x  in X</li>
 </ul>
 
-<h2 id="linearprogramming">Linear Programming</h2>
+<h2 id="relationship">Relationship</h2>
 
-<h1 id="traditionalmethodsincompletesolutions">Traditional Methods InComplete Solutions</h1>
-
-<h2 id="greedyalgorithm">Greedy algorithm</h2>
-
-<p>Greedy algorithm attack a problem by constructing the complete solution in a series of steps.</p>
-
-<p>For interating parameters, greedy algorithm may not provide good solutions.</p>
+<p>A——（a，ma(a)）；B——（b，mb(b)）
+R is define for each pair (a,b) equals min{ma(a),mb(b) }</p>
 
 <h2 id="dvideandconquer">Dvide and conquer</h2>
 
