@@ -79,13 +79,20 @@ Fuzziness and probability have two distinctly different interpretations.
 
 ## Fuzzy Set Operation
 
-algorithm:
-
--  SAT:GSAT
-- TSP: Lin-Kernighan
-- NLP: 1,Newton‘s method.
-Find a g(s) s.t. f(x) = 0 <-> g(x) = x, there are some contrains to g: it must map [a,b] -> [a,b], and it is continuous. iterat s_next = g(s);2 Brent's method
-
+- A fuzzy set is said to be  empty  if and only if its membership function is
+identically zero on the entire universe of discourse  X  ( all possible argu-
+ments to the function )  . .
+- Two fuzzy sets  A  and  B  are  equal,  A  =
+B,
+if and only if mA ( x )  =  mB ( x )
+for all x  in  X.  For convenience, this can be written as mA  =  mB .
+- The  complement  of a fuzzy set  A  is denoted  A'  and defined as mA' = 
+1 - mA .
+- The fuzzy set  A  is  contained in  or is a  subset of B  if and only if mA<=mB.
+- The  union  of two fuzzy sets  A  and  B  is a fuzzy set  C  =  A  U  B  with a
+membership function mc ( x )  =  max { mA ( x ) , mB ( x )} , x  in  X.
+- The  intersection  of two fuzzy sets  A  and  B  is a fuzzy set  C  =  A n  B  with
+a membership function mc ( x )  =  min { mA ( x ) ,mB ( x )} , x  in X
 ##Linear Programming
 
 #Traditional Methods InComplete Solutions
@@ -213,13 +220,21 @@ be described as a membership function,  mA ( x ) , where the function takes on t
 
 <h2 id="fuzzysetoperation">Fuzzy Set Operation</h2>
 
-<p>algorithm:</p>
-
 <ul>
-<li>SAT:GSAT</li>
-<li>TSP: Lin-Kernighan</li>
-<li>NLP: 1,Newton‘s method.
-Find a g(s) s.t. f(x) = 0 &lt;-&gt; g(x) = x, there are some contrains to g: it must map [a,b] -&gt; [a,b], and it is continuous. iterat s_next = g(s);2 Brent's method</li>
+<li>A fuzzy set is said to be  empty  if and only if its membership function is
+identically zero on the entire universe of discourse  X  ( all possible argu-
+ments to the function )  . .</li>
+<li>Two fuzzy sets  A  and  B  are  equal,  A  =
+B,
+if and only if mA ( x )  =  mB ( x )
+for all x  in  X.  For convenience, this can be written as mA  =  mB .</li>
+<li>The  complement  of a fuzzy set  A  is denoted  A'  and defined as mA' = 
+1 - mA .</li>
+<li>The fuzzy set  A  is  contained in  or is a  subset of B  if and only if mA&lt;=mB.</li>
+<li>The  union  of two fuzzy sets  A  and  B  is a fuzzy set  C  =  A  U  B  with a
+membership function mc ( x )  =  max { mA ( x ) , mB ( x )} , x  in  X.</li>
+<li>The  intersection  of two fuzzy sets  A  and  B  is a fuzzy set  C  =  A n  B  with
+a membership function mc ( x )  =  min { mA ( x ) ,mB ( x )} , x  in X</li>
 </ul>
 
 <h2 id="linearprogramming">Linear Programming</h2>
