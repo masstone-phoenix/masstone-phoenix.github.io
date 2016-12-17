@@ -64,13 +64,20 @@ begin
 end
 ```
 
-##Local Search
-1.  Pick a solution from the search space and evaluate the merit.This is current solution
-2.  Apply a transform to current solution to generate a new solution and evaluate the merit.
-3.  If the new solution is better than current solution, then exchange it with current solution;otherwise discard the new solution
-4.  Repeats 2 and 3 until no transformation in the given set improves current solution
 
-*The transform selected is very important*
+#Fuzzy
+
+##What is fuzzy?
+The set of even natural numbers that are less than  10
+is a precise collection of four elements  {2, 4, 6, 8}.  Alternatively, this set could
+be described as a membership function,  mA ( x ) , where the function takes on the value  1  when the argument  x  is an element of the set  A  and is  0  otherwise.A fuzzy set offers the possibility for mA ( x )  to take on values other than {0, 1} , say in the range [0,a],  where the value assumed indicates the *degree* of membership of  x  in  A.
+
+Fuzziness and probability have two distinctly different interpretations.
+
+1.  probability 有一个反面，而Fuzziness只是边界的问题（在周围）；
+2.  当采样后，probability 就变了，或0或1；而Fuzziness在采样后也不会变。
+
+## Fuzzy Set Operation
 
 algorithm:
 
@@ -189,16 +196,22 @@ begin
 end
 </code></pre>
 
-<h2 id="localsearch">Local Search</h2>
+<h1 id="fuzzy">Fuzzy</h1>
+
+<h2 id="whatisfuzzy">What is fuzzy?</h2>
+
+<p>The set of even natural numbers that are less than  10
+is a precise collection of four elements  {2, 4, 6, 8}.  Alternatively, this set could
+be described as a membership function,  mA ( x ) , where the function takes on the value  1  when the argument  x  is an element of the set  A  and is  0  otherwise.A fuzzy set offers the possibility for mA ( x )  to take on values other than {0, 1} , say in the range [0,a],  where the value assumed indicates the <em>degree</em> of membership of  x  in  A.</p>
+
+<p>Fuzziness and probability have two distinctly different interpretations.</p>
 
 <ol>
-<li>Pick a solution from the search space and evaluate the merit.This is current solution</li>
-<li>Apply a transform to current solution to generate a new solution and evaluate the merit.</li>
-<li>If the new solution is better than current solution, then exchange it with current solution;otherwise discard the new solution</li>
-<li>Repeats 2 and 3 until no transformation in the given set improves current solution</li>
+<li>probability 有一个反面，而Fuzziness只是边界的问题（在周围）；</li>
+<li>当采样后，probability 就变了，或0或1；而Fuzziness在采样后也不会变。</li>
 </ol>
 
-<p><em>The transform selected is very important</em></p>
+<h2 id="fuzzysetoperation">Fuzzy Set Operation</h2>
 
 <p>algorithm:</p>
 
