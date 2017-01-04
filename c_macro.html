@@ -29,19 +29,17 @@
 我们使用#把宏参数变为一个字符串,用##把两个宏参数贴合在一起. 
 用法: 
 ```
-＃include<cstdio> 
-＃include<climits> 
-using namespace std; 
+#include <stdio.h>
 
-#define STR(s)     #s 
-#define CONS(a,b)  int(a##e##b) 
+#define STR(s)     #s
+#define CONS(a,b)  (int)(a##e##b)
 
-int main() 
-{ 
-    printf(STR(vck));           // 输出字符串"vck" 
-    printf("%d\n", CONS(2,3));  // 2e3 输出:2000 
-    return 0; 
-} 
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    printf(STR(vck));           // 输出字符串"vck"
+    printf("\n%d\n", CONS(2,3));  // 2e3 输出:2000
+    return 0;
+}
 ```
 
 二、当宏参数是另一个宏的时候 
@@ -86,19 +84,17 @@ CONS(A, A)  -->  _CONS((2), (2))  --> int((2)e(2))
 我们使用#把宏参数变为一个字符串,用##把两个宏参数贴合在一起. 
 用法: </p>
 
-<pre><code>＃include&lt;cstdio&gt; 
-＃include&lt;climits&gt; 
-using namespace std; 
+<pre><code>#include &lt;stdio.h&gt;
 
-#define STR(s)     #s 
-#define CONS(a,b)  int(a##e##b) 
+#define STR(s)     #s
+#define CONS(a,b)  (int)(a##e##b)
 
-int main() 
-{ 
-    printf(STR(vck));           // 输出字符串"vck" 
-    printf("%d\n", CONS(2,3));  // 2e3 输出:2000 
-    return 0; 
-} 
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    printf(STR(vck));           // 输出字符串"vck"
+    printf("\n%d\n", CONS(2,3));  // 2e3 输出:2000
+    return 0;
+}
 </code></pre>
 
 <p>二、当宏参数是另一个宏的时候 
