@@ -45,6 +45,18 @@ we do not emphasize change—the function itself does not change.
 
 
 **Stream processing** lets us model systems that have state without ever using assignment or mutabledata.This has important implications, both theoretical and practical, because we can build models that avoid the drawbacks inherent in introducing assignment.
+
+***Streams are a clever idea that allows one to use sequence manipulations without incurring the costs of manipulating sequences as lists.
+With streams we can achieve the best of both worlds: We can formulate programs elegantly as sequence manipulations, while attaining the efficiency of incremental computation***. The basic idea is to arrange to
+construct a stream only partially, and to pass the partial construction
+to the program that consumes the stream. If the consumer aempts to
+access a part of the stream that has not yet been constructed, the stream
+will automatically construct just enough more of itself to produce the
+required part, thus preserving the illusion that the entire stream exists.
+In other words, although we will write programs as if we were process-
+ing complete sequences, we design our stream implementation to au-
+tomatically and transparently interleave the construction of the stream
+with its use.
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -70,6 +82,18 @@ x(t). If we concentrate on x instant by instant, we think of it as a changing qu
 we do not emphasize change—the function itself does not change.</p>
 
 <p><strong>Stream processing</strong> lets us model systems that have state without ever using assignment or mutabledata.This has important implications, both theoretical and practical, because we can build models that avoid the drawbacks inherent in introducing assignment.</p>
+
+<p><strong><em>Streams are a clever idea that allows one to use sequence manipulations without incurring the costs of manipulating sequences as lists.
+With streams we can achieve the best of both worlds: We can formulate programs elegantly as sequence manipulations, while attaining the efficiency of incremental computation</em></strong>. The basic idea is to arrange to
+construct a stream only partially, and to pass the partial construction
+to the program that consumes the stream. If the consumer aempts to
+access a part of the stream that has not yet been constructed, the stream
+will automatically construct just enough more of itself to produce the
+required part, thus preserving the illusion that the entire stream exists.
+In other words, although we will write programs as if we were process-
+ing complete sequences, we design our stream implementation to au-
+tomatically and transparently interleave the construction of the stream
+with its use.</p>
 <!-- content end -->
 </div>
 <br>
