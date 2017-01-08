@@ -57,6 +57,9 @@ In other words, although we will write programs as if we were process-
 ing complete sequences, we design our stream implementation to au-
 tomatically and transparently interleave the construction of the stream
 with its use.
+
+What  we have done is  to decouple the actual order of events in the computation from the apparent structure of our procedures.We write procedures as if the streams existed “all at once” when, in reality, the computation is performed incrementally,
+as in traditional programming styles
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -94,6 +97,9 @@ In other words, although we will write programs as if we were process-
 ing complete sequences, we design our stream implementation to au-
 tomatically and transparently interleave the construction of the stream
 with its use.</p>
+
+<p>What  we have done is  to decouple the actual order of events in the computation from the apparent structure of our procedures.We write procedures as if the streams existed “all at once” when, in reality, the computation is performed incrementally,
+as in traditional programming styles</p>
 <!-- content end -->
 </div>
 <br>
