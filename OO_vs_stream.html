@@ -25,32 +25,42 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-Let’s step back and review where this complexity comes from. In
-an attempt to model real-world phenomena, we made some apparently
+#Object-oriented
+ In an attempt to model real-world phenomena, we made some apparently
 reasonable decisions: We modeled real-world objects with local state by
 computational objects with local variables. We identified time variation
 in the real world with time variation in the computer. We implemented
 the time variation of the states of the model objects in the computer
 with assignments to the local variables of the model objects.
 
+这代来了并发处理时的各种锁以及“back out” of the deadlocked的问题。
 
+#Stream processing
 Is there another approach? Can we avoid identifying time in the
 computer with time in the modeled world? Must we make the model
 change with time in order to model phenomena in a changing world?
 Think about the issue in terms of mathematical functions. We can describe the time-varying behavior of a quantity x as a function of time
 x(t). If we concentrate on x instant by instant, we think of it as a changing quantity. Yet if we concentrate on the entire time history of values,
 we do not emphasize change—the function itself does not change.
+
+
+**Stream processing** lets us model systems that have state without ever using assignment or mutabledata.This has important implications, both theoretical and practical, because we can build models that avoid the drawbacks inherent in introducing assignment.
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
-<p>Let’s step back and review where this complexity comes from. In
-an attempt to model real-world phenomena, we made some apparently
+<h1 id="objectoriented">Object-oriented</h1>
+
+<p>In an attempt to model real-world phenomena, we made some apparently
 reasonable decisions: We modeled real-world objects with local state by
 computational objects with local variables. We identified time variation
 in the real world with time variation in the computer. We implemented
 the time variation of the states of the model objects in the computer
 with assignments to the local variables of the model objects.</p>
+
+<p>这代来了并发处理时的各种锁以及“back out” of the deadlocked的问题。</p>
+
+<h1 id="streamprocessing">Stream processing</h1>
 
 <p>Is there another approach? Can we avoid identifying time in the
 computer with time in the modeled world? Must we make the model
@@ -58,6 +68,8 @@ change with time in order to model phenomena in a changing world?
 Think about the issue in terms of mathematical functions. We can describe the time-varying behavior of a quantity x as a function of time
 x(t). If we concentrate on x instant by instant, we think of it as a changing quantity. Yet if we concentrate on the entire time history of values,
 we do not emphasize change—the function itself does not change.</p>
+
+<p><strong>Stream processing</strong> lets us model systems that have state without ever using assignment or mutabledata.This has important implications, both theoretical and practical, because we can build models that avoid the drawbacks inherent in introducing assignment.</p>
 <!-- content end -->
 </div>
 <br>
