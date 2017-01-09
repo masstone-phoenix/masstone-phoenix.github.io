@@ -53,9 +53,7 @@ to the program that consumes the stream. If the consumer attempts to
 access a part of the stream that has not yet been constructed, the stream
 will automatically construct just enough more of itself to produce the
 required part, thus preserving the illusion that the entire stream exists.
-In other words, although we will write programs as if we were process-
-ing complete sequences, we design our stream implementation to au-
-tomatically and transparently interleave the construction of the stream
+In other words, although we will write programs as if we were processing complete sequences, we design our stream implementation to automatically and transparently interleave the construction of the stream
 with its use.
 
 What  we have done is  to decouple the actual order of events in the computation from the apparent structure of our procedures.We write procedures as if the streams existed “all at once” when, in reality, the computation is performed incrementally,
@@ -93,9 +91,7 @@ to the program that consumes the stream. If the consumer attempts to
 access a part of the stream that has not yet been constructed, the stream
 will automatically construct just enough more of itself to produce the
 required part, thus preserving the illusion that the entire stream exists.
-In other words, although we will write programs as if we were process-
-ing complete sequences, we design our stream implementation to au-
-tomatically and transparently interleave the construction of the stream
+In other words, although we will write programs as if we were processing complete sequences, we design our stream implementation to automatically and transparently interleave the construction of the stream
 with its use.</p>
 
 <p>What  we have done is  to decouple the actual order of events in the computation from the apparent structure of our procedures.We write procedures as if the streams existed “all at once” when, in reality, the computation is performed incrementally,
