@@ -50,7 +50,8 @@ CFShow(myDestinationTypes);
 ##从Image Source创建一张图片
 1. 创建一个CGImageSourceRef，此时你可以设置是否需要缓存，是否创建一个缩略图等
 2. 使用CGImageSourceCreateImageAtIndex创建图片（如果需要知道数据源的）, CGImageSourceCreateThumbnailAtIndex创建缩略图
-3. 如果要得到图片中的信息，可以使用CGImageSourceGetCount , CGImageSourceCopyProperties和 CGImageSourceCopyTypeIdentifiers.
+
+PS：如果要得到图片中的信息，可以使用CGImageSourceGetCount , CGImageSourceCopyProperties和 CGImageSourceCopyTypeIdentifiers.
 
 例子：
 ```
@@ -176,6 +177,8 @@ Add image data to the CFData object.
 2. 使用CGImageDestinationAddImage 或 CGImageDestinationAddImageFromSource向destination中加入图片
 4. 调用 CGImageDestinationFinalize完成图片的写入。
 
+PS：如果要获得CGImageDestinationRef中的信息，可以 使用CGImageDestinationCopyTypeIdentifiers 或 CGImageDestinationGetTypeID.
+
 例子：创建一个APNG动画图片
 ```
 let loopCount = 1
@@ -243,8 +246,9 @@ CFShow(myDestinationTypes);
 <ol>
 <li>创建一个CGImageSourceRef，此时你可以设置是否需要缓存，是否创建一个缩略图等</li>
 <li>使用CGImageSourceCreateImageAtIndex创建图片（如果需要知道数据源的）, CGImageSourceCreateThumbnailAtIndex创建缩略图</li>
-<li>如果要得到图片中的信息，可以使用CGImageSourceGetCount , CGImageSourceCopyProperties和 CGImageSourceCopyTypeIdentifiers.</li>
 </ol>
+
+<p>PS：如果要得到图片中的信息，可以使用CGImageSourceGetCount , CGImageSourceCopyProperties和 CGImageSourceCopyTypeIdentifiers.</p>
 
 <p>例子：</p>
 
@@ -372,6 +376,8 @@ Add image data to the CFData object.</li>
 <li>使用CGImageDestinationAddImage 或 CGImageDestinationAddImageFromSource向destination中加入图片</li>
 <li>调用 CGImageDestinationFinalize完成图片的写入。</li>
 </ol>
+
+<p>PS：如果要获得CGImageDestinationRef中的信息，可以 使用CGImageDestinationCopyTypeIdentifiers 或 CGImageDestinationGetTypeID.</p>
 
 <p>例子：创建一个APNG动画图片</p>
 
