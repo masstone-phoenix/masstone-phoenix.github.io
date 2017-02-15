@@ -166,6 +166,51 @@ Add image data to the CFData object.
 5. Check to see if you have all the data for an image by calling the function CGImageSourceGetStatusAtIndex. If the image is complete, this function returns kCGImageStatusComplete. If the image is not complete, repeat steps 3 and 4 until it is.
 6. Release the incremental image source.
 
+
+#CGImageDestinationRef
+
+##将图片数据写入Image Destination
+1. 使用 CGImageDestinationCreateWithURL, CGImageDestinationCreateWithData或CGImageDestinationCreateWithDataConsumer创建一个CGImageDestinationRef
+2. 使用CGImageDestinationSetProperties设置图片的一些属性
+2. 使用CGImageDestinationAddImage 或 CGImageDestinationAddImageFromSource向destination中加入图片
+4. 调用 CGImageDestinationFinalize完成图片的写入。
+
+例子：创建一个APNG动画图片
+```
+let loopCount = 1
+let frameCount = 60
+ 
+var fileProperties = NSMutableDictionary()
+fileProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGLoopCount: frameCount]))
+ 
+var frameProperties = NSMutableDictionary()
+frameProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGDelayTime: 1.0 / Double(frameCount)]))
+ 
+guard let destination = CGImageDestinationCreateWithURL(fileURL, kUTTypePNG, frameCount, nil) else {
+    // Provide error handling here.
+}
+ 
+CGImageDestinationSetProperties(destination, fileProperties.copy() as? NSDictionary)
+ 
+for i in 0..<frameCount {
+    autoreleasepool {
+        let radians = M_PI * 2.0 * Double(i) / Double(frameCount)
+        guard let image = imageForFrame(size: CGSize(width: 300, height: 300)) else {
+            return
+        }
+        
+        CGImageDestinationAddImage(destination, image, frameProperties)
+    }
+}
+ 
+if !CGImageDestinationFinalize(destination) {
+    // Provide error handling here.
+}
+```
+
+***使用这个framework时不要忘记使用CFRelease释放掉相当的资源***
+
+PS：在项目是创建的Gif文件有很多锯齿，将文件类型由kUTTypeGIF改为kUTTypePNG后好多了
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -314,6 +359,54 @@ Add image data to the CFData object.</li>
 <li>Check to see if you have all the data for an image by calling the function CGImageSourceGetStatusAtIndex. If the image is complete, this function returns kCGImageStatusComplete. If the image is not complete, repeat steps 3 and 4 until it is.</li>
 <li>Release the incremental image source.</li>
 </ol>
+
+<h1 id="cgimagedestinationref">CGImageDestinationRef</h1>
+
+<h2 id="imagedestination">将图片数据写入Image Destination</h2>
+
+<ol>
+<li>使用 CGImageDestinationCreateWithURL, CGImageDestinationCreateWithData或CGImageDestinationCreateWithDataConsumer创建一个CGImageDestinationRef</li>
+<li>使用CGImageDestinationSetProperties设置图片的一些属性</li>
+<li>使用CGImageDestinationAddImage 或 CGImageDestinationAddImageFromSource向destination中加入图片</li>
+<li>调用 CGImageDestinationFinalize完成图片的写入。</li>
+</ol>
+
+<p>例子：创建一个APNG动画图片</p>
+
+<pre><code>let loopCount = 1
+let frameCount = 60
+
+var fileProperties = NSMutableDictionary()
+fileProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGLoopCount: frameCount]))
+
+var frameProperties = NSMutableDictionary()
+frameProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGDelayTime: 1.0 / Double(frameCount)]))
+
+guard let destination = CGImageDestinationCreateWithURL(fileURL, kUTTypePNG, frameCount, nil) else {
+    // Provide error handling here.
+}
+
+CGImageDestinationSetProperties(destination, fileProperties.copy() as? NSDictionary)
+
+for i in 0..&lt;frameCount {
+    autoreleasepool {
+        let radians = M_PI * 2.0 * Double(i) / Double(frameCount)
+        guard let image = imageForFrame(size: CGSize(width: 300, height: 300)) else {
+            return
+        }
+
+        CGImageDestinationAddImage(destination, image, frameProperties)
+    }
+}
+
+if !CGImageDestinationFinalize(destination) {
+    // Provide error handling here.
+}
+</code></pre>
+
+<p><strong><em>使用这个framework时不要忘记使用CFRelease释放掉相当的资源</em></strong></p>
+
+<p>PS：在项目是创建的Gif文件有很多锯齿，将文件类型由kUTTypeGIF改为kUTTypePNG后好多了</p>
 <!-- content end -->
 </div>
 <br>
