@@ -28,22 +28,22 @@
 
 #概述
 
-Image I/O framework主要提供了读取图片数据(CGImageSourceRef) 与写入图片数据(CGImageDestinationRef)两方面的功能。
+Core Text主是有排版和字体两种功能。
 
-数据的输入或输出可以是以下几种：
+##排版
+![总括](https://developer.apple.com/library/content/documentation/StringsTextFonts/Conceptual/CoreText_Programming/Art/core_text_arch_2x.png)
 
-- URL——CFURLRef
-- Data——CFDataRef , CFMutableDataRef
-- Quartz data consumer (CGDataConsumerRef) and data provider (CGDataProviderRef)
+CTFrameSetter：给个attributed string，我们能够创建一个CTFramesetterRef，它用来对给定的attributed string排版，过程如下：CTTypesetterRef将attributed string排版成行，CTFramesetterRef将这样行排版成段，并设置段样式。
 
-支持的数据格式：使用以下代码得到
+CTFrame：代表一个段
 
-```
-CFArrayRef mySourceTypes = CGImageSourceCopyTypeIdentifiers();
-CFShow(mySourceTypes);
-CFArrayRef myDestinationTypes = CGImageDestinationCopyTypeIdentifiers();
-CFShow(myDestinationTypes);
-```
+CTLine：代表一行，由CTTypesetterRef创建，像CTFrame一样，可以在图形上下文（graphics context）中绘制自己
+
+CTRun：代表属性、方向相同的一组连续的“字形”（glyphs），它也可以在图形上下文（graphics context）中绘制自己
+
+一个CTFrame对象可能包含一个或多个CTLine对象，
+
+
 
 #CGImageSourceRef
 
@@ -219,7 +219,200 @@ PS：在项目是创建的Gif文件有很多锯齿，将文件类型由kUTTypeGI
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<h1 id="">概述</h1>
 
+<p>Core Text主是有排版和字体两种功能。</p>
+
+<h2 id="">排版</h2>
+
+<p><img src="https://developer.apple.com/library/content/documentation/StringsTextFonts/Conceptual/CoreText_Programming/Art/core_text_arch_2x.png" alt="总括" title=""></p>
+
+<p>CTFrameSetter：给个attributed string，我们能够创建一个CTFramesetterRef，它用来对给定的attributed string排版，过程如下：CTTypesetterRef将attributed string排版成行，CTFramesetterRef将这样行排版成段，并设置段样式。</p>
+
+<p>CTFrame：代表一个段</p>
+
+<p>CTLine：代表一行，由CTTypesetterRef创建，像CTFrame一样，可以在图形上下文（graphics context）中绘制自己</p>
+
+<p>CTRun：代表属性、方向相同的一组连续的“字形”（glyphs），它也可以在图形上下文（graphics context）中绘制自己</p>
+
+<p>一个CTFrame对象可能包含一个或多个CTLine对象，</p>
+
+<h1 id="cgimagesourceref">CGImageSourceRef</h1>
+
+<h2 id="imagesource">从Image Source创建一张图片</h2>
+
+<ol>
+<li>创建一个CGImageSourceRef，此时你可以设置是否需要缓存，是否创建一个缩略图等</li>
+<li>使用CGImageSourceCreateImageAtIndex创建图片（如果需要知道数据源的）, CGImageSourceCreateThumbnailAtIndex创建缩略图</li>
+</ol>
+
+<p>PS：如果要得到图片中的信息，可以使用CGImageSourceGetCount , CGImageSourceCopyProperties和 CGImageSourceCopyTypeIdentifiers.</p>
+
+<p>例子：</p>
+
+<pre><code>CGImageRef MyCreateCGImageFromFile (NSString* path)
+{
+    // Get the URL for the pathname passed to the function.
+    NSURL *url = [NSURL fileURLWithPath:path];
+    CGImageRef        myImage = NULL;
+    CGImageSourceRef  myImageSource;
+    CFDictionaryRef   myOptions = NULL;
+    CFStringRef       myKeys[2];
+    CFTypeRef         myValues[2];
+
+    // Set up options if you want them. The options here are for
+    // caching the image in a decoded form and for using floating-point
+    // values if the image format supports them.
+    myKeys[0] = kCGImageSourceShouldCache;
+    myValues[0] = (CFTypeRef)kCFBooleanTrue;
+    myKeys[1] = kCGImageSourceShouldAllowFloat;
+    myValues[1] = (CFTypeRef)kCFBooleanTrue;
+    // Create the dictionary
+    myOptions = CFDictionaryCreate(NULL, (const void **) myKeys,
+                   (const void **) myValues, 2,
+                   &amp;kCFTypeDictionaryKeyCallBacks,
+                   &amp; kCFTypeDictionaryValueCallBacks);
+    // Create an image source from the URL.
+    myImageSource = CGImageSourceCreateWithURL((CFURLRef)url, myOptions);
+    CFRelease(myOptions);
+    // Make sure the image source exists before continuing
+    if (myImageSource == NULL){
+        fprintf(stderr, "Image source is NULL.");
+        return  NULL;
+    }
+    // Create an image from the first item in the image source.
+    myImage = CGImageSourceCreateImageAtIndex(myImageSource,
+                                           0,
+                                           NULL);
+
+    CFRelease(myImageSource);
+    // Make sure the image exists before continuing
+    if (myImage == NULL){
+         fprintf(stderr, "Image not created from image source.");
+         return NULL;
+    }
+
+    return myImage;
+}
+
+
+
+CGImageRef MyCreateThumbnailImageFromData (NSData * data, int imageSize)
+{
+    CGImageRef        myThumbnailImage = NULL;
+    CGImageSourceRef  myImageSource;
+    CFDictionaryRef   myOptions = NULL;
+    CFStringRef       myKeys[3];
+    CFTypeRef         myValues[3];
+    CFNumberRef       thumbnailSize;
+
+   // Create an image source from NSData; no options.
+   myImageSource = CGImageSourceCreateWithData((CFDataRef)data,
+                                               NULL);
+   // Make sure the image source exists before continuing.
+   if (myImageSource == NULL){
+        fprintf(stderr, "Image source is NULL.");
+        return  NULL;
+   }
+
+   // Package the integer as a  CFNumber object. Using CFTypes allows you
+   // to more easily create the options dictionary later.
+   thumbnailSize = CFNumberCreate(NULL, kCFNumberIntType, &amp;imageSize);
+
+   // Set up the thumbnail options.
+   myKeys[0] = kCGImageSourceCreateThumbnailWithTransform;
+   myValues[0] = (CFTypeRef)kCFBooleanTrue;
+   myKeys[1] = kCGImageSourceCreateThumbnailFromImageIfAbsent;
+   myValues[1] = (CFTypeRef)kCFBooleanTrue;
+   myKeys[2] = kCGImageSourceThumbnailMaxPixelSize;
+   myValues[2] = (CFTypeRef)thumbnailSize;
+
+   myOptions = CFDictionaryCreate(NULL, (const void **) myKeys,
+                   (const void **) myValues, 2,
+                   &amp;kCFTypeDictionaryKeyCallBacks,
+                   &amp; kCFTypeDictionaryValueCallBacks);
+
+  // Create the thumbnail image using the specified options.
+  myThumbnailImage = CGImageSourceCreateThumbnailAtIndex(myImageSource,
+                                          0,
+                                          myOptions);
+  // Release the options dictionary and the image source
+  // when you no longer need them.
+  CFRelease(thumbnailSize);
+  CFRelease(myOptions);
+  CFRelease(myImageSource);
+
+   // Make sure the thumbnail image exists before continuing.
+   if (myThumbnailImage == NULL){
+         fprintf(stderr, "Thumbnail image not created from image source.");
+         return NULL;
+   }
+
+   return myThumbnailImage;
+}
+</code></pre>
+
+<h2 id="">渐进式加载图片</h2>
+
+<ol>
+<li>Create the CFData object for accumulating the image data.</li>
+<li>Create an incremental image source by calling the function CGImageSourceCreateIncremental.
+Add image data to the CFData object.</li>
+<li>Call the function CGImageSourceUpdateData, passing the CFData object and a Boolean value (bool data type) that specifies whether the data parameter contains the entire image, or just partial image data. In any case, the data parameter must contain all the image file data accumulated up to that point.</li>
+<li>If you have accumulated enough image data, create an image by calling CGImageSourceCreateImageAtIndex, draw the partial image, and then release it.</li>
+<li>Check to see if you have all the data for an image by calling the function CGImageSourceGetStatusAtIndex. If the image is complete, this function returns kCGImageStatusComplete. If the image is not complete, repeat steps 3 and 4 until it is.</li>
+<li>Release the incremental image source.</li>
+</ol>
+
+<h1 id="cgimagedestinationref">CGImageDestinationRef</h1>
+
+<h2 id="imagedestination">将图片数据写入Image Destination</h2>
+
+<ol>
+<li>使用 CGImageDestinationCreateWithURL, CGImageDestinationCreateWithData或CGImageDestinationCreateWithDataConsumer创建一个CGImageDestinationRef</li>
+<li>使用CGImageDestinationSetProperties设置图片的一些属性</li>
+<li>使用CGImageDestinationAddImage 或 CGImageDestinationAddImageFromSource向destination中加入图片</li>
+<li>调用 CGImageDestinationFinalize完成图片的写入。</li>
+</ol>
+
+<p>PS：如果要获得CGImageDestinationRef中的信息，可以 使用CGImageDestinationCopyTypeIdentifiers 或 CGImageDestinationGetTypeID.</p>
+
+<p>例子：创建一个APNG动画图片</p>
+
+<pre><code>let loopCount = 1
+let frameCount = 60
+
+var fileProperties = NSMutableDictionary()
+fileProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGLoopCount: frameCount]))
+
+var frameProperties = NSMutableDictionary()
+frameProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGDelayTime: 1.0 / Double(frameCount)]))
+
+guard let destination = CGImageDestinationCreateWithURL(fileURL, kUTTypePNG, frameCount, nil) else {
+    // Provide error handling here.
+}
+
+CGImageDestinationSetProperties(destination, fileProperties.copy() as? NSDictionary)
+
+for i in 0..&lt;frameCount {
+    autoreleasepool {
+        let radians = M_PI * 2.0 * Double(i) / Double(frameCount)
+        guard let image = imageForFrame(size: CGSize(width: 300, height: 300)) else {
+            return
+        }
+
+        CGImageDestinationAddImage(destination, image, frameProperties)
+    }
+}
+
+if !CGImageDestinationFinalize(destination) {
+    // Provide error handling here.
+}
+</code></pre>
+
+<p><strong><em>使用这个framework时不要忘记使用CFRelease释放掉相当的资源</em></strong></p>
+
+<p>PS：在项目是创建的Gif文件有很多锯齿，将文件类型由kUTTypeGIF改为kUTTypePNG后好多了</p>
 <!-- content end -->
 </div>
 <br>
