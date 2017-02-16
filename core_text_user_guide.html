@@ -231,6 +231,72 @@ CFRelease(line);
 }
 
 
+
+
+
+//手动断行的demo,里面有如何居中
+double width; CGContextRef context; CGPoint textPosition; CFAttributedStringRef attrString;
+// Initialize those variables.
+ 
+// Create a typesetter using the attributed string.
+CTTypesetterRef typesetter = CTTypesetterCreateWithAttributedString(attrString);
+ 
+// Find a break for line from the beginning of the string to the given width.
+CFIndex start = 0;
+CFIndex count = CTTypesetterSuggestLineBreak(typesetter, start, width);
+ 
+// Use the returned character count (to the break) to create the line.
+CTLineRef line = CTTypesetterCreateLine(typesetter, CFRangeMake(start, count));
+ 
+// Get the offset needed to center the line.
+float flush = 0.5; // centered
+double penOffset = CTLineGetPenOffsetForFlush(line, flush, width);
+ 
+// Move the given text drawing position by the calculated offset and draw the line.
+CGContextSetTextPosition(context, textPosition.x + penOffset, textPosition.y);
+CTLineDraw(line, context);
+ 
+// Move the index beyond the line break.
+start += count;
+
+
+
+
+//Applying a paragraph style
+NSAttributedString* applyParaStyle(
+                CFStringRef fontName , CGFloat pointSize,
+                NSString *plainText, CGFloat lineSpaceInc){
+ 
+    // Create the font so we can determine its height.
+    CTFontRef font = CTFontCreateWithName(fontName, pointSize, NULL);
+ 
+    // Set the lineSpacing.
+    CGFloat lineSpacing = (CTFontGetLeading(font) + lineSpaceInc) * 2;
+ 
+    // Create the paragraph style settings.
+    CTParagraphStyleSetting setting;
+ 
+    setting.spec = kCTParagraphStyleSpecifierLineSpacing;
+    setting.valueSize = sizeof(CGFloat);
+    setting.value = &lineSpacing;
+ 
+    CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(&setting, 1);
+ 
+    // Add the paragraph style to the dictionary.
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                               (__bridge id)font, (id)kCTFontNameAttribute,
+                               (__bridge id)paragraphStyle,
+                               (id)kCTParagraphStyleAttributeName, nil];
+    CFRelease(font);
+    CFRelease(paragraphStyle);
+ 
+    // Apply the paragraph style to the string to created the attributed string.
+    NSAttributedString* attrString = [[NSAttributedString alloc]
+                               initWithString:(NSString*)plainText
+                               attributes:attributes];
+ 
+    return attrString;
+}
 ```
 
 
@@ -611,6 +677,74 @@ CFRelease(line);
     CFRelease(columnPaths);
     CFRelease(framesetter);
 
+}
+
+
+
+
+
+//手动断行的demo,里面有如何居中
+double width; CGContextRef context; CGPoint textPosition; CFAttributedStringRef attrString;
+// Initialize those variables.
+
+// Create a typesetter using the attributed string.
+CTTypesetterRef typesetter = CTTypesetterCreateWithAttributedString(attrString);
+
+// Find a break for line from the beginning of the string to the given width.
+CFIndex start = 0;
+CFIndex count = CTTypesetterSuggestLineBreak(typesetter, start, width);
+
+// Use the returned character count (to the break) to create the line.
+CTLineRef line = CTTypesetterCreateLine(typesetter, CFRangeMake(start, count));
+
+// Get the offset needed to center the line.
+float flush = 0.5; // centered
+double penOffset = CTLineGetPenOffsetForFlush(line, flush, width);
+
+// Move the given text drawing position by the calculated offset and draw the line.
+CGContextSetTextPosition(context, textPosition.x + penOffset, textPosition.y);
+CTLineDraw(line, context);
+
+// Move the index beyond the line break.
+start += count;
+
+
+
+
+//Applying a paragraph style
+NSAttributedString* applyParaStyle(
+                CFStringRef fontName , CGFloat pointSize,
+                NSString *plainText, CGFloat lineSpaceInc){
+
+    // Create the font so we can determine its height.
+    CTFontRef font = CTFontCreateWithName(fontName, pointSize, NULL);
+
+    // Set the lineSpacing.
+    CGFloat lineSpacing = (CTFontGetLeading(font) + lineSpaceInc) * 2;
+
+    // Create the paragraph style settings.
+    CTParagraphStyleSetting setting;
+
+    setting.spec = kCTParagraphStyleSpecifierLineSpacing;
+    setting.valueSize = sizeof(CGFloat);
+    setting.value = &amp;lineSpacing;
+
+    CTParagraphStyleRef paragraphStyle = CTParagraphStyleCreate(&amp;setting, 1);
+
+    // Add the paragraph style to the dictionary.
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                               (__bridge id)font, (id)kCTFontNameAttribute,
+                               (__bridge id)paragraphStyle,
+                               (id)kCTParagraphStyleAttributeName, nil];
+    CFRelease(font);
+    CFRelease(paragraphStyle);
+
+    // Apply the paragraph style to the string to created the attributed string.
+    NSAttributedString* attrString = [[NSAttributedString alloc]
+                               initWithString:(NSString*)plainText
+                               attributes:attributes];
+
+    return attrString;
 }
 </code></pre>
 
