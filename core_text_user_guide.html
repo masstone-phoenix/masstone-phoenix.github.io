@@ -28,7 +28,7 @@
 
 #概述
 
-Core Text主是有排版和字体两种功能。
+Core Text是一组C-based的API，主要功能有排版和字体两种。
 
 ##排版
 ![总括](https://developer.apple.com/library/content/documentation/StringsTextFonts/Conceptual/CoreText_Programming/Art/core_text_arch_2x.png)
@@ -41,7 +41,107 @@ CTLine：代表一行，由CTTypesetterRef创建，像CTFrame一样，可以在�
 
 CTRun：代表属性、方向相同的一组连续的“字形”（glyphs），它也可以在图形上下文（graphics context）中绘制自己
 
-一个CTFrame对象可能包含一个或多个CTLine对象，
+一个CTFrame对象可能包含一个或多个CTLine对象，同样，一个CTLine对象可能包含一个或多个CTRun对象。
+
+官方的排版例子：
+
+```
+// Initialize a graphics context in iOS.
+CGContextRef context = UIGraphicsGetCurrentContext();
+ 
+// Flip the context coordinates, in iOS only.
+CGContextTranslateCTM(context, 0, self.bounds.size.height);
+CGContextScaleCTM(context, 1.0, -1.0);
+ 
+// Initializing a graphic context in OS X is different:
+// CGContextRef context =
+//     (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+ 
+// Set the text matrix.
+CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+ 
+// Create a path which bounds the area where you will be drawing text.
+// The path need not be rectangular.
+CGMutablePathRef path = CGPathCreateMutable();
+ 
+// In this simple example, initialize a rectangular path.
+CGRect bounds = CGRectMake(10.0, 10.0, 200.0, 200.0);
+CGPathAddRect(path, NULL, bounds );
+ 
+// Initialize a string.
+CFStringRef textString = CFSTR("Hello, World! I know nothing in the world that has as much power as a word. Sometimes I write one, and I look at it, until it begins to shine.");
+ 
+// Create a mutable attributed string with a max length of 0.
+// The max length is a hint as to how much internal storage to reserve.
+// 0 means no hint.
+CFMutableAttributedStringRef attrString =
+         CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
+ 
+// Copy the textString into the newly created attrString
+CFAttributedStringReplaceString (attrString, CFRangeMake(0, 0),
+         textString);
+ 
+// Create a color that will be added as an attribute to the attrString.
+CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
+CGFloat components[] = { 1.0, 0.0, 0.0, 0.8 };
+CGColorRef red = CGColorCreate(rgbColorSpace, components);
+CGColorSpaceRelease(rgbColorSpace);
+ 
+// Set the color of the first 12 chars to red.
+CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 12),
+         kCTForegroundColorAttributeName, red);
+ 
+/*******************************************************************/
+// Create the framesetter with the attributed string.
+CTFramesetterRef framesetter =
+         CTFramesetterCreateWithAttributedString(attrString);
+CFRelease(attrString);
+ 
+// Create a frame.
+CTFrameRef frame = CTFramesetterCreateFrame(framesetter,
+          CFRangeMake(0, 0), path, NULL);
+/*******************************************************************/
+ 
+// Draw the specified frame in the given context.
+CTFrameDraw(frame, context);
+ 
+// Release the objects we used.
+CFRelease(frame);
+CFRelease(path);
+CFRelease(framesetter);
+
+
+
+
+
+//画简单文字的例子，使用CTLine
+CFStringRef string; CTFontRef font; CGContextRef context;
+// Initialize the string, font, and context
+ 
+CFStringRef keys[] = { kCTFontAttributeName };
+CFTypeRef values[] = { font };
+ 
+CFDictionaryRef attributes =
+    CFDictionaryCreate(kCFAllocatorDefault, (const void**)&keys,
+        (const void**)&values, sizeof(keys) / sizeof(keys[0]),
+        &kCFTypeDictionaryKeyCallBacks,
+        &kCFTypeDictionaryValueCallBacks);
+ 
+CFAttributedStringRef attrString =
+    CFAttributedStringCreate(kCFAllocatorDefault, string, attributes);
+CFRelease(string);
+CFRelease(attributes);
+ 
+/*******************************************************************/
+CTLineRef line = CTLineCreateWithAttributedString(attrString);
+ 
+// Set text position and draw the line into the graphics context
+CGContextSetTextPosition(context, 10.0, 10.0);
+CTLineDraw(line, context);
+/*******************************************************************/
+CFRelease(line);
+
+```
 
 
 
@@ -221,7 +321,7 @@ PS：在项目是创建的Gif文件有很多锯齿，将文件类型由kUTTypeGI
 <!-- content -->
 <h1 id="">概述</h1>
 
-<p>Core Text主是有排版和字体两种功能。</p>
+<p>Core Text是一组C-based的API，主要功能有排版和字体两种。</p>
 
 <h2 id="">排版</h2>
 
@@ -235,7 +335,105 @@ PS：在项目是创建的Gif文件有很多锯齿，将文件类型由kUTTypeGI
 
 <p>CTRun：代表属性、方向相同的一组连续的“字形”（glyphs），它也可以在图形上下文（graphics context）中绘制自己</p>
 
-<p>一个CTFrame对象可能包含一个或多个CTLine对象，</p>
+<p>一个CTFrame对象可能包含一个或多个CTLine对象，同样，一个CTLine对象可能包含一个或多个CTRun对象。</p>
+
+<p>官方的排版例子：</p>
+
+<pre><code>// Initialize a graphics context in iOS.
+CGContextRef context = UIGraphicsGetCurrentContext();
+
+// Flip the context coordinates, in iOS only.
+CGContextTranslateCTM(context, 0, self.bounds.size.height);
+CGContextScaleCTM(context, 1.0, -1.0);
+
+// Initializing a graphic context in OS X is different:
+// CGContextRef context =
+//     (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+
+// Set the text matrix.
+CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+
+// Create a path which bounds the area where you will be drawing text.
+// The path need not be rectangular.
+CGMutablePathRef path = CGPathCreateMutable();
+
+// In this simple example, initialize a rectangular path.
+CGRect bounds = CGRectMake(10.0, 10.0, 200.0, 200.0);
+CGPathAddRect(path, NULL, bounds );
+
+// Initialize a string.
+CFStringRef textString = CFSTR("Hello, World! I know nothing in the world that has as much power as a word. Sometimes I write one, and I look at it, until it begins to shine.");
+
+// Create a mutable attributed string with a max length of 0.
+// The max length is a hint as to how much internal storage to reserve.
+// 0 means no hint.
+CFMutableAttributedStringRef attrString =
+         CFAttributedStringCreateMutable(kCFAllocatorDefault, 0);
+
+// Copy the textString into the newly created attrString
+CFAttributedStringReplaceString (attrString, CFRangeMake(0, 0),
+         textString);
+
+// Create a color that will be added as an attribute to the attrString.
+CGColorSpaceRef rgbColorSpace = CGColorSpaceCreateDeviceRGB();
+CGFloat components[] = { 1.0, 0.0, 0.0, 0.8 };
+CGColorRef red = CGColorCreate(rgbColorSpace, components);
+CGColorSpaceRelease(rgbColorSpace);
+
+// Set the color of the first 12 chars to red.
+CFAttributedStringSetAttribute(attrString, CFRangeMake(0, 12),
+         kCTForegroundColorAttributeName, red);
+
+/*******************************************************************/
+// Create the framesetter with the attributed string.
+CTFramesetterRef framesetter =
+         CTFramesetterCreateWithAttributedString(attrString);
+CFRelease(attrString);
+
+// Create a frame.
+CTFrameRef frame = CTFramesetterCreateFrame(framesetter,
+          CFRangeMake(0, 0), path, NULL);
+/*******************************************************************/
+
+// Draw the specified frame in the given context.
+CTFrameDraw(frame, context);
+
+// Release the objects we used.
+CFRelease(frame);
+CFRelease(path);
+CFRelease(framesetter);
+
+
+
+
+
+//画简单文字的例子，使用CTLine
+CFStringRef string; CTFontRef font; CGContextRef context;
+// Initialize the string, font, and context
+
+CFStringRef keys[] = { kCTFontAttributeName };
+CFTypeRef values[] = { font };
+
+CFDictionaryRef attributes =
+    CFDictionaryCreate(kCFAllocatorDefault, (const void**)&amp;keys,
+        (const void**)&amp;values, sizeof(keys) / sizeof(keys[0]),
+        &amp;kCFTypeDictionaryKeyCallBacks,
+        &amp;kCFTypeDictionaryValueCallBacks);
+
+CFAttributedStringRef attrString =
+    CFAttributedStringCreate(kCFAllocatorDefault, string, attributes);
+CFRelease(string);
+CFRelease(attributes);
+
+/*******************************************************************/
+CTLineRef line = CTLineCreateWithAttributedString(attrString);
+
+// Set text position and draw the line into the graphics context
+CGContextSetTextPosition(context, 10.0, 10.0);
+CTLineDraw(line, context);
+/*******************************************************************/
+CFRelease(line);
+</code></pre>
 
 <h1 id="cgimagesourceref">CGImageSourceRef</h1>
 
