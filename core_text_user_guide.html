@@ -301,176 +301,133 @@ NSAttributedString* applyParaStyle(
 
 
 
-#CGImageSourceRef
+#Font
+Core Text font objects 是不可变的（immutable），使用CTFontCreateWithFontDescriptor，CTFontCreateWithName，CTFontCreateWithGraphicsFont等。
 
-##从Image Source创建一张图片
-1. 创建一个CGImageSourceRef，此时你可以设置是否需要缓存，是否创建一个缩略图等
-2. 使用CGImageSourceCreateImageAtIndex创建图片（如果需要知道数据源的）, CGImageSourceCreateThumbnailAtIndex创建缩略图
+##CTFontDescriptor
+CTFontDescriptor使用属性字典来描述字体，我们可以从CTFontDescriptor创建CTFont，可以从CTFont得到其CTFontDescriptor；还可以通过修改CTFontDescriptor，用修改后的得到一个新的CTFont。使用CTFontDescriptor得到CTFont可以想象成一个“查询”，系统会选择最适合的。
 
-PS：如果要得到图片中的信息，可以使用CGImageSourceGetCount , CGImageSourceCopyProperties和 CGImageSourceCopyTypeIdentifiers.
-
-例子：
+官方例子：
 ```
-CGImageRef MyCreateCGImageFromFile (NSString* path)
+
+//创建CTFontDescriptor的例子
+//第一种
+CTFontDescriptorCreateWithNameAndSize(postScriptName, size);
+
+//第二种
+NSString* familyName = @"Papyrus";
+CTFontSymbolicTraits symbolicTraits = kCTFontTraitCondensed;
+CGFloat size = 24.0;
+ 
+NSMutableDictionary* attributes = [NSMutableDictionary dictionary];
+[attributes setObject:familyName forKey:(id)kCTFontFamilyNameAttribute];
+ 
+// The attributes dictionary contains another dictionary, the traits dictionary,
+// which in this example specifies only the symbolic traits.
+NSMutableDictionary* traits = [NSMutableDictionary dictionary];
+[traits setObject:[NSNumber numberWithUnsignedInt:symbolicTraits]
+                                           forKey:(id)kCTFontSymbolicTrait];
+ 
+[attributes setObject:traits forKey:(id)kCTFontTraitsAttribute];
+[attributes setObject:[NSNumber numberWithFloat:size]
+                                         forKey:(id)kCTFontSizeAttribute];
+ 
+CTFontDescriptorRef descriptor =
+             CTFontDescriptorCreateWithAttributes((CFDictionaryRef)attributes);
+CFRelease(descriptor);
+
+
+
+
+CTFontRef CreateBoldFont(CTFontRef font, Boolean makeBold)
 {
-    // Get the URL for the pathname passed to the function.
-    NSURL *url = [NSURL fileURLWithPath:path];
-    CGImageRef        myImage = NULL;
-    CGImageSourceRef  myImageSource;
-    CFDictionaryRef   myOptions = NULL;
-    CFStringRef       myKeys[2];
-    CFTypeRef         myValues[2];
+    CTFontSymbolicTraits desiredTrait = 0;
+    CTFontSymbolicTraits traitMask;
  
-    // Set up options if you want them. The options here are for
-    // caching the image in a decoded form and for using floating-point
-    // values if the image format supports them.
-    myKeys[0] = kCGImageSourceShouldCache;
-    myValues[0] = (CFTypeRef)kCFBooleanTrue;
-    myKeys[1] = kCGImageSourceShouldAllowFloat;
-    myValues[1] = (CFTypeRef)kCFBooleanTrue;
-    // Create the dictionary
-    myOptions = CFDictionaryCreate(NULL, (const void **) myKeys,
-                   (const void **) myValues, 2,
-                   &kCFTypeDictionaryKeyCallBacks,
-                   & kCFTypeDictionaryValueCallBacks);
-    // Create an image source from the URL.
-    myImageSource = CGImageSourceCreateWithURL((CFURLRef)url, myOptions);
-    CFRelease(myOptions);
-    // Make sure the image source exists before continuing
-    if (myImageSource == NULL){
-        fprintf(stderr, "Image source is NULL.");
-        return  NULL;
-    }
-    // Create an image from the first item in the image source.
-    myImage = CGImageSourceCreateImageAtIndex(myImageSource,
-                                           0,
-                                           NULL);
+    // If requesting that the font be bold, set the desired trait
+    // to be bold.
+    if (makeBold) desiredTrait = kCTFontBoldTrait;
  
-    CFRelease(myImageSource);
-    // Make sure the image exists before continuing
-    if (myImage == NULL){
-         fprintf(stderr, "Image not created from image source.");
-         return NULL;
-    }
+    // Mask off the bold trait to indicate that it is the only trait
+    // to be modified. As CTFontSymbolicTraits is a bit field,
+    // could change multiple traits if desired.
+    traitMask = kCTFontBoldTrait;
  
-    return myImage;
+    // Create a copy of the original font with the masked trait set to the
+    // desired value. If the font family does not have the appropriate style,
+    // returns NULL.
+ 
+    return CTFontCreateCopyWithSymbolicTraits(font, 0.0, NULL, desiredTrait, traitMask);
 }
 
+```
+
+PS：变换font family可以使用CTFontCreateCopyWithFamily
 
 
-CGImageRef MyCreateThumbnailImageFromData (NSData * data, int imageSize)
+###Font的序列化
+
+```
+CFDataRef CreateFlattenedFontData(CTFontRef font)
 {
-    CGImageRef        myThumbnailImage = NULL;
-    CGImageSourceRef  myImageSource;
-    CFDictionaryRef   myOptions = NULL;
-    CFStringRef       myKeys[3];
-    CFTypeRef         myValues[3];
-    CFNumberRef       thumbnailSize;
+    CFDataRef           result = NULL;
+    CTFontDescriptorRef descriptor;
+    CFDictionaryRef     attributes;
  
-   // Create an image source from NSData; no options.
-   myImageSource = CGImageSourceCreateWithData((CFDataRef)data,
-                                               NULL);
-   // Make sure the image source exists before continuing.
-   if (myImageSource == NULL){
-        fprintf(stderr, "Image source is NULL.");
-        return  NULL;
-   }
+    // Get the font descriptor for the font.
+    descriptor = CTFontCopyFontDescriptor(font);
  
-   // Package the integer as a  CFNumber object. Using CFTypes allows you
-   // to more easily create the options dictionary later.
-   thumbnailSize = CFNumberCreate(NULL, kCFNumberIntType, &imageSize);
+    if (descriptor != NULL) {
+        // Get the font attributes from the descriptor. This should be enough
+        // information to recreate the descriptor and the font later.
+        attributes = CTFontDescriptorCopyAttributes(descriptor);
  
-   // Set up the thumbnail options.
-   myKeys[0] = kCGImageSourceCreateThumbnailWithTransform;
-   myValues[0] = (CFTypeRef)kCFBooleanTrue;
-   myKeys[1] = kCGImageSourceCreateThumbnailFromImageIfAbsent;
-   myValues[1] = (CFTypeRef)kCFBooleanTrue;
-   myKeys[2] = kCGImageSourceThumbnailMaxPixelSize;
-   myValues[2] = (CFTypeRef)thumbnailSize;
- 
-   myOptions = CFDictionaryCreate(NULL, (const void **) myKeys,
-                   (const void **) myValues, 2,
-                   &kCFTypeDictionaryKeyCallBacks,
-                   & kCFTypeDictionaryValueCallBacks);
- 
-  // Create the thumbnail image using the specified options.
-  myThumbnailImage = CGImageSourceCreateThumbnailAtIndex(myImageSource,
-                                          0,
-                                          myOptions);
-  // Release the options dictionary and the image source
-  // when you no longer need them.
-  CFRelease(thumbnailSize);
-  CFRelease(myOptions);
-  CFRelease(myImageSource);
- 
-   // Make sure the thumbnail image exists before continuing.
-   if (myThumbnailImage == NULL){
-         fprintf(stderr, "Thumbnail image not created from image source.");
-         return NULL;
-   }
- 
-   return myThumbnailImage;
-}
-
-```
-
-##渐进式加载图片
-
-1. Create the CFData object for accumulating the image data.
-2. Create an incremental image source by calling the function CGImageSourceCreateIncremental.
-Add image data to the CFData object.
-3. Call the function CGImageSourceUpdateData, passing the CFData object and a Boolean value (bool data type) that specifies whether the data parameter contains the entire image, or just partial image data. In any case, the data parameter must contain all the image file data accumulated up to that point.
-4. If you have accumulated enough image data, create an image by calling CGImageSourceCreateImageAtIndex, draw the partial image, and then release it.
-5. Check to see if you have all the data for an image by calling the function CGImageSourceGetStatusAtIndex. If the image is complete, this function returns kCGImageStatusComplete. If the image is not complete, repeat steps 3 and 4 until it is.
-6. Release the incremental image source.
-
-
-#CGImageDestinationRef
-
-##将图片数据写入Image Destination
-1. 使用 CGImageDestinationCreateWithURL, CGImageDestinationCreateWithData或CGImageDestinationCreateWithDataConsumer创建一个CGImageDestinationRef
-2. 使用CGImageDestinationSetProperties设置图片的一些属性
-2. 使用CGImageDestinationAddImage 或 CGImageDestinationAddImageFromSource向destination中加入图片
-4. 调用 CGImageDestinationFinalize完成图片的写入。
-
-PS：如果要获得CGImageDestinationRef中的信息，可以 使用CGImageDestinationCopyTypeIdentifiers 或 CGImageDestinationGetTypeID.
-
-例子：创建一个APNG动画图片
-```
-let loopCount = 1
-let frameCount = 60
- 
-var fileProperties = NSMutableDictionary()
-fileProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGLoopCount: frameCount]))
- 
-var frameProperties = NSMutableDictionary()
-frameProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGDelayTime: 1.0 / Double(frameCount)]))
- 
-guard let destination = CGImageDestinationCreateWithURL(fileURL, kUTTypePNG, frameCount, nil) else {
-    // Provide error handling here.
-}
- 
-CGImageDestinationSetProperties(destination, fileProperties.copy() as? NSDictionary)
- 
-for i in 0..<frameCount {
-    autoreleasepool {
-        let radians = M_PI * 2.0 * Double(i) / Double(frameCount)
-        guard let image = imageForFrame(size: CGSize(width: 300, height: 300)) else {
-            return
+        if (attributes != NULL) {
+            // If attributes are a valid property list, directly flatten
+            // the property list. Otherwise we may need to analyze the attributes
+            // and remove or manually convert them to serializable forms.
+            // This is left as an exercise for the reader.
+           if (CFPropertyListIsValid(attributes, kCFPropertyListXMLFormat_v1_0)) {
+                result = CFPropertyListCreateXMLData(kCFAllocatorDefault, attributes);
+            }
         }
-        
-        CGImageDestinationAddImage(destination, image, frameProperties)
     }
+    return result;
 }
+
+
+
+CTFontRef CreateFontFromFlattenedFontData(CFDataRef iData)
+{
+    CTFontRef           font = NULL;
+    CFDictionaryRef     attributes;
+    CTFontDescriptorRef descriptor;
  
-if !CGImageDestinationFinalize(destination) {
-    // Provide error handling here.
+    // Create our font attributes from the property list.
+    // For simplicity, this example creates an immutable object.
+    // If you needed to massage or convert certain attributes
+    // from their serializable form to the Core Text usable form,
+    // do it here.
+    attributes =
+          (CFDictionaryRef)CFPropertyListCreateFromXMLData(
+                               kCFAllocatorDefault,
+                               iData, kCFPropertyListImmutable, NULL);
+    if (attributes != NULL) {
+        // Create the font descriptor from the attributes.
+        descriptor = CTFontDescriptorCreateWithAttributes(attributes);
+        if (descriptor != NULL) {
+            // Create the font from the font descriptor. This sample uses
+            // 0.0 and NULL for the size and matrix parameters. This
+            // causes the font to be created with the size and/or matrix
+            // that exist in the descriptor, if present. Otherwise default
+            // values are used.
+            font = CTFontCreateWithFontDescriptor(descriptor, 0.0, NULL);
+        }
+    }
+    return font;
 }
+
 ```
-
-***使用这个framework时不要忘记使用CFRelease释放掉相当的资源***
-
-PS：在项目是创建的Gif文件有很多锯齿，将文件类型由kUTTypeGIF改为kUTTypePNG后好多了
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -748,182 +705,130 @@ NSAttributedString* applyParaStyle(
 }
 </code></pre>
 
-<h1 id="cgimagesourceref">CGImageSourceRef</h1>
+<h1 id="font">Font</h1>
 
-<h2 id="imagesource">从Image Source创建一张图片</h2>
+<p>Core Text font objects 是不可变的（immutable），使用CTFontCreateWithFontDescriptor，CTFontCreateWithName，CTFontCreateWithGraphicsFont等。</p>
 
-<ol>
-<li>创建一个CGImageSourceRef，此时你可以设置是否需要缓存，是否创建一个缩略图等</li>
-<li>使用CGImageSourceCreateImageAtIndex创建图片（如果需要知道数据源的）, CGImageSourceCreateThumbnailAtIndex创建缩略图</li>
-</ol>
+<h2 id="ctfontdescriptor">CTFontDescriptor</h2>
 
-<p>PS：如果要得到图片中的信息，可以使用CGImageSourceGetCount , CGImageSourceCopyProperties和 CGImageSourceCopyTypeIdentifiers.</p>
+<p>CTFontDescriptor使用属性字典来描述字体，我们可以从CTFontDescriptor创建CTFont，可以从CTFont得到其CTFontDescriptor；还可以通过修改CTFontDescriptor，用修改后的得到一个新的CTFont。使用CTFontDescriptor得到CTFont可以想象成一个“查询”，系统会选择最适合的。</p>
 
-<p>例子：</p>
+<p>官方例子：</p>
 
-<pre><code>CGImageRef MyCreateCGImageFromFile (NSString* path)
+<pre><code>//创建CTFontDescriptor的例子
+//第一种
+CTFontDescriptorCreateWithNameAndSize(postScriptName, size);
+
+//第二种
+NSString* familyName = @"Papyrus";
+CTFontSymbolicTraits symbolicTraits = kCTFontTraitCondensed;
+CGFloat size = 24.0;
+
+NSMutableDictionary* attributes = [NSMutableDictionary dictionary];
+[attributes setObject:familyName forKey:(id)kCTFontFamilyNameAttribute];
+
+// The attributes dictionary contains another dictionary, the traits dictionary,
+// which in this example specifies only the symbolic traits.
+NSMutableDictionary* traits = [NSMutableDictionary dictionary];
+[traits setObject:[NSNumber numberWithUnsignedInt:symbolicTraits]
+                                           forKey:(id)kCTFontSymbolicTrait];
+
+[attributes setObject:traits forKey:(id)kCTFontTraitsAttribute];
+[attributes setObject:[NSNumber numberWithFloat:size]
+                                         forKey:(id)kCTFontSizeAttribute];
+
+CTFontDescriptorRef descriptor =
+             CTFontDescriptorCreateWithAttributes((CFDictionaryRef)attributes);
+CFRelease(descriptor);
+
+
+
+
+CTFontRef CreateBoldFont(CTFontRef font, Boolean makeBold)
 {
-    // Get the URL for the pathname passed to the function.
-    NSURL *url = [NSURL fileURLWithPath:path];
-    CGImageRef        myImage = NULL;
-    CGImageSourceRef  myImageSource;
-    CFDictionaryRef   myOptions = NULL;
-    CFStringRef       myKeys[2];
-    CFTypeRef         myValues[2];
+    CTFontSymbolicTraits desiredTrait = 0;
+    CTFontSymbolicTraits traitMask;
 
-    // Set up options if you want them. The options here are for
-    // caching the image in a decoded form and for using floating-point
-    // values if the image format supports them.
-    myKeys[0] = kCGImageSourceShouldCache;
-    myValues[0] = (CFTypeRef)kCFBooleanTrue;
-    myKeys[1] = kCGImageSourceShouldAllowFloat;
-    myValues[1] = (CFTypeRef)kCFBooleanTrue;
-    // Create the dictionary
-    myOptions = CFDictionaryCreate(NULL, (const void **) myKeys,
-                   (const void **) myValues, 2,
-                   &amp;kCFTypeDictionaryKeyCallBacks,
-                   &amp; kCFTypeDictionaryValueCallBacks);
-    // Create an image source from the URL.
-    myImageSource = CGImageSourceCreateWithURL((CFURLRef)url, myOptions);
-    CFRelease(myOptions);
-    // Make sure the image source exists before continuing
-    if (myImageSource == NULL){
-        fprintf(stderr, "Image source is NULL.");
-        return  NULL;
-    }
-    // Create an image from the first item in the image source.
-    myImage = CGImageSourceCreateImageAtIndex(myImageSource,
-                                           0,
-                                           NULL);
+    // If requesting that the font be bold, set the desired trait
+    // to be bold.
+    if (makeBold) desiredTrait = kCTFontBoldTrait;
 
-    CFRelease(myImageSource);
-    // Make sure the image exists before continuing
-    if (myImage == NULL){
-         fprintf(stderr, "Image not created from image source.");
-         return NULL;
-    }
+    // Mask off the bold trait to indicate that it is the only trait
+    // to be modified. As CTFontSymbolicTraits is a bit field,
+    // could change multiple traits if desired.
+    traitMask = kCTFontBoldTrait;
 
-    return myImage;
-}
+    // Create a copy of the original font with the masked trait set to the
+    // desired value. If the font family does not have the appropriate style,
+    // returns NULL.
 
-
-
-CGImageRef MyCreateThumbnailImageFromData (NSData * data, int imageSize)
-{
-    CGImageRef        myThumbnailImage = NULL;
-    CGImageSourceRef  myImageSource;
-    CFDictionaryRef   myOptions = NULL;
-    CFStringRef       myKeys[3];
-    CFTypeRef         myValues[3];
-    CFNumberRef       thumbnailSize;
-
-   // Create an image source from NSData; no options.
-   myImageSource = CGImageSourceCreateWithData((CFDataRef)data,
-                                               NULL);
-   // Make sure the image source exists before continuing.
-   if (myImageSource == NULL){
-        fprintf(stderr, "Image source is NULL.");
-        return  NULL;
-   }
-
-   // Package the integer as a  CFNumber object. Using CFTypes allows you
-   // to more easily create the options dictionary later.
-   thumbnailSize = CFNumberCreate(NULL, kCFNumberIntType, &amp;imageSize);
-
-   // Set up the thumbnail options.
-   myKeys[0] = kCGImageSourceCreateThumbnailWithTransform;
-   myValues[0] = (CFTypeRef)kCFBooleanTrue;
-   myKeys[1] = kCGImageSourceCreateThumbnailFromImageIfAbsent;
-   myValues[1] = (CFTypeRef)kCFBooleanTrue;
-   myKeys[2] = kCGImageSourceThumbnailMaxPixelSize;
-   myValues[2] = (CFTypeRef)thumbnailSize;
-
-   myOptions = CFDictionaryCreate(NULL, (const void **) myKeys,
-                   (const void **) myValues, 2,
-                   &amp;kCFTypeDictionaryKeyCallBacks,
-                   &amp; kCFTypeDictionaryValueCallBacks);
-
-  // Create the thumbnail image using the specified options.
-  myThumbnailImage = CGImageSourceCreateThumbnailAtIndex(myImageSource,
-                                          0,
-                                          myOptions);
-  // Release the options dictionary and the image source
-  // when you no longer need them.
-  CFRelease(thumbnailSize);
-  CFRelease(myOptions);
-  CFRelease(myImageSource);
-
-   // Make sure the thumbnail image exists before continuing.
-   if (myThumbnailImage == NULL){
-         fprintf(stderr, "Thumbnail image not created from image source.");
-         return NULL;
-   }
-
-   return myThumbnailImage;
+    return CTFontCreateCopyWithSymbolicTraits(font, 0.0, NULL, desiredTrait, traitMask);
 }
 </code></pre>
 
-<h2 id="">渐进式加载图片</h2>
+<p>PS：变换font family可以使用CTFontCreateCopyWithFamily</p>
 
-<ol>
-<li>Create the CFData object for accumulating the image data.</li>
-<li>Create an incremental image source by calling the function CGImageSourceCreateIncremental.
-Add image data to the CFData object.</li>
-<li>Call the function CGImageSourceUpdateData, passing the CFData object and a Boolean value (bool data type) that specifies whether the data parameter contains the entire image, or just partial image data. In any case, the data parameter must contain all the image file data accumulated up to that point.</li>
-<li>If you have accumulated enough image data, create an image by calling CGImageSourceCreateImageAtIndex, draw the partial image, and then release it.</li>
-<li>Check to see if you have all the data for an image by calling the function CGImageSourceGetStatusAtIndex. If the image is complete, this function returns kCGImageStatusComplete. If the image is not complete, repeat steps 3 and 4 until it is.</li>
-<li>Release the incremental image source.</li>
-</ol>
+<h3 id="font">Font的序列化</h3>
 
-<h1 id="cgimagedestinationref">CGImageDestinationRef</h1>
+<pre><code>CFDataRef CreateFlattenedFontData(CTFontRef font)
+{
+    CFDataRef           result = NULL;
+    CTFontDescriptorRef descriptor;
+    CFDictionaryRef     attributes;
 
-<h2 id="imagedestination">将图片数据写入Image Destination</h2>
+    // Get the font descriptor for the font.
+    descriptor = CTFontCopyFontDescriptor(font);
 
-<ol>
-<li>使用 CGImageDestinationCreateWithURL, CGImageDestinationCreateWithData或CGImageDestinationCreateWithDataConsumer创建一个CGImageDestinationRef</li>
-<li>使用CGImageDestinationSetProperties设置图片的一些属性</li>
-<li>使用CGImageDestinationAddImage 或 CGImageDestinationAddImageFromSource向destination中加入图片</li>
-<li>调用 CGImageDestinationFinalize完成图片的写入。</li>
-</ol>
+    if (descriptor != NULL) {
+        // Get the font attributes from the descriptor. This should be enough
+        // information to recreate the descriptor and the font later.
+        attributes = CTFontDescriptorCopyAttributes(descriptor);
 
-<p>PS：如果要获得CGImageDestinationRef中的信息，可以 使用CGImageDestinationCopyTypeIdentifiers 或 CGImageDestinationGetTypeID.</p>
-
-<p>例子：创建一个APNG动画图片</p>
-
-<pre><code>let loopCount = 1
-let frameCount = 60
-
-var fileProperties = NSMutableDictionary()
-fileProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGLoopCount: frameCount]))
-
-var frameProperties = NSMutableDictionary()
-frameProperties.setObject(kCGImagePropertyPNGDictionary, forKey: NSDictionary(dictionary: [kCGImagePropertyAPNGDelayTime: 1.0 / Double(frameCount)]))
-
-guard let destination = CGImageDestinationCreateWithURL(fileURL, kUTTypePNG, frameCount, nil) else {
-    // Provide error handling here.
-}
-
-CGImageDestinationSetProperties(destination, fileProperties.copy() as? NSDictionary)
-
-for i in 0..&lt;frameCount {
-    autoreleasepool {
-        let radians = M_PI * 2.0 * Double(i) / Double(frameCount)
-        guard let image = imageForFrame(size: CGSize(width: 300, height: 300)) else {
-            return
+        if (attributes != NULL) {
+            // If attributes are a valid property list, directly flatten
+            // the property list. Otherwise we may need to analyze the attributes
+            // and remove or manually convert them to serializable forms.
+            // This is left as an exercise for the reader.
+           if (CFPropertyListIsValid(attributes, kCFPropertyListXMLFormat_v1_0)) {
+                result = CFPropertyListCreateXMLData(kCFAllocatorDefault, attributes);
+            }
         }
-
-        CGImageDestinationAddImage(destination, image, frameProperties)
     }
+    return result;
 }
 
-if !CGImageDestinationFinalize(destination) {
-    // Provide error handling here.
+
+
+CTFontRef CreateFontFromFlattenedFontData(CFDataRef iData)
+{
+    CTFontRef           font = NULL;
+    CFDictionaryRef     attributes;
+    CTFontDescriptorRef descriptor;
+
+    // Create our font attributes from the property list.
+    // For simplicity, this example creates an immutable object.
+    // If you needed to massage or convert certain attributes
+    // from their serializable form to the Core Text usable form,
+    // do it here.
+    attributes =
+          (CFDictionaryRef)CFPropertyListCreateFromXMLData(
+                               kCFAllocatorDefault,
+                               iData, kCFPropertyListImmutable, NULL);
+    if (attributes != NULL) {
+        // Create the font descriptor from the attributes.
+        descriptor = CTFontDescriptorCreateWithAttributes(attributes);
+        if (descriptor != NULL) {
+            // Create the font from the font descriptor. This sample uses
+            // 0.0 and NULL for the size and matrix parameters. This
+            // causes the font to be created with the size and/or matrix
+            // that exist in the descriptor, if present. Otherwise default
+            // values are used.
+            font = CTFontCreateWithFontDescriptor(descriptor, 0.0, NULL);
+        }
+    }
+    return font;
 }
 </code></pre>
-
-<p><strong><em>使用这个framework时不要忘记使用CFRelease释放掉相当的资源</em></strong></p>
-
-<p>PS：在项目是创建的Gif文件有很多锯齿，将文件类型由kUTTypeGIF改为kUTTypePNG后好多了</p>
 <!-- content end -->
 </div>
 <br>
