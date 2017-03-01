@@ -45,7 +45,16 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 
 #A small Language
 
-这里主要介绍了
+{Q} S {R}表示当precondition为Q时，执行S这些语句，一定能够在一定时间内结束并且满足R（叫做postcondition）。
+
+首先，介绍了wp(S; R)的概念，即最弱precondition，即{wp(S; R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q => wp(S; R)。
+
+其次，这部分主要介绍了程序中用到的顺序，分支，循环三种程序最基本的结构的wp的求法，以及已知Q，S，R，判断{Q} S {R}是否成立的方法。
+
+最后，介绍了函数调用的正确性证明。
+
+
+#
 
 <!-- markdown end -->
 </div>
@@ -72,7 +81,15 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 
 <h1 id="asmalllanguage">A small Language</h1>
 
-<p>这里主要介绍了</p>
+<p>{Q} S {R}表示当precondition为Q时，执行S这些语句，一定能够在一定时间内结束并且满足R（叫做postcondition）。</p>
+
+<p>首先，介绍了wp(S; R)的概念，即最弱precondition，即{wp(S; R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q =&gt; wp(S; R)。</p>
+
+<p>其次，这部分主要介绍了程序中用到的顺序，分支，循环三种程序最基本的结构的wp的求法，以及已知Q，S，R，判断{Q} S {R}是否成立的方法。</p>
+
+<p>最后，介绍了函数调用的正确性证明。</p>
+
+<p>#</p>
 <!-- content end -->
 </div>
 <br>
