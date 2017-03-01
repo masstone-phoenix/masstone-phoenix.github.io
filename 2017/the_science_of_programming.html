@@ -47,7 +47,7 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 
 {Q} S {R}表示当precondition为Q时，执行S这些语句，一定能够在一定时间内结束并且满足R（叫做postcondition）。
 
-首先，介绍了wp(S; R)的概念，即最弱precondition，即{wp(S; R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q => wp(S; R)。
+首先，介绍了wp(S, R)的概念，即最弱precondition，即{wp(S, R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q => wp(S, R)。
 
 ![](http://masstone-phoenix.github.io/image/the_science_of_programming/wp.jpg)
 
@@ -64,7 +64,7 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 
 ##已知loop invariant和bound function，设计程序
 ###分支语句
-思路是找到语句可以达到R，再推导其wp(S; R)，比较这个范围与preconditoin的区别，如果已经覆盖precondition，则程序完成；如果没有，再找其它可以到达R的语句，同样计算其wp,直到完成程序设计。
+思路是找到语句可以达到R，再推导其wp(S, R)，比较这个范围与preconditoin的区别，如果已经覆盖precondition，则程序完成；如果没有，再找其它可以到达R的语句，同样计算其wp,直到完成程序设计。
 
 ###循环语句
 这里有两种方法，如下：
@@ -108,7 +108,7 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 
 <p>{Q} S {R}表示当precondition为Q时，执行S这些语句，一定能够在一定时间内结束并且满足R（叫做postcondition）。</p>
 
-<p>首先，介绍了wp(S; R)的概念，即最弱precondition，即{wp(S; R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q =&gt; wp(S; R)。</p>
+<p>首先，介绍了wp(S, R)的概念，即最弱precondition，即{wp(S, R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q =&gt; wp(S, R)。</p>
 
 <p><img src="http://masstone-phoenix.github.io/image/the_science_of_programming/wp.jpg" alt="" title=""></p>
 
@@ -126,7 +126,7 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 
 <h3 id="">分支语句</h3>
 
-<p>思路是找到语句可以达到R，再推导其wp(S; R)，比较这个范围与preconditoin的区别，如果已经覆盖precondition，则程序完成；如果没有，再找其它可以到达R的语句，同样计算其wp,直到完成程序设计。</p>
+<p>思路是找到语句可以达到R，再推导其wp(S, R)，比较这个范围与preconditoin的区别，如果已经覆盖precondition，则程序完成；如果没有，再找其它可以到达R的语句，同样计算其wp,直到完成程序设计。</p>
 
 <h3 id="">循环语句</h3>
 
