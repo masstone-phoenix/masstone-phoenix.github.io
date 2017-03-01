@@ -49,9 +49,13 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 
 首先，介绍了wp(S; R)的概念，即最弱precondition，即{wp(S; R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q => wp(S; R)。
 
+![](http://masstone-phoenix.github.io/image/the_science_of_programming/wp.jpg)
+
 其次，这部分主要介绍了程序中用到的顺序，分支，循环三种程序最基本的结构的wp的求法，以及已知Q，S，R，判断{Q} S {R}是否成立的方法。
 
 最后，介绍了函数调用的正确性证明。
+
+![](http://masstone-phoenix.github.io/image/the_science_of_programming/IF_loop_theorem.jpg)
 
 
 #利用loop invariant方法设计程序
@@ -72,7 +76,7 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 
 ##如何确定loop invariant和bound function
 方法见下图：
-![](http://masstone-phoenix.github.io/image/nature_induction_rules.png)
+![](http://masstone-phoenix.github.io/image/the_science_of_programming/loop_invariant_devise.jpg)
 
 但是，这是程序设计中最具难度的地方，也可以说是个艺术，需要练习才能熟练。
 
@@ -106,9 +110,13 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 
 <p>首先，介绍了wp(S; R)的概念，即最弱precondition，即{wp(S; R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q =&gt; wp(S; R)。</p>
 
+<p><img src="http://masstone-phoenix.github.io/image/the_science_of_programming/wp.jpg" alt="" title=""></p>
+
 <p>其次，这部分主要介绍了程序中用到的顺序，分支，循环三种程序最基本的结构的wp的求法，以及已知Q，S，R，判断{Q} S {R}是否成立的方法。</p>
 
 <p>最后，介绍了函数调用的正确性证明。</p>
+
+<p><img src="http://masstone-phoenix.github.io/image/the_science_of_programming/IF_loop_theorem.jpg" alt="" title=""></p>
 
 <h1 id="loopinvariant">利用loop invariant方法设计程序</h1>
 
@@ -131,7 +139,7 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 <h2 id="loopinvariantboundfunction">如何确定loop invariant和bound function</h2>
 
 <p>方法见下图：
-<img src="http://masstone-phoenix.github.io/image/nature_induction_rules.png" alt="" title=""></p>
+<img src="http://masstone-phoenix.github.io/image/the_science_of_programming/loop_invariant_devise.jpg" alt="" title=""></p>
 
 <p>但是，这是程序设计中最具难度的地方，也可以说是个艺术，需要练习才能熟练。</p>
 <!-- content end -->
