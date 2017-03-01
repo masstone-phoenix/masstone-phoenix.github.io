@@ -70,6 +70,13 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 二、先根据R和bound function，确定各种执行语句，通过这些语句和loop invariant，计算它们的条件（guard）,足够多的guard就组成了循环条件，最后证明P ^ (not BB) => R
 
 
+##如何确定loop invariant和bound function
+方法见下图：
+![](http://masstone-phoenix.github.io/image/nature_induction_rules.png)
+
+但是，这是程序设计中最具难度的地方，也可以说是个艺术，需要练习才能熟练。
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -120,6 +127,13 @@ PS:这里还介绍了使用assert来注释程序，这会让程序不容易出�
 <p>一、先计算循环条件，然后根据bound function，我们要减小bound function的值，再根据loop invariant，写出各种条件下的执行语句</p>
 
 <p>二、先根据R和bound function，确定各种执行语句，通过这些语句和loop invariant，计算它们的条件（guard）,足够多的guard就组成了循环条件，最后证明P ^ (not BB) =&gt; R</p>
+
+<h2 id="loopinvariantboundfunction">如何确定loop invariant和bound function</h2>
+
+<p>方法见下图：
+<img src="http://masstone-phoenix.github.io/image/nature_induction_rules.png" alt="" title=""></p>
+
+<p>但是，这是程序设计中最具难度的地方，也可以说是个艺术，需要练习才能熟练。</p>
 <!-- content end -->
 </div>
 <br>
