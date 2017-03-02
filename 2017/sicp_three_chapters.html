@@ -25,74 +25,163 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-#The science of programming概述
-这本书改变了我对编程方法的一些看法，使我学会了如何证明自己程序的正确性。最重要的是，我学会了如何使用loop invariant方法设计程序。
+#函数抽象
 
-这本书的第一部分介绍了其数学基础；第二部分介绍了一个包含赋值、分支、循环、函数调用在内的一个“语言”，在第三部分的程序设计方法论中，会经常使用这些基本概念；第三部分主要阐述了如何使用loop invariant设计程序，是本书的精髓。
+这里函数可以做为参数，返回值，为变量命名，和整数等基本数据类型完全一样。
 
-#数学基础
+##求值过程
+1. normal-order evaluation——全部展开，然后求值
+2. applicative-order evaluation
 
-##自然演绎系统（nature deduction system）
+##递归的程序在执行时分为两种：
 
-这是这部分给我印象最深的，以前只是使用De Morgan's laws,证明只会使用真值表证明其正确性，在这里我们使用如下10条inference rules就可以推导出来。
-![](http://masstone-phoenix.github.io/image/nature_induction_rules.png)
+1. an iterative process：固定个参数决定其状态和结束条件
+2. linear recursive process：这个就是我们常说的会造成栈溢出的递归
 
-##数组的函数看法
-这是这部分我觉得比较新颖的看法（我是第一次看到），把矩阵看做是从index到数组中值的映射（也即函数），可以较轻松的处理多维数组，这是从另一个方向看待数组（另一个内存的视角）。比较像“波粒二象性”。当改变数组中的值时，视为改变了这个映射。
-
-PS:这里还介绍了使用assert来注释程序，这会让程序不容易出错。使用pre-condition, post-condition。
+函数的抽象就是将要进行的操作抽象，比如求不动点，输入是一个函数，输出是这个函数的不动点，我们就可以使用这个求不动点的函数解方程等。
 
 
-#A small Language
-
-{Q} S {R}表示当precondition为Q时，执行S这些语句，一定能够在一定时间内结束并且满足R（叫做postcondition）。
-
-首先，介绍了wp(S, R)的概念，即最弱precondition，即{wp(S, R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q => wp(S, R)。
-
-![](http://masstone-phoenix.github.io/image/the_science_of_programming/wp.jpg)
-
-其次，这部分主要介绍了程序中用到的顺序，分支，循环三种程序最基本的结构的wp的求法，以及已知Q，S，R，判断{Q} S {R}是否成立的方法。
-
-最后，介绍了函数调用的正确性证明。
-
-![](http://masstone-phoenix.github.io/image/the_science_of_programming/IF_loop_theorem.jpg)
+#数据抽象
 
 
-#利用loop invariant方法设计程序
+## 将数据抽象为Selectors and constructors
+例子：有理数以及它的运算
 
-这里这本书里分了两个部分——一、告诉你loop invariant和bound function，然后进行程序设计；二，自己设计loop invariant和bound function，然后完成程序的设计。
+##数据流图
+![](http://masstone-phoenix.github.io/image/SICP/signal-flow.png)
 
-##已知loop invariant和bound function，设计程序
-###分支语句
-思路是找到语句可以达到R，再推导其wp(S, R)，比较这个范围与preconditoin的区别，如果已经覆盖precondition，则程序完成；如果没有，再找其它可以到达R的语句，同样计算其wp,直到完成程序设计。
+##一个算法系统的抽象例子
 
-###循环语句
-这里有两种方法，如下：
+###复数的抽象
+使用一个tag来区分两种复数的表示方法。
 
-一、先计算循环条件，然后根据bound function，我们要减小bound function的值，再根据loop invariant，写出各种条件下的执行语句
+![](http://masstone-phoenix.github.io/image/SICP/complex_system.png)
 
-二、先根据R和bound function，确定各种执行语句，通过这些语句和loop invariant，计算它们的条件（guard）,足够多的guard就组成了循环条件，最后证明P ^ (not BB) => R
+###复数操作和数据的表格形式
+
+![](http://masstone-phoenix.github.io/image/SICP/tag_table.png)
+
+这样的好处：相应于增加了一个抽象层，而对数据的操作只需要操作（op）和参数（arg）这两个输入，数据的类型和操作都已经抽象化了，由这张表去处理，新加入的数据和操作只需要向这张表里增加表项（即一行）即可。书中将这种编程方法叫Data-directed programming。
+
+如果数据抽象有多层，则每向下传递一层，就会使用一个tag,剥离出这个tag，将数据继续向下一层传递。
+
+##终级形态
+
+![](http://masstone-phoenix.github.io/image/SICP/add_mul_all.png)
+
+###相同数据类型的操作
+使用上述的Data-directed programming方法即可解决问题。
+
+###不同数据类型的操作
+
+####方法一
+同上述Data-directed programming方法，在表格中加入不同数据的做为参数的函数操作，但这样非常麻烦，因为需要添加到表格中的项会非常多。
+
+####方法二
+将一种类型当有是另外一种类型来处理，叫做强制（Coercion）。比如我们可以将有理数当成实数来处理。这样我们只需要提供这种转换函数和应用函数时进行处理就好了。
+
+此时，如果是“线状”结构，我们可以使用上升（raise）和下降（drop）来完成这种应用操作。策略：对于参数，只要没有到达“最高层”（可以使用一个list来索引这个），我们就对它进行上升操作，然后查表。
 
 
-##如何确定loop invariant和bound function
-方法见下图：
-![](http://masstone-phoenix.github.io/image/the_science_of_programming/loop_invariant_devise.jpg)
+#变动数据的抽象
+本章引入了可变数据，函数也就可以有状态了。
 
-但是，这是程序设计中最具难度的地方，也可以说是个艺术，需要练习才能熟练。
+![](http://masstone-phoenix.github.io/image/SICP/wire_agenda.png)
 
+- 向右箭头：当wire值改变时，调用Procedrues中的函数，这里会向agenda中写入计划。
+- 向左箭头：agenda中计划不为空时，取出第一项进行执行，这会对wire的值进行设置。
 
-#总结
-设计一个程序的步骤：
+agenda作用：存储所有要执行的操作，并按时间顺序进行管理。
 
-1. precondition 和postcondition
-2. loop  invariant 和 bound function
-3. 执行语句
+##流
+表示无穷数据的一种结构，使用延时求值技术来实现。描述的是一个对象的时间史。可以用来计算无穷极数、微分方程等。
 
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<h1 id="">函数抽象</h1>
 
+<p>这里函数可以做为参数，返回值，为变量命名，和整数等基本数据类型完全一样。</p>
+
+<h2 id="">求值过程</h2>
+
+<ol>
+<li>normal-order evaluation——全部展开，然后求值</li>
+<li>applicative-order evaluation</li>
+</ol>
+
+<h2 id="">递归的程序在执行时分为两种：</h2>
+
+<ol>
+<li>an iterative process：固定个参数决定其状态和结束条件</li>
+<li>linear recursive process：这个就是我们常说的会造成栈溢出的递归</li>
+</ol>
+
+<p>函数的抽象就是将要进行的操作抽象，比如求不动点，输入是一个函数，输出是这个函数的不动点，我们就可以使用这个求不动点的函数解方程等。</p>
+
+<h1 id="">数据抽象</h1>
+
+<h2 id="selectorsandconstructors">将数据抽象为Selectors and constructors</h2>
+
+<p>例子：有理数以及它的运算</p>
+
+<h2 id="">数据流图</h2>
+
+<p><img src="http://masstone-phoenix.github.io/image/SICP/signal-flow.png" alt="" title=""></p>
+
+<h2 id="">一个算法系统的抽象例子</h2>
+
+<h3 id="">复数的抽象</h3>
+
+<p>使用一个tag来区分两种复数的表示方法。</p>
+
+<p><img src="http://masstone-phoenix.github.io/image/SICP/complex_system.png" alt="" title=""></p>
+
+<h3 id="">复数操作和数据的表格形式</h3>
+
+<p><img src="http://masstone-phoenix.github.io/image/SICP/tag_table.png" alt="" title=""></p>
+
+<p>这样的好处：相应于增加了一个抽象层，而对数据的操作只需要操作（op）和参数（arg）这两个输入，数据的类型和操作都已经抽象化了，由这张表去处理，新加入的数据和操作只需要向这张表里增加表项（即一行）即可。书中将这种编程方法叫Data-directed programming。</p>
+
+<p>如果数据抽象有多层，则每向下传递一层，就会使用一个tag,剥离出这个tag，将数据继续向下一层传递。</p>
+
+<h2 id="">终级形态</h2>
+
+<p><img src="http://masstone-phoenix.github.io/image/SICP/add_mul_all.png" alt="" title=""></p>
+
+<h3 id="">相同数据类型的操作</h3>
+
+<p>使用上述的Data-directed programming方法即可解决问题。</p>
+
+<h3 id="">不同数据类型的操作</h3>
+
+<h4 id="">方法一</h4>
+
+<p>同上述Data-directed programming方法，在表格中加入不同数据的做为参数的函数操作，但这样非常麻烦，因为需要添加到表格中的项会非常多。</p>
+
+<h4 id="">方法二</h4>
+
+<p>将一种类型当有是另外一种类型来处理，叫做强制（Coercion）。比如我们可以将有理数当成实数来处理。这样我们只需要提供这种转换函数和应用函数时进行处理就好了。</p>
+
+<p>此时，如果是“线状”结构，我们可以使用上升（raise）和下降（drop）来完成这种应用操作。策略：对于参数，只要没有到达“最高层”（可以使用一个list来索引这个），我们就对它进行上升操作，然后查表。</p>
+
+<h1 id="">变动数据的抽象</h1>
+
+<p>本章引入了可变数据，函数也就可以有状态了。</p>
+
+<p><img src="http://masstone-phoenix.github.io/image/SICP/wire_agenda.png" alt="" title=""></p>
+
+<ul>
+<li>向右箭头：当wire值改变时，调用Procedrues中的函数，这里会向agenda中写入计划。</li>
+<li>向左箭头：agenda中计划不为空时，取出第一项进行执行，这会对wire的值进行设置。</li>
+</ul>
+
+<p>agenda作用：存储所有要执行的操作，并按时间顺序进行管理。</p>
+
+<h2 id="">流</h2>
+
+<p>表示无穷数据的一种结构，使用延时求值技术来实现。描述的是一个对象的时间史。可以用来计算无穷极数、微分方程等。</p>
 <!-- content end -->
 </div>
 <br>
