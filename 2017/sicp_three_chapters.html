@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+#The science of programming概述
+这本书改变了我对编程方法的一些看法，使我学会了如何证明自己程序的正确性。最重要的是，我学会了如何使用loop invariant方法设计程序。
+
+这本书的第一部分介绍了其数学基础；第二部分介绍了一个包含赋值、分支、循环、函数调用在内的一个“语言”，在第三部分的程序设计方法论中，会经常使用这些基本概念；第三部分主要阐述了如何使用loop invariant设计程序，是本书的精髓。
+
+#数学基础
+
+##自然演绎系统（nature deduction system）
+
+这是这部分给我印象最深的，以前只是使用De Morgan's laws,证明只会使用真值表证明其正确性，在这里我们使用如下10条inference rules就可以推导出来。
+![](http://masstone-phoenix.github.io/image/nature_induction_rules.png)
+
+##数组的函数看法
+这是这部分我觉得比较新颖的看法（我是第一次看到），把矩阵看做是从index到数组中值的映射（也即函数），可以较轻松的处理多维数组，这是从另一个方向看待数组（另一个内存的视角）。比较像“波粒二象性”。当改变数组中的值时，视为改变了这个映射。
+
+PS:这里还介绍了使用assert来注释程序，这会让程序不容易出错。使用pre-condition, post-condition。
+
+
+#A small Language
+
+{Q} S {R}表示当precondition为Q时，执行S这些语句，一定能够在一定时间内结束并且满足R（叫做postcondition）。
+
+首先，介绍了wp(S, R)的概念，即最弱precondition，即{wp(S, R)} S {R}为立。由上述，对于任意{Q} S {R}，我们有Q => wp(S, R)。
+
+![](http://masstone-phoenix.github.io/image/the_science_of_programming/wp.jpg)
+
+其次，这部分主要介绍了程序中用到的顺序，分支，循环三种程序最基本的结构的wp的求法，以及已知Q，S，R，判断{Q} S {R}是否成立的方法。
+
+最后，介绍了函数调用的正确性证明。
+
+![](http://masstone-phoenix.github.io/image/the_science_of_programming/IF_loop_theorem.jpg)
+
+
+#利用loop invariant方法设计程序
+
+这里这本书里分了两个部分——一、告诉你loop invariant和bound function，然后进行程序设计；二，自己设计loop invariant和bound function，然后完成程序的设计。
+
+##已知loop invariant和bound function，设计程序
+###分支语句
+思路是找到语句可以达到R，再推导其wp(S, R)，比较这个范围与preconditoin的区别，如果已经覆盖precondition，则程序完成；如果没有，再找其它可以到达R的语句，同样计算其wp,直到完成程序设计。
+
+###循环语句
+这里有两种方法，如下：
+
+一、先计算循环条件，然后根据bound function，我们要减小bound function的值，再根据loop invariant，写出各种条件下的执行语句
+
+二、先根据R和bound function，确定各种执行语句，通过这些语句和loop invariant，计算它们的条件（guard）,足够多的guard就组成了循环条件，最后证明P ^ (not BB) => R
+
+
+##如何确定loop invariant和bound function
+方法见下图：
+![](http://masstone-phoenix.github.io/image/the_science_of_programming/loop_invariant_devise.jpg)
+
+但是，这是程序设计中最具难度的地方，也可以说是个艺术，需要练习才能熟练。
+
+
+#总结
+设计一个程序的步骤：
+
+1. precondition 和postcondition
+2. loop  invariant 和 bound function
+3. 执行语句
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "2017/sicp_three_chapters.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
