@@ -25,138 +25,261 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-#JS基本概念
+iOS系统提供了一个粒子引擎，能够模拟烟花、下雪、下雨等效果（话说闪电效果怎么做？有时间再研究吧）。CAEmitterLayer是粒子效果的容器，即粒子效果在这里展示；也是粒子的发射源。CAEmitterCell是粒子的抽象，即CAEmitterLayer向外发射CAEmitterCell。
 
-##JSVirtualMachine
+#CAEmitterLayer
 
-JavaScript代码是在由JSVirtualMachine类表示的一个虚拟机上执行的。通常情况下你不需要直接与这个类交互，但有一种情况例外：并发执行JavaScript代码。在一个独立的JSVirtualMachine中，是不可能同一时间执行多个线程的。为了支持并行，你必须使用多个虚拟机。
-
-每一个JSVirtualMachine实例都有自己的堆和自己的垃圾回收器，这意味着你**不能**在虚拟机之间传递对象。一个虚拟机的垃圾收集器不知道如何去处理另一个堆上的值。
-
-##JSContext
-
-一个JSContext对象表示JavaScript代码的执行环境。它对应于一个单一的全局对象；它的web开发环境等同于一个窗口对象。不同于一个虚拟机，你可以在多个上下文之间传递对象(因为它们位于同一虚拟机)。
-
-##JSValue
-
-JSValue是我们需要处理的主要数据类型：它可以表示任何可能的Javascript值。一个JSValue被绑定到其存活的JSContext对象中。任何来源于上下文对象的值都是JSValue类型。
-
-![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/02/javascriptcore.png)
-
-#调用JS方法
-
-1. import JavaScriptCore
-2. 创建context
-3. 调用
+CAEmitterLayer是CALayer的子类，也CAMediaTiming这个协议。
 
 ```
-    var context : JSContext? {
-        
-        get {
-            let context = JSContext()
-            
-            //你从应用的bundle中加载common.js文件，这个文件中包含你要访问的JavaScript代码
-            guard let commonJSPath = Bundle.main.path(forResource: "common", ofType: "js") else {
-                print("Unable to read js file")
-                return nil
-            }
-            
-            //在加载文件后，上下文对象将调用context.evaluateScript()，并将文件内容作为其参数，以此来执行js代码。
-            do {
-                let common = try String(contentsOfFile: commonJSPath, encoding: String.Encoding.utf8)
-                context?.evaluateScript(common)
-            }
-            catch (let error) {
-                print("Error while processing script file: \(error)")
-            }
-            
-            return context
-        }
-    }
-    
-    func parseResponse(_ response: String, withLimit limit: Double) -> [Movie] {
-    //调用JS方法
-    
-    // 1. 得到context
-    guard let context = context else {
-        print("JSContext not found.")
-        return []
-    }
-    
-    // 2.查询 parseJson 方法，结果封装在JSValue
-    let parseFunction = context.objectForKeyedSubscript("parseJson")
-    
-    // 3. 调用方法
-    let parsed = parseFunction?.call(withArguments: [response]).toArray()
-    
-    // 4.同样方法调用filterByLimit(),返回匹配给定价格限制的电影列表。
-    let filterFucntion = context.objectForKeyedSubscript("filterByLimit")
-    let filtered = filterFucntion?.call(withArguments: [parsed, limit]).toArray()
-    
-    
-    //现在你已经获取到了电影列表，但仍然忘了一点：filtered常量持有一个JSValue数组，你需要将其映射为本地Movie类型。
-    
-    return []
-  }
-```
-
-#JS调用swift
-
-1. 使用@convention(block)创建一个闭包
-2. 将它通过setObject(_:forKeyedSubscript:)加载到JSContext
-3. 用evaluateScript()获得block的一个引用
-4. 使用call(withArguments:)调用
-
-```
-    // a. 你使用Swift的unsafeBitCast(_:_:)方法来将block转换成AnyObject
-    let builderBlock = unsafeBitCast(Movie.movieBuilder, to: AnyObject.self)
-    
-    // b.在上下文中调用setObject(_:forKeyedSubscript:)，将block加载到JavaScript运行时。
-    context.setObject(builderBlock, forKeyedSubscript:"movieBuilder" as (NSCopying & NSObjectProtocol)!)
-    
-    // c.法获取JavaScript中block的一个引用。
-    let builder = context.evaluateScript("movieBuilder")
-    
-    // d.使用callWithArguments(_:)从JavaScript中调用你的block，这个方法传入一个JSValue对象的数组作为参数。返回值可以被转换成Movie对象的数组
-    guard let unwrappedFiltered = filtered, let movies = builder?.call(withArguments: [unwrappedFiltered]).toArray() as? [Movie] else {
-            print("Error while processing movies.")
-            return []
-    }
+	//发射的位置
+	emitterLayer.emitterPosition = CGPointMake(view.bounds.size.width / 2, -10.0);
+	//发射位置的Z坐标
+    emitterLayer.emitterZPosition = 0;
+    //发射的大小，根据emitterShape的不同有不同的解释
+    emitterLayer.emitterSize = CGSizeMake(view.bounds.size.width, 0.0);
+    //发射形状，线，矩形，圆，半球等
+    emitterLayer.emitterShape = kCAEmitterLayerLine;
+    //发射mode:点，面，体，轮廓等
+    emitterLayer.emitterMode = kCAEmitterLayerOutline;
+    //发射速率，与CAEmitterCell的发射速率乘是最终的发射速率
+    emitterLayer.birthRate = 0.0;
+    //随机种子
+	emitterLayer.seed = arc4random();
+	//还有一个renderMode，使用kCAEmitterLayerAdditive是烟花的效果。
 ```
 
 
-
-#JSExport协议
-1. 在JS中用到的类中加入一个协议
-2. 实现协议中的构造方法和其它
-3. 写一个JS脚本，其中调用swift中的类实现想要的功能
-4. 与上面调用JS函数一样，调用上述函数
-
+#CAEmitterCell
 
 ```
-import JavaScriptCore
- 
-@objc protocol MovieJSExports: JSExport {
-  var title: String { get set }
-  var price: String { get set }
-  var imageUrl: String { get set }
- 
-  static func movieWithTitle(title: String, price: String, imageUrl: String) -> Movie
+    CAEmitterCell *emitterCell = [CAEmitterCell emitterCell];
+    emitterCell.enabled = YES;
+    emitterCell.name = @"emitterCell";
+    emitterCell.contents = (__bridge id _Nullable)([UIImage imageNamed:@"triangle"].CGImage);
+    emitterCell.scale = 0.15;
+    emitterCell.scaleRange = 0.04;
+    emitterCell.scaleSpeed = 0.0;
+    emitterCell.greenRange = 1.0;
+    emitterCell.greenSpeed = 1.0;
+    
+    CGFloat zeroDegreesInRadians = degreesToRadians(0.0);
+    //自旋
+    emitterCell.spin = degreesToRadians(130.0);
+    emitterCell.spinRange = zeroDegreesInRadians;
+    emitterCell.emissionLatitude = zeroDegreesInRadians;
+    //发射方向
+    emitterCell.emissionLongitude = M_PI;
+    //发射范围
+    emitterCell.emissionRange = 1.0;
+    
+    //存活时间
+    emitterCell.lifetime = 7;
+    emitterCell.lifetimeRange = 0.0;
+    //发射速率
+    emitterCell.birthRate = 30.0;
+    //粒子的速度
+    emitterCell.velocity = 300.0;
+    emitterCell.velocityRange = 20.0;
+    //粒子的加速度
+    emitterCell.xAcceleration = 0.0;
+    emitterCell.yAcceleration = 40.0;
+```
+
+定义好上面的后，只需要设置CAEmitterLayer的emitterCells，将这个layer加到视图树上，就开始动画了。
+
+```
+	emitterLayer.emitterCells = [NSArray arrayWithObjects:emitterCell, nil];
+    [view.layer addSublayer:emitterLayer];
+    
+    
+ - (void)burst:(CAEmitterLayer *)layer {
+    layer.beginTime = CACurrentMediaTime();
+    layer.birthRate = 0.2;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        layer.birthRate = 0.0;
+    });
 }
+```
 
+#使用KVC animate the animatable property
 
-
+```
+        CAKeyframeAnimation *animation = [CAKeyframeAnimation animation];
+        animation.keyPath = [NSString stringWithFormat:@"emitterCells.%@.birthRate", cell.name];
+        animation.duration = 5;
+        animation.repeatCount = 1000;
+        animation.values = @[@(30.0), @(0.0), @(0.0)];
+        animation.keyTimes = @[@(0.0), @(0.2), @(1.)];
+    	[emitterLayer addAnimation:animation forKey:nil];
 
 ```
 
-原文：<https://www.raywenderlich.com/124075/javascriptcore-tutorial>
-文件：[Demo](https://pan.baidu.com/s/1nv9ECad)
+#遇到的坑
+1. 程序开始时，调用burst函数时动画没来得急播放；解决：可能在这个runloop中做的事太多了，在下个runloop中调用burst函数。
+2. 开始播放一次动画，再次播放动画不是从开始发射，而是一出来就出来一片；解决：layer.beginTime = CACurrentMediaTime();
+参考<http://stackoverflow.com/questions/29994236/initial-particles-from-caemitterlayer-dont-start-at-emitterposition>
 
+
+
+
+
+
+
+
+附：
+
+AVCoreAnimationBeginTimeAtZero
+
+The constant is a small, non-zero, positive value which prevents CoreAnimation from replacing 0.0 with CACurrentMediaTime.
+
+```
+/* The begin time of the object, in relation to its parent object, if
+ * applicable. Defaults to 0. */
+
+@property CFTimeInterval beginTime;
+
+/* The basic duration of the object. Defaults to 0. */
+
+@property CFTimeInterval duration;
+
+/* The rate of the layer. Used to scale parent time to local time, e.g.
+ * if rate is 2, local time progresses twice as fast as parent time.
+ * Defaults to 1. */
+
+@property float speed;
+
+/* Additional offset in active local time. i.e. to convert from parent
+ * time tp to active local time t: t = (tp - begin) * speed + offset.
+ * One use of this is to "pause" a layer by setting `speed' to zero and
+ * `offset' to a suitable value. Defaults to 0. */
+
+@property CFTimeInterval timeOffset;
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>iOS系统提供了一个粒子引擎，能够模拟烟花、下雪、下雨等效果（话说闪电效果怎么做？有时间再研究吧）。CAEmitterLayer是粒子效果的容器，即粒子效果在这里展示；也是粒子的发射源。CAEmitterCell是粒子的抽象，即CAEmitterLayer向外发射CAEmitterCell。</p>
 
+<h1 id="caemitterlayer">CAEmitterLayer</h1>
+
+<p>CAEmitterLayer是CALayer的子类，也CAMediaTiming这个协议。</p>
+
+<pre><code>    //发射的位置
+    emitterLayer.emitterPosition = CGPointMake(view.bounds.size.width / 2, -10.0);
+    //发射位置的Z坐标
+    emitterLayer.emitterZPosition = 0;
+    //发射的大小，根据emitterShape的不同有不同的解释
+    emitterLayer.emitterSize = CGSizeMake(view.bounds.size.width, 0.0);
+    //发射形状，线，矩形，圆，半球等
+    emitterLayer.emitterShape = kCAEmitterLayerLine;
+    //发射mode:点，面，体，轮廓等
+    emitterLayer.emitterMode = kCAEmitterLayerOutline;
+    //发射速率，与CAEmitterCell的发射速率乘是最终的发射速率
+    emitterLayer.birthRate = 0.0;
+    //随机种子
+    emitterLayer.seed = arc4random();
+    //还有一个renderMode，使用kCAEmitterLayerAdditive是烟花的效果。
+</code></pre>
+
+<h1 id="caemittercell">CAEmitterCell</h1>
+
+<pre><code>    CAEmitterCell *emitterCell = [CAEmitterCell emitterCell];
+    emitterCell.enabled = YES;
+    emitterCell.name = @"emitterCell";
+    emitterCell.contents = (__bridge id _Nullable)([UIImage imageNamed:@"triangle"].CGImage);
+    emitterCell.scale = 0.15;
+    emitterCell.scaleRange = 0.04;
+    emitterCell.scaleSpeed = 0.0;
+    emitterCell.greenRange = 1.0;
+    emitterCell.greenSpeed = 1.0;
+
+    CGFloat zeroDegreesInRadians = degreesToRadians(0.0);
+    //自旋
+    emitterCell.spin = degreesToRadians(130.0);
+    emitterCell.spinRange = zeroDegreesInRadians;
+    emitterCell.emissionLatitude = zeroDegreesInRadians;
+    //发射方向
+    emitterCell.emissionLongitude = M_PI;
+    //发射范围
+    emitterCell.emissionRange = 1.0;
+
+    //存活时间
+    emitterCell.lifetime = 7;
+    emitterCell.lifetimeRange = 0.0;
+    //发射速率
+    emitterCell.birthRate = 30.0;
+    //粒子的速度
+    emitterCell.velocity = 300.0;
+    emitterCell.velocityRange = 20.0;
+    //粒子的加速度
+    emitterCell.xAcceleration = 0.0;
+    emitterCell.yAcceleration = 40.0;
+</code></pre>
+
+<p>定义好上面的后，只需要设置CAEmitterLayer的emitterCells，将这个layer加到视图树上，就开始动画了。</p>
+
+<pre><code>    emitterLayer.emitterCells = [NSArray arrayWithObjects:emitterCell, nil];
+    [view.layer addSublayer:emitterLayer];
+
+
+ - (void)burst:(CAEmitterLayer *)layer {
+    layer.beginTime = CACurrentMediaTime();
+    layer.birthRate = 0.2;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        layer.birthRate = 0.0;
+    });
+}
+</code></pre>
+
+<h1 id="kvcanimatetheanimatableproperty">使用KVC animate the animatable property</h1>
+
+<pre><code>        CAKeyframeAnimation *animation = [CAKeyframeAnimation animation];
+        animation.keyPath = [NSString stringWithFormat:@"emitterCells.%@.birthRate", cell.name];
+        animation.duration = 5;
+        animation.repeatCount = 1000;
+        animation.values = @[@(30.0), @(0.0), @(0.0)];
+        animation.keyTimes = @[@(0.0), @(0.2), @(1.)];
+        [emitterLayer addAnimation:animation forKey:nil];
+</code></pre>
+
+<h1 id="">遇到的坑</h1>
+
+<ol>
+<li>程序开始时，调用burst函数时动画没来得急播放；解决：可能在这个runloop中做的事太多了，在下个runloop中调用burst函数。</li>
+<li>开始播放一次动画，再次播放动画不是从开始发射，而是一出来就出来一片；解决：layer.beginTime = CACurrentMediaTime();
+参考<a href="http://stackoverflow.com/questions/29994236/initial-particles-from-caemitterlayer-dont-start-at-emitterposition">http://stackoverflow.com/questions/29994236/initial-particles-from-caemitterlayer-dont-start-at-emitterposition</a></li>
+</ol>
+
+<p>附：</p>
+
+<p>AVCoreAnimationBeginTimeAtZero</p>
+
+<p>The constant is a small, non-zero, positive value which prevents CoreAnimation from replacing 0.0 with CACurrentMediaTime.</p>
+
+<pre><code>/* The begin time of the object, in relation to its parent object, if
+ * applicable. Defaults to 0. */
+
+@property CFTimeInterval beginTime;
+
+/* The basic duration of the object. Defaults to 0. */
+
+@property CFTimeInterval duration;
+
+/* The rate of the layer. Used to scale parent time to local time, e.g.
+ * if rate is 2, local time progresses twice as fast as parent time.
+ * Defaults to 1. */
+
+@property float speed;
+
+/* Additional offset in active local time. i.e. to convert from parent
+ * time tp to active local time t: t = (tp - begin) * speed + offset.
+ * One use of this is to "pause" a layer by setting `speed' to zero and
+ * `offset' to a suitable value. Defaults to 0. */
+
+@property CFTimeInterval timeOffset;
+</code></pre>
 <!-- content end -->
 </div>
 <br>
