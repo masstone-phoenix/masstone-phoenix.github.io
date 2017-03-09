@@ -1,0 +1,230 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+#JS基本概念
+
+##JSVirtualMachine
+
+JavaScript代码是在由JSVirtualMachine类表示的一个虚拟机上执行的。通常情况下你不需要直接与这个类交互，但有一种情况例外：并发执行JavaScript代码。在一个独立的JSVirtualMachine中，是不可能同一时间执行多个线程的。为了支持并行，你必须使用多个虚拟机。
+
+每一个JSVirtualMachine实例都有自己的堆和自己的垃圾回收器，这意味着你**不能**在虚拟机之间传递对象。一个虚拟机的垃圾收集器不知道如何去处理另一个堆上的值。
+
+##JSContext
+
+一个JSContext对象表示JavaScript代码的执行环境。它对应于一个单一的全局对象；它的web开发环境等同于一个窗口对象。不同于一个虚拟机，你可以在多个上下文之间传递对象(因为它们位于同一虚拟机)。
+
+##JSValue
+
+JSValue是我们需要处理的主要数据类型：它可以表示任何可能的Javascript值。一个JSValue被绑定到其存活的JSContext对象中。任何来源于上下文对象的值都是JSValue类型。
+
+![](https://cdn5.raywenderlich.com/wp-content/uploads/2016/02/javascriptcore.png)
+
+#调用JS方法
+
+1. import JavaScriptCore
+2. 创建context
+3. 调用
+
+```
+    var context : JSContext? {
+        
+        get {
+            let context = JSContext()
+            
+            //你从应用的bundle中加载common.js文件，这个文件中包含你要访问的JavaScript代码
+            guard let commonJSPath = Bundle.main.path(forResource: "common", ofType: "js") else {
+                print("Unable to read js file")
+                return nil
+            }
+            
+            //在加载文件后，上下文对象将调用context.evaluateScript()，并将文件内容作为其参数，以此来执行js代码。
+            do {
+                let common = try String(contentsOfFile: commonJSPath, encoding: String.Encoding.utf8)
+                context?.evaluateScript(common)
+            }
+            catch (let error) {
+                print("Error while processing script file: \(error)")
+            }
+            
+            return context
+        }
+    }
+    
+    func parseResponse(_ response: String, withLimit limit: Double) -> [Movie] {
+    //调用JS方法
+    
+    // 1. 得到context
+    guard let context = context else {
+        print("JSContext not found.")
+        return []
+    }
+    
+    // 2.查询 parseJson 方法，结果封装在JSValue
+    let parseFunction = context.objectForKeyedSubscript("parseJson")
+    
+    // 3. 调用方法
+    let parsed = parseFunction?.call(withArguments: [response]).toArray()
+    
+    // 4.同样方法调用filterByLimit(),返回匹配给定价格限制的电影列表。
+    let filterFucntion = context.objectForKeyedSubscript("filterByLimit")
+    let filtered = filterFucntion?.call(withArguments: [parsed, limit]).toArray()
+    
+    
+    //现在你已经获取到了电影列表，但仍然忘了一点：filtered常量持有一个JSValue数组，你需要将其映射为本地Movie类型。
+    
+    return []
+  }
+```
+
+#JS调用swift
+
+1. 使用@convention(block)创建一个闭包
+2. 将它通过setObject(_:forKeyedSubscript:)加载到JSContext
+3. 用evaluateScript()获得block的一个引用
+4. 使用call(withArguments:)调用
+
+```
+    // a. 你使用Swift的unsafeBitCast(_:_:)方法来将block转换成AnyObject
+    let builderBlock = unsafeBitCast(Movie.movieBuilder, to: AnyObject.self)
+    
+    // b.在上下文中调用setObject(_:forKeyedSubscript:)，将block加载到JavaScript运行时。
+    context.setObject(builderBlock, forKeyedSubscript:"movieBuilder" as (NSCopying & NSObjectProtocol)!)
+    
+    // c.法获取JavaScript中block的一个引用。
+    let builder = context.evaluateScript("movieBuilder")
+    
+    // d.使用callWithArguments(_:)从JavaScript中调用你的block，这个方法传入一个JSValue对象的数组作为参数。返回值可以被转换成Movie对象的数组
+    guard let unwrappedFiltered = filtered, let movies = builder?.call(withArguments: [unwrappedFiltered]).toArray() as? [Movie] else {
+            print("Error while processing movies.")
+            return []
+    }
+```
+
+
+
+#JSExport协议
+1. 在JS中用到的类中加入一个协议
+2. 实现协议中的构造方法和其它
+3. 写一个JS脚本，其中调用swift中的类实现想要的功能
+4. 与上面调用JS函数一样，调用上述函数
+
+
+```
+import JavaScriptCore
+ 
+@objc protocol MovieJSExports: JSExport {
+  var title: String { get set }
+  var price: String { get set }
+  var imageUrl: String { get set }
+ 
+  static func movieWithTitle(title: String, price: String, imageUrl: String) -> Movie
+}
+
+
+
+
+```
+
+原文：<https://www.raywenderlich.com/124075/javascriptcore-tutorial>
+文件：[Demo](https://pan.baidu.com/s/1nv9ECad)
+
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "2017/CAEmitterLayer.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
