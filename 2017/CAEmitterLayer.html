@@ -68,7 +68,7 @@ CAEmitterLayer是CALayer的子类，也CAMediaTiming这个协议。
     emitterCell.spin = degreesToRadians(130.0);
     emitterCell.spinRange = zeroDegreesInRadians;
     emitterCell.emissionLatitude = zeroDegreesInRadians;
-    //发射方向，0 radians是向右，PI / 2是向下
+    //发射方向，在为点状kCAEmitterLayerPoint时，0 radians是向右，PI / 2是向下；在为kCAEmitterLayerLine时，0是向上，PI / 2是向右。不过都是顺时针为正方向。
     emitterCell.emissionLongitude = M_PI;
     //发射范围
     emitterCell.emissionRange = 1.0;
@@ -224,7 +224,7 @@ The constant is a small, non-zero, positive value which prevents CoreAnimation f
     emitterCell.spin = degreesToRadians(130.0);
     emitterCell.spinRange = zeroDegreesInRadians;
     emitterCell.emissionLatitude = zeroDegreesInRadians;
-    //发射方向，0 radians是向右，PI / 2是向下
+    //发射方向，在为点状kCAEmitterLayerPoint时，0 radians是向右，PI / 2是向下；在为kCAEmitterLayerLine时，0是向上，PI / 2是向右。不过都是顺时针为正方向。
     emitterCell.emissionLongitude = M_PI;
     //发射范围
     emitterCell.emissionRange = 1.0;
