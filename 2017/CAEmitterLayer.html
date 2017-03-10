@@ -120,6 +120,29 @@ CAEmitterLayer是CALayer的子类，也CAMediaTiming这个协议。
 2. 开始播放一次动画，再次播放动画不是从开始发射，而是一出来就出来一片；解决：layer.beginTime = CACurrentMediaTime();
 参考<http://stackoverflow.com/questions/29994236/initial-particles-from-caemitterlayer-dont-start-at-emitterposition>
 
+```
+// After one burst, change the birth rate of the cloud to 0
+// so that there is only one burst per side.
+double delayInSeconds = 0.5; // One cloud will have been created by now, but not two
+dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+
+    // For some reason, setting the birthRate of the "cloud" to 0
+    // has a strange side effect that when you set it back to 1 all
+    // the missed emissions seems to happen at once during the first
+    // emission and then it goes back to only emitting once per
+    // second. (Thanks D33 for pointing this out).
+    // By instead changing the birthRate of the "dust" particle
+    // to 0 and then back to (in my case) 7000 gives the visual
+    // effect that I'm expecting. I'm not sure why it works
+    // this way but at least this works for me...
+    // NOTE: This is only relevant in case you want to re-use
+    // the emitters for a second emission later on by setting
+    // the birthRate up to a non-zero value.
+    [dustEmitter setValue:[NSNumber numberWithFloat:0.0] 
+               forKeyPath:@"emitterCells.cloud.emitterCells.dust.birthRate"];
+});
+```
 
 
 
@@ -251,6 +274,29 @@ The constant is a small, non-zero, positive value which prevents CoreAnimation f
 <li>开始播放一次动画，再次播放动画不是从开始发射，而是一出来就出来一片；解决：layer.beginTime = CACurrentMediaTime();
 参考<a href="http://stackoverflow.com/questions/29994236/initial-particles-from-caemitterlayer-dont-start-at-emitterposition">http://stackoverflow.com/questions/29994236/initial-particles-from-caemitterlayer-dont-start-at-emitterposition</a></li>
 </ol>
+
+<pre><code>// After one burst, change the birth rate of the cloud to 0
+// so that there is only one burst per side.
+double delayInSeconds = 0.5; // One cloud will have been created by now, but not two
+dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+
+    // For some reason, setting the birthRate of the "cloud" to 0
+    // has a strange side effect that when you set it back to 1 all
+    // the missed emissions seems to happen at once during the first
+    // emission and then it goes back to only emitting once per
+    // second. (Thanks D33 for pointing this out).
+    // By instead changing the birthRate of the "dust" particle
+    // to 0 and then back to (in my case) 7000 gives the visual
+    // effect that I'm expecting. I'm not sure why it works
+    // this way but at least this works for me...
+    // NOTE: This is only relevant in case you want to re-use
+    // the emitters for a second emission later on by setting
+    // the birthRate up to a non-zero value.
+    [dustEmitter setValue:[NSNumber numberWithFloat:0.0] 
+               forKeyPath:@"emitterCells.cloud.emitterCells.dust.birthRate"];
+});
+</code></pre>
 
 <p>附：</p>
 
