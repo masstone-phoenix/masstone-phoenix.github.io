@@ -120,7 +120,7 @@ CAEmitterLayer是CALayer的子类，也CAMediaTiming这个协议。
 2. 开始播放一次动画，再次播放动画不是从开始发射，而是一出来就出来一片；解决：layer.beginTime = CACurrentMediaTime();
 参考<http://stackoverflow.com/questions/29994236/initial-particles-from-caemitterlayer-dont-start-at-emitterposition>
 
-还有一种办法：设置CAEmitterCell的birthRate,如下：
+还有一种办法：设置CAEmitterCell的birthRate,如下(这个没有做实验)：
 ```
 // After one burst, change the birth rate of the cloud to 0
 // so that there is only one burst per side.
@@ -276,7 +276,7 @@ The constant is a small, non-zero, positive value which prevents CoreAnimation f
 参考<a href="http://stackoverflow.com/questions/29994236/initial-particles-from-caemitterlayer-dont-start-at-emitterposition">http://stackoverflow.com/questions/29994236/initial-particles-from-caemitterlayer-dont-start-at-emitterposition</a></li>
 </ol>
 
-<p>还有一种办法：设置CAEmitterCell的birthRate,如下：</p>
+<p>还有一种办法：设置CAEmitterCell的birthRate,如下(这个没有做实验)：</p>
 
 <pre><code>// After one burst, change the birth rate of the cloud to 0
 // so that there is only one burst per side.
