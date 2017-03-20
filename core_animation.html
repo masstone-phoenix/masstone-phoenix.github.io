@@ -32,6 +32,7 @@ Core Animation动画分成两种：一种是隐式动画，一种是显式动画
 隐式动画是指改变UIView或CALay的“动画属性”（Animatable Properties），从而触发的动画。
 比如：
 
+###对于View：
 ```    
 	[UIView animateWithDuration:0.6
                           delay:0
@@ -78,6 +79,14 @@ Core Animation动画分成两种：一种是隐式动画，一种是显式动画
 
 **注意：对UIView的backing layers的“动画属性”（Animatable Properties）进行操作是不会触发隐式动画的,必须得在view-based animation block中才行**
 
+
+###对于CALayer：
+
+```
+theLayer.opacity = 0.0;
+```
+
+如果要改变这样隐式动画的参数，可以使用CATranscation的方法（还可以嵌套）。
 
 
 ##显式动画
@@ -189,6 +198,8 @@ iOS中还有另一个动画系统，用于模拟物理效果比如重力，吸�
 <p>隐式动画是指改变UIView或CALay的“动画属性”（Animatable Properties），从而触发的动画。
 比如：</p>
 
+<h3 id="view">对于View：</h3>
+
 <pre><code class="    ">    [UIView animateWithDuration:0.6
                           delay:0
          usingSpringWithDamping:1
@@ -231,6 +242,13 @@ iOS中还有另一个动画系统，用于模拟物理效果比如重力，吸�
 </code></pre>
 
 <p><strong>注意：对UIView的backing layers的“动画属性”（Animatable Properties）进行操作是不会触发隐式动画的,必须得在view-based animation block中才行</strong></p>
+
+<h3 id="calayer">对于CALayer：</h3>
+
+<pre><code>theLayer.opacity = 0.0;
+</code></pre>
+
+<p>如果要改变这样隐式动画的参数，可以使用CATranscation的方法（还可以嵌套）。</p>
 
 <h2 id="">显式动画</h2>
 
