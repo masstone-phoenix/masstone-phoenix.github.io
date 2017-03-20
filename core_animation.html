@@ -80,7 +80,7 @@ Core Animation动画分成两种：一种是隐式动画，一种是显式动画
 **注意：对UIView的backing layers的“动画属性”（Animatable Properties）进行操作是不会触发隐式动画的,必须得在view-based animation block中才行**
 
 
-###对于CALayer：
+###对于CALayer（非UIView的backing layers）：
 
 ```
 theLayer.opacity = 0.0;
@@ -243,7 +243,7 @@ iOS中还有另一个动画系统，用于模拟物理效果比如重力，吸�
 
 <p><strong>注意：对UIView的backing layers的“动画属性”（Animatable Properties）进行操作是不会触发隐式动画的,必须得在view-based animation block中才行</strong></p>
 
-<h3 id="calayer">对于CALayer：</h3>
+<h3 id="calayeruiviewbackinglayers">对于CALayer（非UIView的backing layers）：</h3>
 
 <pre><code>theLayer.opacity = 0.0;
 </code></pre>
