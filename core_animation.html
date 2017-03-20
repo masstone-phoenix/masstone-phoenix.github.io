@@ -187,7 +187,7 @@ float interpolate(float from, float to, float time)
 ##将生成的Action object加入到一个CALayer上
 在action被执行之前，the layer需要找到这个action object。The layer通过要修改的属性名或id来找到这个action object，这通过调用actionForKey:这个函数来实现。其查找顺序为：
 
-1. layer的代理的actionForLayer:forKey:方法，返回 NSNull 则不继续向下搜索直接返回；返回 nil，证明代理没有，继续躺下查找
+1. layer的代理的actionForLayer:forKey:方法，返回 NSNull 则不继续向下搜索直接返回；返回 nil，证明代理没有，继续向下查找
 2.  layer’s actions 字典
 3.  layer’s style 字典（the style dictionary contains an actions key whose value is also a dictionary）
 4.  layer 调用 defaultActionForKey: 这个class method
@@ -380,7 +380,7 @@ float interpolate(float from, float to, float time)
 <p>在action被执行之前，the layer需要找到这个action object。The layer通过要修改的属性名或id来找到这个action object，这通过调用actionForKey:这个函数来实现。其查找顺序为：</p>
 
 <ol>
-<li>layer的代理的actionForLayer:forKey:方法，返回 NSNull 则不继续向下搜索直接返回；返回 nil，证明代理没有，继续躺下查找</li>
+<li>layer的代理的actionForLayer:forKey:方法，返回 NSNull 则不继续向下搜索直接返回；返回 nil，证明代理没有，继续向下查找</li>
 <li>layer’s actions 字典</li>
 <li>layer’s style 字典（the style dictionary contains an actions key whose value is also a dictionary）</li>
 <li>layer 调用 defaultActionForKey: 这个class method</li>
