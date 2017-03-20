@@ -179,6 +179,35 @@ float interpolate(float from, float to, float time)
 除了上述类，CAAnimation还有一个CATransition，用于制做不同View的变换效果，使用和CABasicAnimation类类似。具体可参考Apple的programming guide。
 
 
+#隐式动画的原理
+
+##生成一个Action object
+这需要遵守CAAction协议；决定在什么时候这个action被触发，这包括更改属性时、kCAOnOrderIn、kCAOnOrderOut和kCATransition。
+
+##将生成的Action object加入到一个CALayer上
+在action被执行之前，the layer需要找到这个action object。The layer通过要修改的属性名或id来找到这个action object，这通过调用actionForKey:这个函数来实现。其查找顺序为：
+
+1. layer的代理的actionForLayer:forKey:方法，返回 NSNull 则不继续向下搜索直接返回；返回 nil，证明代理没有，继续躺下查找
+2.  layer’s actions 字典
+3.  layer’s style 字典（the style dictionary contains an actions key whose value is also a dictionary）
+4.  layer 调用 defaultActionForKey: 这个class method
+5.  layer 执行Core Animation定义的默认action
+
+读完以上，我们就有了将action layer加入到layer中的时机，即上面的1，2，3，4。
+
+##禁用隐式动画
+
+```
+[CATransaction begin];
+[CATransaction setValue:(id)kCFBooleanTrue
+                 forKey:kCATransactionDisableActions];
+[aLayer removeFromSuperlayer];
+[CATransaction commit];
+```
+
+
+##解释隐式动画
+在通常状况下，UIView通过某种方式使layer的actionForKey:返回为空（比如，代理的actionForLayer:forKey:返回NSNull），所以没有显示动画；在view-based animation block中，才返回相应的action object，执行相当的动画。
 
 #其他
 Core Animation类除了做动画，还有一些其它功能，比如制作圆角、阴影、图层蒙板等功能，有机会再一一介绍。
@@ -339,6 +368,39 @@ float interpolate(float from, float to, float time)
 <h3 id="catransition">CATransition</h3>
 
 <p>除了上述类，CAAnimation还有一个CATransition，用于制做不同View的变换效果，使用和CABasicAnimation类类似。具体可参考Apple的programming guide。</p>
+
+<h1 id="">隐式动画的原理</h1>
+
+<h2 id="actionobject">生成一个Action object</h2>
+
+<p>这需要遵守CAAction协议；决定在什么时候这个action被触发，这包括更改属性时、kCAOnOrderIn、kCAOnOrderOut和kCATransition。</p>
+
+<h2 id="actionobjectcalayer">将生成的Action object加入到一个CALayer上</h2>
+
+<p>在action被执行之前，the layer需要找到这个action object。The layer通过要修改的属性名或id来找到这个action object，这通过调用actionForKey:这个函数来实现。其查找顺序为：</p>
+
+<ol>
+<li>layer的代理的actionForLayer:forKey:方法，返回 NSNull 则不继续向下搜索直接返回；返回 nil，证明代理没有，继续躺下查找</li>
+<li>layer’s actions 字典</li>
+<li>layer’s style 字典（the style dictionary contains an actions key whose value is also a dictionary）</li>
+<li>layer 调用 defaultActionForKey: 这个class method</li>
+<li>layer 执行Core Animation定义的默认action</li>
+</ol>
+
+<p>读完以上，我们就有了将action layer加入到layer中的时机，即上面的1，2，3，4。</p>
+
+<h2 id="">禁用隐式动画</h2>
+
+<pre><code>[CATransaction begin];
+[CATransaction setValue:(id)kCFBooleanTrue
+                 forKey:kCATransactionDisableActions];
+[aLayer removeFromSuperlayer];
+[CATransaction commit];
+</code></pre>
+
+<h2 id="">解释隐式动画</h2>
+
+<p>在通常状况下，UIView通过某种方式使layer的actionForKey:返回为空（比如，代理的actionForLayer:forKey:返回NSNull），所以没有显示动画；在view-based animation block中，才返回相应的action object，执行相当的动画。</p>
 
 <h1 id="">其他</h1>
 
