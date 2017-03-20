@@ -28,11 +28,11 @@
 
 Core Animation动画分成两种：一种是隐式动画，一种是显式动画，它们的坐标与UIView的坐标系是相同的，都是左上角是原点，正方向为向下向右（而Core Graphic和open GL是左下角为原点）以下分别介绍隐式动画和显式动画。
 
-##隐式动画
+#隐式动画
 隐式动画是指改变UIView或CALay的“动画属性”（Animatable Properties），从而触发的动画。
 比如：
 
-###对于View：
+##对于View：
 ```    
 	[UIView animateWithDuration:0.6
                           delay:0
@@ -80,7 +80,7 @@ Core Animation动画分成两种：一种是隐式动画，一种是显式动画
 **注意：对UIView的backing layers的“动画属性”（Animatable Properties）进行操作是不会触发隐式动画的,必须得在view-based animation block中才行**
 
 
-###对于CALayer（非UIView的backing layers）：
+##对于CALayer（非UIView的backing layers）：
 
 ```
 theLayer.opacity = 0.0;
@@ -89,11 +89,11 @@ theLayer.opacity = 0.0;
 如果要改变这样隐式动画的参数，可以使用CATranscation的方法（还可以嵌套）。
 
 
-##显式动画
+#显式动画
 
 要显式的对一个“动画属性”（Animatable Properties）进行动画，需要创建一个Core Animation’s animation类的实例，并且将它加到想到动画的layer中，需要注意，**显式动画是不会更改layer的属性值的**，显式动画对动画属性的控制更加精细。
 
-### CABasicAnimation 
+## CABasicAnimation 
 CABasicAnimation是CAAnimation的一个子类，用于创建简单的动画：
 
 ```
@@ -104,7 +104,7 @@ opacityAnimation.toValue = [NSNumber numberWithFloat:0.0];
 [layer addAnimation:opacityAnimation forKey:@"opacityAnimation"];
 ```
 
-### CAKeyframeAnimation  
+## CAKeyframeAnimation  
 CAKeyframeAnimation 是CAAnimation的一个子类，用于关键帧动画，它可以创建各种缓冲函数驱动的动画：
 
 ```
@@ -172,10 +172,10 @@ float interpolate(float from, float to, float time)
 程序中使用interpolate()函数将当前时间的值内插入初始值和终值之间，这样就形成了关键帧。如果使用缓冲函数，只需将时间输入缓冲函数中，将输出的时当作现在的时间使用即可。
 
 
-### CAAnimationGroup
+## CAAnimationGroup
 可以将多个CAAnimation对象加入到一个CAAnimationGroup的对象中，此时，当CAAnimationGroup对象加入layer时，所有动画会同时开始执行。CAAnimationGroup是组织动画的一种好方法。
 
-###CATransition
+## CATransition
 除了上述类，CAAnimation还有一个CATransition，用于制做不同View的变换效果，使用和CABasicAnimation类类似。具体可参考Apple的programming guide。
 
 
@@ -222,12 +222,12 @@ iOS中还有另一个动画系统，用于模拟物理效果比如重力，吸�
 <!-- content -->
 <p>Core Animation动画分成两种：一种是隐式动画，一种是显式动画，它们的坐标与UIView的坐标系是相同的，都是左上角是原点，正方向为向下向右（而Core Graphic和open GL是左下角为原点）以下分别介绍隐式动画和显式动画。</p>
 
-<h2 id="">隐式动画</h2>
+<h1 id="">隐式动画</h1>
 
 <p>隐式动画是指改变UIView或CALay的“动画属性”（Animatable Properties），从而触发的动画。
 比如：</p>
 
-<h3 id="view">对于View：</h3>
+<h2 id="view">对于View：</h2>
 
 <pre><code class="    ">    [UIView animateWithDuration:0.6
                           delay:0
@@ -272,18 +272,18 @@ iOS中还有另一个动画系统，用于模拟物理效果比如重力，吸�
 
 <p><strong>注意：对UIView的backing layers的“动画属性”（Animatable Properties）进行操作是不会触发隐式动画的,必须得在view-based animation block中才行</strong></p>
 
-<h3 id="calayeruiviewbackinglayers">对于CALayer（非UIView的backing layers）：</h3>
+<h2 id="calayeruiviewbackinglayers">对于CALayer（非UIView的backing layers）：</h2>
 
 <pre><code>theLayer.opacity = 0.0;
 </code></pre>
 
 <p>如果要改变这样隐式动画的参数，可以使用CATranscation的方法（还可以嵌套）。</p>
 
-<h2 id="">显式动画</h2>
+<h1 id="">显式动画</h1>
 
 <p>要显式的对一个“动画属性”（Animatable Properties）进行动画，需要创建一个Core Animation’s animation类的实例，并且将它加到想到动画的layer中，需要注意，<strong>显式动画是不会更改layer的属性值的</strong>，显式动画对动画属性的控制更加精细。</p>
 
-<h3 id="cabasicanimation">CABasicAnimation</h3>
+<h2 id="cabasicanimation">CABasicAnimation</h2>
 
 <p>CABasicAnimation是CAAnimation的一个子类，用于创建简单的动画：</p>
 
@@ -294,7 +294,7 @@ opacityAnimation.toValue = [NSNumber numberWithFloat:0.0];
 [layer addAnimation:opacityAnimation forKey:@"opacityAnimation"];
 </code></pre>
 
-<h3 id="cakeyframeanimation">CAKeyframeAnimation</h3>
+<h2 id="cakeyframeanimation">CAKeyframeAnimation</h2>
 
 <p>CAKeyframeAnimation 是CAAnimation的一个子类，用于关键帧动画，它可以创建各种缓冲函数驱动的动画：</p>
 
@@ -361,11 +361,11 @@ float interpolate(float from, float to, float time)
 
 <p>程序中使用interpolate()函数将当前时间的值内插入初始值和终值之间，这样就形成了关键帧。如果使用缓冲函数，只需将时间输入缓冲函数中，将输出的时当作现在的时间使用即可。</p>
 
-<h3 id="caanimationgroup">CAAnimationGroup</h3>
+<h2 id="caanimationgroup">CAAnimationGroup</h2>
 
 <p>可以将多个CAAnimation对象加入到一个CAAnimationGroup的对象中，此时，当CAAnimationGroup对象加入layer时，所有动画会同时开始执行。CAAnimationGroup是组织动画的一种好方法。</p>
 
-<h3 id="catransition">CATransition</h3>
+<h2 id="catransition">CATransition</h2>
 
 <p>除了上述类，CAAnimation还有一个CATransition，用于制做不同View的变换效果，使用和CABasicAnimation类类似。具体可参考Apple的programming guide。</p>
 
