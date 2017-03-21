@@ -25,7 +25,7 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-Object-C中的类型
+##Object-C中的类型
 
 引子：背景是这样的，目前程序中在images的数组中由于不明原因有极小概率会出现NSNumber，那么问题来了，下面的保护能起作用吗？
 
@@ -47,11 +47,37 @@ Object-C中的类型
 原因：虽然在fast enumeration中将数组中的object都cast成UIImage * 类型了，但这只影响编译器对程序进行的静态检查，不会对运行的结果造成任何影响。对于运行时候，指针所指向的数据是什么类型是不由指针类型决定的，这是因为OC是动态语言，在***运行时所有的对象都是id型***的，在ojbect中有 *isa* 指针，用来确定object是什么类型。
 
 
+##UIView的响应链
+
+iOS的事件有好几种：Touch Events(触摸事件)、Motion Events(运动事件，比如重力感应和摇一摇等)、Remote Events(远程事件，比如用耳机上得按键来控制手机)，UIEventTypePresses（3D touch）。每种都是通过响应链来进行事件的响应，既然是链，就要有起点(initial object)，其中Touch Events的起点是hit-test view,它是由UIApplication的UIWindow的keyWindow发送到触摸（touch）发生的view，其它两种是从first responder开始。
+
+###UIResponder的nextResponder
+
+The UIResponder class does not store or set the next responder automatically, instead returning nil by default. Subclasses must override this method to set the next responder. *UIView implements this method by returning the UIViewController object that manages it (if it has one) or its superview (if it doesn’t); UIViewController implements the method by returning its view’s superview; UIWindow returns the application object, and UIApplication returns nil.*
+
+###事件的响应
+iOS就是从initial object开始查找，沿着nextResponder这条路，来寻找处理事件的object，找到后进行事件的响应。
+
+有了以上知识就可以实现一些好玩的效果了，比如：
+
+让事件穿透本view由“下面”的view进行响应：
+
+```
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    UIView *view = [super hitTest:point withEvent:event];
+    if (view == self)
+        return nil;
+    else
+        return view;
+}
+```
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
-<p>Object-C中的类型</p>
+<h2 id="objectc">Object-C中的类型</h2>
 
 <p>引子：背景是这样的，目前程序中在images的数组中由于不明原因有极小概率会出现NSNumber，那么问题来了，下面的保护能起作用吗？</p>
 
@@ -70,6 +96,31 @@ Object-C中的类型
 <p>答案：能。</p>
 
 <p>原因：虽然在fast enumeration中将数组中的object都cast成UIImage * 类型了，但这只影响编译器对程序进行的静态检查，不会对运行的结果造成任何影响。对于运行时候，指针所指向的数据是什么类型是不由指针类型决定的，这是因为OC是动态语言，在<strong><em>运行时所有的对象都是id型</em></strong>的，在ojbect中有 <em>isa</em> 指针，用来确定object是什么类型。</p>
+
+<h2 id="uiview">UIView的响应链</h2>
+
+<p>iOS的事件有好几种：Touch Events(触摸事件)、Motion Events(运动事件，比如重力感应和摇一摇等)、Remote Events(远程事件，比如用耳机上得按键来控制手机)，UIEventTypePresses（3D touch）。每种都是通过响应链来进行事件的响应，既然是链，就要有起点(initial object)，其中Touch Events的起点是hit-test view,它是由UIApplication的UIWindow的keyWindow发送到触摸（touch）发生的view，其它两种是从first responder开始。</p>
+
+<h3 id="uirespondernextresponder">UIResponder的nextResponder</h3>
+
+<p>The UIResponder class does not store or set the next responder automatically, instead returning nil by default. Subclasses must override this method to set the next responder. <em>UIView implements this method by returning the UIViewController object that manages it (if it has one) or its superview (if it doesn’t); UIViewController implements the method by returning its view’s superview; UIWindow returns the application object, and UIApplication returns nil.</em></p>
+
+<h3 id="">事件的响应</h3>
+
+<p>iOS就是从initial object开始查找，沿着nextResponder这条路，来寻找处理事件的object，找到后进行事件的响应。</p>
+
+<p>有了以上知识就可以实现一些好玩的效果了，比如：</p>
+
+<p>让事件穿透本view由“下面”的view进行响应：</p>
+
+<pre><code>- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    UIView *view = [super hitTest:point withEvent:event];
+    if (view == self)
+        return nil;
+    else
+        return view;
+}
+</code></pre>
 <!-- content end -->
 </div>
 <br>
