@@ -58,6 +58,8 @@ The UIResponder class does not store or set the next responder automatically, in
 ###事件的响应
 iOS就是从initial object开始查找，沿着nextResponder这条路，来寻找处理事件的object，找到后进行事件的响应。
 
+还有一点需要注意，系统默认的hitTest:withEvent:方法是不会返回在receiver的bounds外的点的view，即在receiver的bounds外即使用有subview包含测试的点，这个view也不会被返回的。常见的情况是某个subview超出了它superview的bounds但是依然可见，但这个view是响应不了事件的。
+
 有了以上知识就可以实现一些好玩的效果了，比如：
 
 让事件穿透本view由“下面”的view进行响应：
@@ -73,7 +75,6 @@ iOS就是从initial object开始查找，沿着nextResponder这条路，来寻�
 ```
 
 PS：UIGestureRecognizer is an abstract base class for concrete gesture-recognizer classes. A gesture recognizer doesn’t participate in the view’s responder chain.View 的 touch 分发是从 UIApplication -> UIWindow 。然后 window 在发送 touch 到 view 之前，会先发给 view （或者它 superView 上）的 gesture recognizers。
-
 
 <!-- markdown end -->
 </div>
@@ -110,6 +111,8 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
 <h3 id="">事件的响应</h3>
 
 <p>iOS就是从initial object开始查找，沿着nextResponder这条路，来寻找处理事件的object，找到后进行事件的响应。</p>
+
+<p>还有一点需要注意，系统默认的hitTest:withEvent:方法是不会返回在receiver的bounds外的点的view，即在receiver的bounds外即使用有subview包含测试的点，这个view也不会被返回的。常见的情况是某个subview超出了它superview的bounds但是依然可见，但这个view是响应不了事件的。</p>
 
 <p>有了以上知识就可以实现一些好玩的效果了，比如：</p>
 
