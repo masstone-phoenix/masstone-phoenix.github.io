@@ -106,7 +106,7 @@ UIDynamicBehavior是描述对UIDynamicItem对象的影响（influences）的抽�
 	//之后使用addChildBehavior加入到一个behavior中
 ```
 
-
+如果使用多个UIDynamicItemBehavior来改变属性，last win。顺序是树的前序遍历。
 
 #UIDynamicItem Protocol
 
@@ -220,6 +220,8 @@ Accelerate a (100,100) view to 100 p/s²
     animationOptions.allowsRotation = NO;
     //之后使用addChildBehavior加入到一个behavior中
 </code></pre>
+
+<p>如果使用多个UIDynamicItemBehavior来改变属性，last win。顺序是树的前序遍历。</p>
 
 <h1 id="uidynamicitemprotocol">UIDynamicItem Protocol</h1>
 
