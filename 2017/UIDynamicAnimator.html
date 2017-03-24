@@ -55,11 +55,73 @@ UIDynamicAnimator对象是通过改变UIDynamicItem对象的frame,transform等�
 
 
 #UIDynamicBehavior
+UIDynamicBehavior是描述对UIDynamicItem对象的影响（influences）的抽象，它可以在任意时刻添加和删除，它可以组合，也可以被subclass。
+
+所有的UIDynamicBehavior有一些共同点:可以在加入到UIDynamicAnimator中之前设置参数；UIDynamicBehavior对item的影响随着它被移除而消失。
+
+以下列举一下预定义的behavior:
+
+##	重力 UIGravityBehavior
+	@property CGFloat angle
+	@property CGFloat magnitude
+	Accelerate a (100,100) view to 100 p/s²
+##碰撞 UICollisionBehavior
+	@property UICollisionBehaviorMode collisionMode
+	-(void)addBoundaryWithIdentyfier:(NSString *)identifier forPath:(UIBezierPath *)path
+	@property BOOL translatesReferenceBoundsIntoBoudary
+	@property (nonatomic, readwrite)
+		UICollisionBehaviorMode collisionMode;
+		UICollisionBehaviorModeItems
+		UICollisionBehaviorModeBoundaries
+		UICollisionBehaviorModeEverything
+##吸附效果 UIAttachmentBehavior
+	@property CGFloat length
+	- (instancetype)initWithItem:(id<UIDynamicItem>)item
+	            offsetFromCenter:(UIOffset)p1
+	            attachedToAnchor:(CGPoint)point
+	            
+	这个可以模拟弹簧的效果，配置参数如下（可调）：
+	    [attachmentBehavior setFrequency:1.0];
+	    [attachmentBehavior setDamping:0.01];
+##UISnapBehavior
+	- (instancetype)initWithItem:(id<UIDynamicItem>)item
+	                 snapToPoint:(CGPoint)point
+	快速移动到snapPoint并振动
+##UIPushBehavior
+这是一个作用力的效果，有瞬时力和持续力两种，当然，力的大小和方向都可以设置。
+
+	@property(readwrite, nonatomic) CGVector pushDirection
+	@property(readwrite, nonatomic) CGFloat magnitude
+	@property(readwrite, nonatomic) CGFloat angle
+	@property(nonatomic, readonly) UIPushBehaviorMode mode
+
+瞬时力作用完成后会将自己设置为非active状态，使用 [p setActive:TRUE]可以重新激活它。
+
+##UIDynamicItemBehaviors 
+这个类提供了改变动画行为的一些设置，比如是否允许旋转（allowsRotation ），弹力（elasticity），摩擦力（friction）等，用法如下：
+
+```
+	animationOptions = [[UIDynamicItemBehaviors alloc] init];
+	animationOptions.allowsRotation = NO;
+	//之后使用addChildBehavior加入到一个behavior中
+```
 
 
 
+#UIDynamicItem Protocol
 
-#UIDynamicItem
+```
+@protocol UIDynamicItem <NSObject>
+@property (nonatomic, readwrite) CGPoint center;
+@property (nonatomic, readonly) CGRect bounds;
+@property (nonatomic, readwrite) CGAffineTransform transform;
+@end
+```
+
+UICollectionViewLayoutAttributes和UIView实现了上述协议，实现了上述协议，就可以通过UIDynamicAnimator来模拟物理效果了。
+
+[苹果的Demo(我在其中加入了一个自己的。。。)](https://pan.baidu.com/s/1hr8TRRu)
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -94,7 +156,83 @@ UIDynamicAnimator对象是通过改变UIDynamicItem对象的frame,transform等�
 
 <h1 id="uidynamicbehavior">UIDynamicBehavior</h1>
 
-<h1 id="uidynamicitem">UIDynamicItem</h1>
+<p>UIDynamicBehavior是描述对UIDynamicItem对象的影响（influences）的抽象，它可以在任意时刻添加和删除，它可以组合，也可以被subclass。</p>
+
+<p>所有的UIDynamicBehavior有一些共同点:可以在加入到UIDynamicAnimator中之前设置参数；UIDynamicBehavior对item的影响随着它被移除而消失。</p>
+
+<p>以下列举一下预定义的behavior:</p>
+
+<h2 id="uigravitybehavior">重力 UIGravityBehavior</h2>
+
+<pre><code>@property CGFloat angle
+@property CGFloat magnitude
+Accelerate a (100,100) view to 100 p/s²
+</code></pre>
+
+<h2 id="uicollisionbehavior">碰撞 UICollisionBehavior</h2>
+
+<pre><code>@property UICollisionBehaviorMode collisionMode
+-(void)addBoundaryWithIdentyfier:(NSString *)identifier forPath:(UIBezierPath *)path
+@property BOOL translatesReferenceBoundsIntoBoudary
+@property (nonatomic, readwrite)
+    UICollisionBehaviorMode collisionMode;
+    UICollisionBehaviorModeItems
+    UICollisionBehaviorModeBoundaries
+    UICollisionBehaviorModeEverything
+</code></pre>
+
+<h2 id="uiattachmentbehavior">吸附效果 UIAttachmentBehavior</h2>
+
+<pre><code>@property CGFloat length
+- (instancetype)initWithItem:(id&lt;UIDynamicItem&gt;)item
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offsetFromCenter:(UIOffset)p1
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attachedToAnchor:(CGPoint)point
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+这个可以模拟弹簧的效果，配置参数如下（可调）：
+&nbsp; &nbsp; [attachmentBehavior setFrequency:1.0];
+&nbsp; &nbsp; [attachmentBehavior setDamping:0.01];
+</code></pre>
+
+<h2 id="uisnapbehavior">UISnapBehavior</h2>
+
+<pre><code>- (instancetype)initWithItem:(id&lt;UIDynamicItem&gt;)item
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;snapToPoint:(CGPoint)point
+快速移动到snapPoint并振动
+</code></pre>
+
+<h2 id="uipushbehavior">UIPushBehavior</h2>
+
+<p>这是一个作用力的效果，有瞬时力和持续力两种，当然，力的大小和方向都可以设置。</p>
+
+<pre><code>@property(readwrite,&nbsp;nonatomic)&nbsp;CGVector&nbsp;pushDirection
+@property(readwrite,&nbsp;nonatomic)&nbsp;CGFloat&nbsp;magnitude
+@property(readwrite,&nbsp;nonatomic)&nbsp;CGFloat&nbsp;angle
+@property(nonatomic,&nbsp;readonly)&nbsp;UIPushBehaviorMode&nbsp;mode
+</code></pre>
+
+<p>瞬时力作用完成后会将自己设置为非active状态，使用 [p setActive:TRUE]可以重新激活它。</p>
+
+<h2 id="uidynamicitembehaviors">UIDynamicItemBehaviors</h2>
+
+<p>这个类提供了改变动画行为的一些设置，比如是否允许旋转（allowsRotation ），弹力（elasticity），摩擦力（friction）等，用法如下：</p>
+
+<pre><code>    animationOptions = [[UIDynamicItemBehaviors alloc] init];
+    animationOptions.allowsRotation = NO;
+    //之后使用addChildBehavior加入到一个behavior中
+</code></pre>
+
+<h1 id="uidynamicitemprotocol">UIDynamicItem Protocol</h1>
+
+<pre><code>@protocol UIDynamicItem &lt;NSObject&gt;
+@property (nonatomic, readwrite) CGPoint center;
+@property (nonatomic, readonly) CGRect bounds;
+@property (nonatomic, readwrite) CGAffineTransform transform;
+@end
+</code></pre>
+
+<p>UICollectionViewLayoutAttributes和UIView实现了上述协议，实现了上述协议，就可以通过UIDynamicAnimator来模拟物理效果了。</p>
+
+<p><a href="https://pan.baidu.com/s/1hr8TRRu">苹果的Demo(我在其中加入了一个自己的。。。)</a></p>
 <!-- content end -->
 </div>
 <br>
