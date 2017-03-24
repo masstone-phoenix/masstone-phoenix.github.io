@@ -171,6 +171,8 @@ float interpolate(float from, float to, float time)
 
 程序中使用interpolate()函数将当前时间的值内插入初始值和终值之间，这样就形成了关键帧。如果使用缓冲函数，只需将时间输入缓冲函数中，将输出的时当作现在的时间使用即可。
 
+CAKeyframeAnimation的属性calculationMode可以控制内插的算法，这是另一种改变timing function的方法；在使用CAKeyframeAnimation沿着某条path做动画时，还可以通过rotationMode来控制物体是否沿着路径旋转。
+
 
 ## CAAnimationGroup
 可以将多个CAAnimation对象加入到一个CAAnimationGroup的对象中，此时，当CAAnimationGroup对象加入layer时，所有动画会同时开始执行。CAAnimationGroup是组织动画的一种好方法。
@@ -360,6 +362,8 @@ float interpolate(float from, float to, float time)
 </code></pre>
 
 <p>程序中使用interpolate()函数将当前时间的值内插入初始值和终值之间，这样就形成了关键帧。如果使用缓冲函数，只需将时间输入缓冲函数中，将输出的时当作现在的时间使用即可。</p>
+
+<p>CAKeyframeAnimation的属性calculationMode可以控制内插的算法，这是另一种改变timing function的方法；在使用CAKeyframeAnimation沿着某条path做动画时，还可以通过rotationMode来控制物体是否沿着路径旋转。</p>
 
 <h2 id="caanimationgroup">CAAnimationGroup</h2>
 
