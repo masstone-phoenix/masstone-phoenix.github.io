@@ -25,51 +25,76 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-# What we can do?
-With CallKit you'll integrate directly into the system's calling infrastructure and once you've adopted CallKit you'll maintain feature parity with native calling services.But most importantly, with CallKit your app will increase its visibility across the system whether it's with full screen, incoming alerts on the locked screen, appearances in recents, favorites, and contacts, or integration with Siri, CarPlay, and Bluetooth.
+#使用UIDynamicAnimator创建物理效果
 
-# Customized experience
-- Localized name for display 
-- Video support
-- Masked image icon
+UIDynamicAnimator是iOS提供的物理效果引擎，使用它我们可以轻松的创建物理效果。以下是UIDynamicAnimator的架构图。我们将按这幅图介绍UIDynamicAnimator。
+
+![](http://masstone-phoenix.github.io/image/UIDynamicAnimator/UIDynamicAnimator_arch.png)
 
 
-# The App rendering
+#UIDynamicAnimator
 
-呼入效果：
+UIDynamicAnimator为整个物理系统提供了一个上下文环境，它同时定义了整个坐标系，跟踪着系统内的Behaviors的运行。
 
-![](http://masstone-phoenix.github.io/image/voip/001.png)
+UIDynamicAnimator有三种：
 
-接听效果：
-
-![](http://masstone-phoenix.github.io/image/voip/002.png)
-
-Recents页面效果：
-
-![](http://masstone-phoenix.github.io/image/voip/003.png)
-
-多人呼入效果：
-
-![](http://masstone-phoenix.github.io/image/voip/004.png)
+1. 如果想要在某个view内做效果，使用[[UIDynamicAnimator alloc] initWithReferenceView:aView]，此时，reference view的坐标系作为UIDynamicAnimator的坐标系，同时，加入UIDynamicAnimator的item必须是reference view的subview。
+2. 如果要在collection view中做动画，使用[[UIDynamicAnimator alloc] initWithCollectionViewLayout:aUICollectionViewLayout];此时，collection view layout作为UIDynamicAnimator的坐标系，加入UIDynamicAnimator的item必须是UICollection​View​Layout​Attribute对象，同时也必须是the layout的一部分。
+3. 如果驱动服从UIDynamic​Item协议的对象，使用[[UIDynamicAnimator alloc] init]，作为结果，UIDynamicAnimator的坐标系是一个抽象坐标系，不绑定到屏幕或任意view
 
 
+所有以上的UIDynamicAnimator都满足以下性质：
 
-# Precaution
-- Not authorized 
-- Block list
-- Do not disturb
+1. 每个UIDynamicAnimator对象都是相互独立的
+2. 如果UIDynamicBehavior对象都属于一个UIDynamicAnimator对象，我们可以将同一个UIDynamicItem对象加入到多个UIDynamicBehavior对象中
+3. 当所有UIDynamicItem对象都停止时，UIDynamicAnimator对象就会自动暂停；***当UIDynamicBehavior对象的参数发生改变或添加删除某个UIDynamicItem对象时，UIDynamicAnimator对象会自动重新运行***
+
+UIDynamicAnimator对象是通过改变UIDynamicItem对象的frame,transform等来完成功能的，因此与AutoLayout不是很兼容。在加入到UIDynamicBehavior对象之前的frame,transform等参数就是动画的初始参数，之后这些就由UIDynamicAnimator对象接管了，如果需要在这时更改上述属性，需要使用updateItemUsingCurrentState:方法。
 
 
-# Other
-CallKit also introduces app extensions that enable call blocking and caller identification.
 
-##A bug:
-**https://forums.developer.apple.com/message/169511#169511**
+
+#UIDynamicBehavior
+
+
+
+
+#UIDynamicItem
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<h1 id="uidynamicanimator">使用UIDynamicAnimator创建物理效果</h1>
 
+<p>UIDynamicAnimator是iOS提供的物理效果引擎，使用它我们可以轻松的创建物理效果。以下是UIDynamicAnimator的架构图。我们将按这幅图介绍UIDynamicAnimator。</p>
+
+<p><img src="http://masstone-phoenix.github.io/image/UIDynamicAnimator/UIDynamicAnimator_arch.png" alt="" title=""></p>
+
+<h1 id="uidynamicanimator">UIDynamicAnimator</h1>
+
+<p>UIDynamicAnimator为整个物理系统提供了一个上下文环境，它同时定义了整个坐标系，跟踪着系统内的Behaviors的运行。</p>
+
+<p>UIDynamicAnimator有三种：</p>
+
+<ol>
+<li>如果想要在某个view内做效果，使用[[UIDynamicAnimator alloc] initWithReferenceView:aView]，此时，reference view的坐标系作为UIDynamicAnimator的坐标系，同时，加入UIDynamicAnimator的item必须是reference view的subview。</li>
+<li>如果要在collection view中做动画，使用[[UIDynamicAnimator alloc] initWithCollectionViewLayout:aUICollectionViewLayout];此时，collection view layout作为UIDynamicAnimator的坐标系，加入UIDynamicAnimator的item必须是UICollection​View​Layout​Attribute对象，同时也必须是the layout的一部分。</li>
+<li>如果驱动服从UIDynamic​Item协议的对象，使用[[UIDynamicAnimator alloc] init]，作为结果，UIDynamicAnimator的坐标系是一个抽象坐标系，不绑定到屏幕或任意view</li>
+</ol>
+
+<p>所有以上的UIDynamicAnimator都满足以下性质：</p>
+
+<ol>
+<li>每个UIDynamicAnimator对象都是相互独立的</li>
+<li>如果UIDynamicBehavior对象都属于一个UIDynamicAnimator对象，我们可以将同一个UIDynamicItem对象加入到多个UIDynamicBehavior对象中</li>
+<li>当所有UIDynamicItem对象都停止时，UIDynamicAnimator对象就会自动暂停；<strong><em>当UIDynamicBehavior对象的参数发生改变或添加删除某个UIDynamicItem对象时，UIDynamicAnimator对象会自动重新运行</em></strong></li>
+</ol>
+
+<p>UIDynamicAnimator对象是通过改变UIDynamicItem对象的frame,transform等来完成功能的，因此与AutoLayout不是很兼容。在加入到UIDynamicBehavior对象之前的frame,transform等参数就是动画的初始参数，之后这些就由UIDynamicAnimator对象接管了，如果需要在这时更改上述属性，需要使用updateItemUsingCurrentState:方法。</p>
+
+<h1 id="uidynamicbehavior">UIDynamicBehavior</h1>
+
+<h1 id="uidynamicitem">UIDynamicItem</h1>
 <!-- content end -->
 </div>
 <br>
