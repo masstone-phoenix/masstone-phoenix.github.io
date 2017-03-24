@@ -91,7 +91,7 @@ theLayer.opacity = 0.0;
 
 #显式动画
 
-要显式的对一个“动画属性”（Animatable Properties）进行动画，需要创建一个Core Animation’s animation类的实例，并且将它加到想到动画的layer中，需要注意，**显式动画是不会更改layer的属性值的**，显式动画对动画属性的控制更加精细。
+要显式的对一个“动画属性”（Animatable Properties）进行动画，需要创建一个Core Animation’s animation类的实例，并且将它加到想到动画的layer中，需要注意，**显式动画是不会更改layer的属性值的,我们需要同步更新model和present layer**，显式动画对动画属性的控制更加精细。
 
 ## CABasicAnimation 
 CABasicAnimation是CAAnimation的一个子类，用于创建简单的动画：
@@ -281,7 +281,7 @@ iOS中还有另一个动画系统，用于模拟物理效果比如重力，吸�
 
 <h1 id="">显式动画</h1>
 
-<p>要显式的对一个“动画属性”（Animatable Properties）进行动画，需要创建一个Core Animation’s animation类的实例，并且将它加到想到动画的layer中，需要注意，<strong>显式动画是不会更改layer的属性值的</strong>，显式动画对动画属性的控制更加精细。</p>
+<p>要显式的对一个“动画属性”（Animatable Properties）进行动画，需要创建一个Core Animation’s animation类的实例，并且将它加到想到动画的layer中，需要注意，<strong>显式动画是不会更改layer的属性值的,我们需要同步更新model和present layer</strong>，显式动画对动画属性的控制更加精细。</p>
 
 <h2 id="cabasicanimation">CABasicAnimation</h2>
 
