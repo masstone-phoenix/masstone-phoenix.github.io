@@ -299,6 +299,9 @@ NSAttributedString* applyParaStyle(
 }
 ```
 
+##图文混排
+Core Text是不支持图片的，所以绘制图片是通过Core Graphics来完成的。而Core Text需要给图片留出适应的位置，这就是通过CTRun的CTRunDelegate来完成的，CTRunDelegate提供CTRun所需要的宽度，高度（Ascent，Descent）等信息，通过CTRunDelegateCreate进行创建，需要提供两个参数，一个是各种回调；一个是额外的信息，这个信息会通过参数传递给回调函数。这样Core Text就给图片留出了适当的位置，在进行完文字排版时，我们需要通过Core Graphics将图片绘制到相应的位置上，这样就完成了图文混排。
+[Demo](https://pan.baidu.com/s/1gfDqbJl)
 
 
 #Font
@@ -708,6 +711,11 @@ NSAttributedString* applyParaStyle(
     return attrString;
 }
 </code></pre>
+
+<h2 id="">图文混排</h2>
+
+<p>Core Text是不支持图片的，所以绘制图片是通过Core Graphics来完成的。而Core Text需要给图片留出适应的位置，这就是通过CTRun的CTRunDelegate来完成的，CTRunDelegate提供CTRun所需要的宽度，高度（Ascent，Descent）等信息，通过CTRunDelegateCreate进行创建，需要提供两个参数，一个是各种回调；一个是额外的信息，这个信息会通过参数传递给回调函数。这样Core Text就给图片留出了适当的位置，在进行完文字排版时，我们需要通过Core Graphics将图片绘制到相应的位置上，这样就完成了图文混排。
+<a href="https://pan.baidu.com/s/1gfDqbJl">Demo</a></p>
 
 <h1 id="font">Font</h1>
 
