@@ -74,7 +74,12 @@ iOS就是从initial object开始查找，沿着nextResponder这条路，来寻�
 }
 ```
 
+
 PS：UIGestureRecognizer is an abstract base class for concrete gesture-recognizer classes. A gesture recognizer doesn’t participate in the view’s responder chain.View 的 touch 分发是从 UIApplication -> UIWindow 。然后 window 在发送 touch 到 view 之前，会先发给 view （或者它 superView 上）的 gesture recognizers。
+
+
+###事件响应总结
+由系统将事件发给UIApplication的队列，UIApplication将事件从队列中取出，使用hitTest找到事件发生的view，然后使用sendEvent:方法将事件发送给这个view(hit-testing view)，然后就会沿着这个view的响应链（[UIResponder nextResponder]）找到相应的事件处理方法，然后执行；还一种是没有找到处理方法，就会作丢弃处理。
 
 <!-- markdown end -->
 </div>
@@ -128,6 +133,10 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
 </code></pre>
 
 <p>PS：UIGestureRecognizer is an abstract base class for concrete gesture-recognizer classes. A gesture recognizer doesn’t participate in the view’s responder chain.View 的 touch 分发是从 UIApplication -&gt; UIWindow 。然后 window 在发送 touch 到 view 之前，会先发给 view （或者它 superView 上）的 gesture recognizers。</p>
+
+<h3 id="">事件响应总结</h3>
+
+<p>由系统将事件发给UIApplication的队列，UIApplication将事件从队列中取出，使用hitTest找到事件发生的view，然后使用sendEvent:方法将事件发送给这个view(hit-testing view)，然后就会沿着这个view的响应链（[UIResponder nextResponder]）找到相应的事件处理方法，然后执行；还一种是没有找到处理方法，就会作丢弃处理。</p>
 <!-- content end -->
 </div>
 <br>
