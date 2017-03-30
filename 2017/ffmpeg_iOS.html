@@ -62,7 +62,9 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 
 
 #链接入工程
-首先：link以下文件：libz.dylib，libbz2.dylib，libiconv.dylib
+首先：link以下文件：libz.dylib，libbz2.dylib，libiconv.dylib，将编译生成的文件夹FFmpeg-iOS拷贝到工程目录下。
+
+其次，在工程设置页，在Build Settings中找到Search Paths，设置Header Search Pahts中加入"$(PROJECT_DIR)/FFmpeg-iOS/include"和/usr/include/libxml2；Library Search Paths加入"$(PROJECT_DIR)/FFmpeg-iOS/lib"
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -102,7 +104,9 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 
 <h1 id="">链接入工程</h1>
 
-<p>首先：link以下文件：libz.dylib，libbz2.dylib，libiconv.dylib</p>
+<p>首先：link以下文件：libz.dylib，libbz2.dylib，libiconv.dylib，将编译生成的文件夹FFmpeg-iOS拷贝到工程目录下。</p>
+
+<p>其次，在工程设置页，在Build Settings中找到Search Paths，设置Header Search Pahts中加入"$(PROJECT<em>DIR)/FFmpeg-iOS/include"和/usr/include/libxml2；Library Search Paths加入"$(PROJECT</em>DIR)/FFmpeg-iOS/lib"</p>
 <!-- content end -->
 </div>
 <br>
