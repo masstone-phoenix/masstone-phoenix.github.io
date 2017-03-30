@@ -28,7 +28,7 @@
 FFmpeg大家都知道，是用来处理音视频数据的程序。项目中可能要用到，在这记录下编译的过程。参考<https://cnbin.github.io/blog/2015/05/19/iospei-zhi-ffmpegkuang-jia/>
 
 #准备
-1.安装yasm。
+1.安装yasm 1.2.0。因为编译脚本需要这个。
 
 ```
  cd yasm-1.2.0
@@ -52,6 +52,10 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 
 这个脚本文件自动下载编译。
 
+```
+./build-ffmpeg.sh
+```
+如果你想直接使用，请到<https://downloads.sourceforge.net/project/ffmpeg-ios/ffmpeg-ios-master.tar.bz2>下载二进制文件。
 
 <!-- markdown end -->
 </div>
@@ -61,7 +65,7 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 
 <h1 id="">准备</h1>
 
-<p>1.安装yasm。</p>
+<p>1.安装yasm 1.2.0。因为编译脚本需要这个。</p>
 
 <pre><code> cd yasm-1.2.0
  ./configure
@@ -83,6 +87,11 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 <a href="https://github.com/kewlbear/FFmpeg-iOS-build-script">https://github.com/kewlbear/FFmpeg-iOS-build-script</a></p>
 
 <p>这个脚本文件自动下载编译。</p>
+
+<pre><code>./build-ffmpeg.sh
+</code></pre>
+
+<p>如果你想直接使用，请到<a href="https://downloads.sourceforge.net/project/ffmpeg-ios/ffmpeg-ios-master.tar.bz2">https://downloads.sourceforge.net/project/ffmpeg-ios/ffmpeg-ios-master.tar.bz2</a>下载二进制文件。</p>
 <!-- content end -->
 </div>
 <br>
