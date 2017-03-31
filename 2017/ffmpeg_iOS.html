@@ -65,6 +65,9 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 
 
 #链接入工程
+
+##iFrameExtractor
+开始，我尝试编译这个项目，按下面步骤
 首先：link以下文件：libz.dylib，libbz2.dylib，libiconv.dylib，将编译生成的文件夹FFmpeg-iOS拷贝到工程目录下。
 
 其次，在工程设置页，在Build Settings中找到Search Paths，
@@ -72,6 +75,21 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 设置Header Search Pahts中加入"$(PROJECT_DIR)/FFmpeg-iOS/include"和/usr/include/libxml2；
 Library Search Paths加入"$(PROJECT_DIR)/FFmpeg-iOS/lib"
 ```
+
+##kxmovie
+最后，我重新自己新建了一个工程，开始新的旅程：
+
+1. 从[kxmovie](https://github.com/kolyvan/kxmovie)下载工程，并把其中kxmovie文件夹的内容加入到工程里
+2. 将上述编译好的FFmpeg-iOS同样加入工程中
+3. 在Build Settings中找到Search Paths
+```
+Header Search Pahts中加入"$(PROJECT_DIR)/FFmpeg-iOS/include"；
+Library Search Paths加入"$(PROJECT_DIR)/FFmpeg-iOS/lib"
+```
+4. 加入VideoToolbox.framework
+5. 加入libbz2.tbd，libiconv.tbd，libz.tbd
+
+编译，可以播放了。[工程](https://pan.baidu.com/s/1kVMB8Jt)和编译用工具源代码的见[地址](https://pan.baidu.com/s/1slRiYip)。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -114,13 +132,37 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 
 <h1 id="">链接入工程</h1>
 
-<p>首先：link以下文件：libz.dylib，libbz2.dylib，libiconv.dylib，将编译生成的文件夹FFmpeg-iOS拷贝到工程目录下。</p>
+<h2 id="iframeextractor">iFrameExtractor</h2>
+
+<p>开始，我尝试编译这个项目，按下面步骤
+首先：link以下文件：libz.dylib，libbz2.dylib，libiconv.dylib，将编译生成的文件夹FFmpeg-iOS拷贝到工程目录下。</p>
 
 <p>其次，在工程设置页，在Build Settings中找到Search Paths，</p>
 
 <pre><code>设置Header Search Pahts中加入"$(PROJECT_DIR)/FFmpeg-iOS/include"和/usr/include/libxml2；
 Library Search Paths加入"$(PROJECT_DIR)/FFmpeg-iOS/lib"
 </code></pre>
+
+<h2 id="kxmovie">kxmovie</h2>
+
+<p>最后，我重新自己新建了一个工程，开始新的旅程：</p>
+
+<ol>
+<li>从<a href="https://github.com/kolyvan/kxmovie">kxmovie</a>下载工程，并把其中kxmovie文件夹的内容加入到工程里</li>
+<li>将上述编译好的FFmpeg-iOS同样加入工程中</li>
+<li>在Build Settings中找到Search Paths</li>
+</ol>
+
+<pre><code>Header Search Pahts中加入"$(PROJECT_DIR)/FFmpeg-iOS/include"；
+Library Search Paths加入"$(PROJECT_DIR)/FFmpeg-iOS/lib"
+</code></pre>
+
+<ol>
+<li>加入VideoToolbox.framework</li>
+<li>加入libbz2.tbd，libiconv.tbd，libz.tbd</li>
+</ol>
+
+<p>编译，可以播放了。<a href="https://pan.baidu.com/s/1kVMB8Jt">工程</a>和编译用工具源代码的见<a href="https://pan.baidu.com/s/1slRiYip">地址</a>。</p>
 <!-- content end -->
 </div>
 <br>
