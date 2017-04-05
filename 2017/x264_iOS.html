@@ -1,0 +1,180 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+FFmpeg大家都知道，是用来处理音视频数据的程序。项目中可能要用到，在这记录下编译的过程。参考<https://cnbin.github.io/blog/2015/05/19/iospei-zhi-ffmpegkuang-jia/>
+
+
+
+#准备
+环境：macOS Sierra 10.12, Xcode Version 8.2 (8C38)
+
+1.安装yasm 1.2.0。因为编译脚本需要这个。
+
+```
+ cd yasm-1.2.0
+ ./configure
+ make
+ sudo make install
+```
+
+2.到https://github.com/libav/gas-preprocessor下载 gas-preprocessor.pl 文件，复制gas-preprocessor.pl到/usr/bin下，修改文件权限 
+
+```
+sudo cp ..../gas-preprocessor.pl   /usr/local/bin/gas-preprocessor.pl
+sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
+```
+
+
+#编译
+
+下载脚本文件<https://github.com/kewlbear/FFmpeg-iOS-build-script>
+
+这个脚本文件自动下载编译。
+
+```
+./build-ffmpeg.sh
+
+结束后可观察格式
+ lipo -info libavcodec.a
+```
+如果你想直接使用，请到<https://downloads.sourceforge.net/project/ffmpeg-ios/ffmpeg-ios-master.tar.bz2>下载二进制文件。
+
+
+#链接入工程
+
+##iFrameExtractor
+开始，我尝试编译这个项目，按下面步骤——
+
+首先：link以下文件：libz.dylib，libbz2.dylib，libiconv.dylib，将编译生成的文件夹FFmpeg-iOS拷贝到工程目录下。
+
+其次，在工程设置页，在Build Settings中找到Search Paths，
+```
+设置Header Search Pahts中加入"$(PROJECT_DIR)/FFmpeg-iOS/include"和/usr/include/libxml2；
+Library Search Paths加入"$(PROJECT_DIR)/FFmpeg-iOS/lib"
+```
+
+最后，设置编译选项-libconv。
+
+然并卵，还是编译不过，<font color=red>放弃</font>。
+
+##kxmovie
+最后，我重新自己新建了一个工程，开始新的旅程：
+
+1. 从[kxmovie](https://github.com/kolyvan/kxmovie)下载工程，并把其中kxmovie文件夹的内容加入到工程里
+2. 将上述编译好的FFmpeg-iOS同样加入工程中
+3. 在Build Settings中找到Search Paths,按下面进行设置
+4. 加入VideoToolbox.framework
+5. 加入libbz2.tbd，libiconv.tbd，libz.tbd
+
+```
+Header Search Pahts中加入"$(PROJECT_DIR)/FFmpeg-iOS/include"；
+Library Search Paths加入"$(PROJECT_DIR)/FFmpeg-iOS/lib"
+```
+
+编译，<font color=red>可以播放了</font>。[工程](https://pan.baidu.com/s/1kVMB8Jt)和编译用工具源代码的见[地址](https://pan.baidu.com/s/1slRiYip)。
+
+
+
+参考链接：
+<http://www.jianshu.com/p/c33f4c96074e>
+<http://www.iosugar.com/2017/03/06/FFmpeg-study-notes-01-environmental-building/>
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "2017/x264_iOS.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
