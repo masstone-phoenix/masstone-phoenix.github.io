@@ -54,6 +54,20 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 结束后可观察格式
  lipo -info libx264.a
 ```
+
+#编译FFmpeg
+修改[上篇](https://masstone-phoenix.github.io/2017/ffmpeg_iOS.html)编译FFmpeg脚本中的x264库的地址如下：
+```
+# absolute path to x264 library
+X264=`pwd`/x264-iOS
+```
+运行，编译出来的FFmpeg即支持x264了
+```
+./build-ffmpeg.sh
+```
+
+#链接入工程
+这个很简单了，将x264-iOS直接拖入工程，然后使用即可。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -83,6 +97,23 @@ sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
 结束后可观察格式
  lipo -info libx264.a
 </code></pre>
+
+<h1 id="ffmpeg">编译FFmpeg</h1>
+
+<p>修改<a href="https://masstone-phoenix.github.io/2017/ffmpeg_iOS.html">上篇</a>编译FFmpeg脚本中的x264库的地址如下：</p>
+
+<pre><code># absolute path to x264 library
+X264=`pwd`/x264-iOS
+</code></pre>
+
+<p>运行，编译出来的FFmpeg即支持x264了</p>
+
+<pre><code>./build-ffmpeg.sh
+</code></pre>
+
+<h1 id="">链接入工程</h1>
+
+<p>这个很简单了，将x264-iOS直接拖入工程，然后使用即可。</p>
 <!-- content end -->
 </div>
 <br>
