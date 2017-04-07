@@ -27,12 +27,28 @@
 <!-- markdown -->
 在[上篇](https://masstone-phoenix.github.io/2017/ffmpeg_iOS.html)编译了FFmpeg库，在iOS中使用这个库需要直接调用其API，使用C语言编程，这样的好处是对编码等可以进行更精细的控制，但难度较大，这里介绍另一种方法，直接在iOS中写类似“ffmpeg -f gif -i FOO.gif -pix_fmt yuv420p -c:v libx264 -movflags +faststart -s 400x400 BAR.mp4”这种的命令，让ffmpeg完成为我们转换视频等操作。
 
+以下为步骤：
+
+
+###1. 新建工程，加入编译好的FFmpeg-iOS、x264-iOS入工程，并配置Header Search Path、Library Search Path
+
+###2. 加入三个.tbd文件和VideoToolbox.framework、AudioToolbox.framework和CoreMedia.framework。
+![](http://masstone-phoenix.github.io/image/UIDynamicAnimator/UIDynamicAnimator_arch.png)
+###3. 
 
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
 <p>在<a href="https://masstone-phoenix.github.io/2017/ffmpeg_iOS.html">上篇</a>编译了FFmpeg库，在iOS中使用这个库需要直接调用其API，使用C语言编程，这样的好处是对编码等可以进行更精细的控制，但难度较大，这里介绍另一种方法，直接在iOS中写类似“ffmpeg -f gif -i FOO.gif -pix_fmt yuv420p -c:v libx264 -movflags +faststart -s 400x400 BAR.mp4”这种的命令，让ffmpeg完成为我们转换视频等操作。</p>
+
+<p>以下为步骤：</p>
+
+<h3 id="1ffmpegiosx264iosheadersearchpathlibrarysearchpath">1. 新建工程，加入编译好的FFmpeg-iOS、x264-iOS入工程，并配置Header Search Path、Library Search Path</h3>
+
+<h3 id="2tbdvideotoolboxframeworkaudiotoolboxframeworkcoremediaframework">2. 加入三个.tbd文件和VideoToolbox.framework、AudioToolbox.framework和CoreMedia.framework。</h3>
+
+<h3 id="3">3.</h3>
 <!-- content end -->
 </div>
 <br>
