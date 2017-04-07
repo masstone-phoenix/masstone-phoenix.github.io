@@ -68,6 +68,35 @@ X264=`pwd`/x264-iOS
 
 #链接入工程
 这个很简单了，将x264-iOS直接拖入工程，然后使用即可。
+
+其中需要设置x264的一些选项的方法：
+
+```
+// Set Option
+    AVDictionary *param = 0;
+    //H.264
+    if(pCodecContext->codec_id == AV_CODEC_ID_H264) {
+        av_dict_set(&param, "preset", "slow", 0);
+        av_dict_set(&param, "tune", "zerolatency", 0);
+        //av_dict_set(&param, "profile", "main", 0);
+        //av_dict_set(&opts, "b", "2.5M", 0);
+        av_dict_set(&param, "vprofile", "baseline", 0);
+        av_dict_set(&param, "crf", "5", 0);
+    }
+
+    AVCodec *pCodec = avcodec_find_encoder(pCodecContext->codec_id);
+    if (!pCodec){
+        printf("Can not find encoder! \n");
+        return ;
+    }
+    if (avcodec_open2(pCodecContext, pCodec,&param) < 0){
+        printf("Failed to open encoder! \n");
+        return ;
+    }
+```
+
+LGPL协议：[例子](https://pan.baidu.com/s/1qYPP6XY)
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -114,6 +143,33 @@ X264=`pwd`/x264-iOS
 <h1 id="">链接入工程</h1>
 
 <p>这个很简单了，将x264-iOS直接拖入工程，然后使用即可。</p>
+
+<p>其中需要设置x264的一些选项的方法：</p>
+
+<pre><code>// Set Option
+    AVDictionary *param = 0;
+    //H.264
+    if(pCodecContext-&gt;codec_id == AV_CODEC_ID_H264) {
+        av_dict_set(&amp;param, "preset", "slow", 0);
+        av_dict_set(&amp;param, "tune", "zerolatency", 0);
+        //av_dict_set(&amp;param, "profile", "main", 0);
+        //av_dict_set(&amp;opts, "b", "2.5M", 0);
+        av_dict_set(&amp;param, "vprofile", "baseline", 0);
+        av_dict_set(&amp;param, "crf", "5", 0);
+    }
+
+    AVCodec *pCodec = avcodec_find_encoder(pCodecContext-&gt;codec_id);
+    if (!pCodec){
+        printf("Can not find encoder! \n");
+        return ;
+    }
+    if (avcodec_open2(pCodecContext, pCodec,&amp;param) &lt; 0){
+        printf("Failed to open encoder! \n");
+        return ;
+    }
+</code></pre>
+
+<p>LGPL协议：<a href="https://pan.baidu.com/s/1qYPP6XY">例子</a></p>
 <!-- content end -->
 </div>
 <br>
