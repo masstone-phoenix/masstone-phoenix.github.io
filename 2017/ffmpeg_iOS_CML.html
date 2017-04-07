@@ -25,83 +25,14 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-x264是一种免费的、具有更优秀算法的符合H.264/MPEG-4 AVC视频压缩编码标准格式的编码库。项目中可能要用到，在这记录下编译的过程。参考<http://depthlove.github.io/2015/09/16/build-X264-library-for-iOS-platform/>
+在[上篇](https://masstone-phoenix.github.io/2017/ffmpeg_iOS.html)编译了FFmpeg库，在iOS中使用这个库需要直接调用其API，使用C语言编程，这样的好处是对编码等可以进行更精细的控制，但难度较大，这里介绍另一种方法，直接在iOS中写类似“ffmpeg -f gif -i FOO.gif -pix_fmt yuv420p -c:v libx264 -movflags +faststart -s 400x400 BAR.mp4”这种的命令，让ffmpeg完成为我们转换视频等操作。
 
-
-
-#准备
-环境：macOS Sierra 10.12, Xcode Version 8.2 (8C38)
-
-1.下载x264并解压好，下载[地址](http://download.videolan.org/pub/x264/snapshots/)，可以选最新的stable版本。
-
-2.到https://github.com/libav/gas-preprocessor下载 gas-preprocessor.pl 文件，复制gas-preprocessor.pl到/usr/bin下，修改文件权限 
-
-```
-sudo cp ..../gas-preprocessor.pl   /usr/local/bin/gas-preprocessor.pl
-sudo chmod 777 /usr/local/bin/gas-preprocessor.pl
-```
-
-
-#编译
-
-下载脚本文件<https://github.com/kewlbear/x264-ios>
-
-这个脚本文件自动下载编译。
-
-```
- ./build-x264.sh
-
-结束后可观察格式
- lipo -info libx264.a
-```
-
-#编译FFmpeg
-修改[上篇](https://masstone-phoenix.github.io/2017/ffmpeg_iOS.html)编译FFmpeg脚本中的x264库的地址如下：
-```
-# absolute path to x264 library
-X264=`pwd`/x264-iOS
-```
-运行，编译出来的FFmpeg即支持x264了
-```
-./build-ffmpeg.sh
-```
-
-#链接入工程
-这个很简单了，将x264-iOS直接拖入工程，然后使用即可。
-
-其中需要设置x264的一些选项的方法：
-
-```
-// Set Option
-    AVDictionary *param = 0;
-    //H.264
-    if(pCodecContext->codec_id == AV_CODEC_ID_H264) {
-        av_dict_set(&param, "preset", "slow", 0);
-        av_dict_set(&param, "tune", "zerolatency", 0);
-        //av_dict_set(&param, "profile", "main", 0);
-        //av_dict_set(&opts, "b", "2.5M", 0);
-        av_dict_set(&param, "vprofile", "baseline", 0);
-        av_dict_set(&param, "crf", "5", 0);
-    }
-
-    AVCodec *pCodec = avcodec_find_encoder(pCodecContext->codec_id);
-    if (!pCodec){
-        printf("Can not find encoder! \n");
-        return ;
-    }
-    if (avcodec_open2(pCodecContext, pCodec,&param) < 0){
-        printf("Failed to open encoder! \n");
-        return ;
-    }
-```
-
-LGPL协议：[例子](https://pan.baidu.com/s/1qYPP6XY)
 
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
-
+<p>在<a href="https://masstone-phoenix.github.io/2017/ffmpeg_iOS.html">上篇</a>编译了FFmpeg库，在iOS中使用这个库需要直接调用其API，使用C语言编程，这样的好处是对编码等可以进行更精细的控制，但难度较大，这里介绍另一种方法，直接在iOS中写类似“ffmpeg -f gif -i FOO.gif -pix_fmt yuv420p -c:v libx264 -movflags +faststart -s 400x400 BAR.mp4”这种的命令，让ffmpeg完成为我们转换视频等操作。</p>
 <!-- content end -->
 </div>
 <br>
