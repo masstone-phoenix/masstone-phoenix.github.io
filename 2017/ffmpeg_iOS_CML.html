@@ -33,10 +33,44 @@
 ###1. 新建工程，加入编译好的FFmpeg-iOS、x264-iOS入工程，并配置Header Search Path、Library Search Path
 
 ###2. 加入三个.tbd文件和VideoToolbox.framework、AudioToolbox.framework和CoreMedia.framework。
+![](http://masstone-phoenix.github.io/image/ffmpeg_cml/ffmpeg_cml_framework.png)
+
+###3. 将与ffmpeg.c想着的文件加入工程中，如下图所示：
 ![](http://masstone-phoenix.github.io/image/ffmpeg_cml/ffmpeg_files.png)
 
-###3. 
+注意，此时编译会有很多错误，我们需要对各种错误进行处理，有些用不到的头文件直接删除，有些log信息报错的直接注释（这里比较简单粗暴）。主要的错误如下：
 
+####a. 真机运行时，提示CPU类型不支持，直接将config.h文件中的下述语句去掉
+```
+//#if   defined(_M_AMD64) || defined(__x86_64)
+//#   define X86_64
+//#elif defined(_M_IX86) || defined(__i386__)
+//#   define X86_32
+//#else
+//#   error Unsupported CPU architecture.
+//#endif
+```
+####b. 时间time.h问题：iOS9中clock_gettime不存在，而在iOS10中加入了，所以使用Xcode8编译的在iOS9上跑会crash。解决办法是重新编译库。在configure后加上：
+
+sed -i -- 's/HAVE_CLOCK_GETTIME 1/HAVE_CLOCK_GETTIME 0/g' config.h
+
+来自：<https://github.com/kewlbear/FFmpeg-iOS-build-script/issues/83>
+
+####c. 转换视频一次后再次启动thread会crash，参考文末文章中的解决办法在ffmpeg_cleanup()函数中加入如下
+
+```
+    nb_filtergraphs = 0;
+    nb_output_files = 0;
+    nb_output_streams = 0;
+    nb_input_files = 0;
+    nb_input_streams = 0;
+```
+
+####d. 退出问题，这个在文末的文章中也有解决方案，我这里直接使用unix中的pthread_exit(&ret);
+
+
+
+参考：<http://blog.sina.com.cn/s/blog_47522f7f0102vbwp.html>
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -49,9 +83,43 @@
 
 <h3 id="2tbdvideotoolboxframeworkaudiotoolboxframeworkcoremediaframework">2. 加入三个.tbd文件和VideoToolbox.framework、AudioToolbox.framework和CoreMedia.framework。</h3>
 
+<p><img src="http://masstone-phoenix.github.io/image/ffmpeg_cml/ffmpeg_cml_framework.png" alt="" title=""></p>
+
+<h3 id="3ffmpegc">3. 将与ffmpeg.c想着的文件加入工程中，如下图所示：</h3>
+
 <p><img src="http://masstone-phoenix.github.io/image/ffmpeg_cml/ffmpeg_files.png" alt="" title=""></p>
 
-<h3 id="3">3.</h3>
+<p>注意，此时编译会有很多错误，我们需要对各种错误进行处理，有些用不到的头文件直接删除，有些log信息报错的直接注释（这里比较简单粗暴）。主要的错误如下：</p>
+
+<h4 id="acpuconfigh">a. 真机运行时，提示CPU类型不支持，直接将config.h文件中的下述语句去掉</h4>
+
+<pre><code>//#if   defined(_M_AMD64) || defined(__x86_64)
+//#   define X86_64
+//#elif defined(_M_IX86) || defined(__i386__)
+//#   define X86_32
+//#else
+//#   error Unsupported CPU architecture.
+//#endif
+</code></pre>
+
+<h4 id="btimehios9clock_gettimeios10xcode8ios9crashconfigure">b. 时间time.h问题：iOS9中clock_gettime不存在，而在iOS10中加入了，所以使用Xcode8编译的在iOS9上跑会crash。解决办法是重新编译库。在configure后加上：</h4>
+
+<p>sed -i -- 's/HAVE<em>CLOCK</em>GETTIME 1/HAVE<em>CLOCK</em>GETTIME 0/g' config.h</p>
+
+<p>来自：<a href="https://github.com/kewlbear/FFmpeg-iOS-build-script/issues/83">https://github.com/kewlbear/FFmpeg-iOS-build-script/issues/83</a></p>
+
+<h4 id="cthreadcrashffmpeg_cleanup">c. 转换视频一次后再次启动thread会crash，参考文末文章中的解决办法在ffmpeg_cleanup()函数中加入如下</h4>
+
+<pre><code>    nb_filtergraphs = 0;
+    nb_output_files = 0;
+    nb_output_streams = 0;
+    nb_input_files = 0;
+    nb_input_streams = 0;
+</code></pre>
+
+<h4 id="dunixpthread_exitret">d. 退出问题，这个在文末的文章中也有解决方案，我这里直接使用unix中的pthread_exit(&amp;ret);</h4>
+
+<p>参考：<a href="http://blog.sina.com.cn/s/blog_47522f7f0102vbwp.html">http://blog.sina.com.cn/s/blog_47522f7f0102vbwp.html</a></p>
 <!-- content end -->
 </div>
 <br>
