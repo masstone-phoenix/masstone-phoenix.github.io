@@ -39,7 +39,7 @@ CTFrame：代表一个段
 
 CTLine：代表一行，由CTTypesetterRef创建，像CTFrame一样，可以在图形上下文（graphics context）中绘制自己
 
-CTRun：代表属性、方向相同的一组连续的“字形”（glyphs），它也可以在图形上下文（graphics context）中绘制自己
+CTRun：代表属性、方向相同的一组连续的“字形”（glyphs），不可以跨行，它也可以在图形上下文（graphics context）中绘制自己
 
 一个CTFrame对象可能包含一个或多个CTLine对象，同样，一个CTLine对象可能包含一个或多个CTRun对象。
 
@@ -453,7 +453,7 @@ CTFontRef CreateFontFromFlattenedFontData(CFDataRef iData)
 
 <p>CTLine：代表一行，由CTTypesetterRef创建，像CTFrame一样，可以在图形上下文（graphics context）中绘制自己</p>
 
-<p>CTRun：代表属性、方向相同的一组连续的“字形”（glyphs），它也可以在图形上下文（graphics context）中绘制自己</p>
+<p>CTRun：代表属性、方向相同的一组连续的“字形”（glyphs），不可以跨行，它也可以在图形上下文（graphics context）中绘制自己</p>
 
 <p>一个CTFrame对象可能包含一个或多个CTLine对象，同样，一个CTLine对象可能包含一个或多个CTRun对象。</p>
 
