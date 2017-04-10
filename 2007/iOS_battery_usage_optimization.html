@@ -29,7 +29,7 @@
 
 #基本概念
 
-我们在编程时，系统可以分为三个状态：空闲（idle state）、中间（intermidate state）、工作（active）。空闲时消耗的能量代，中间态有Fixed cost，工作态有Dynamic cost和Fixed cost。*所以我们应该将小的，分开的事情集中在一起做*，这样可以节省电量。
+我们在编程时，系统可以分为三个状态：空闲（idle state）、中间（intermidate state）、工作（active）。空闲时消耗的能量低，中间态有Fixed cost，工作态有Dynamic cost和Fixed cost。*所以我们应该将小的，间歇性的事情集中在一起做*，这样可以节省电量。
 
 总结：
 
@@ -37,9 +37,39 @@
 2. 密集的工作，Dynamic cost占的比例多
 
 
-#不要做
+#不要做（Do it never）
+
+在用户看不到的情况下，不要做更新UI等不需要做的事情。
+
+比如：iOS中没有didResignActive方法，我给放在了willResignActive里
+```
+- (void)applicationWillResignActive:(UIApplication *)application {
+// Pause animations and UI updates
+}
+!
+- (void)applicationDidBecomeActive:(UIApplication *)application; {
+// Resume animations and UI updates
+}
+
+```
+
+#更好的时机做（Do it at a better time）
+1. NSURLSession Background Session
+2. Discretionary Tasks：NSURLSessionConfiguration.discretionary
 
 
+#更高效的做（Do it more efficiently）
+这里着重介绍了Quality of Service和其应用。
+#少做（Do it less）
+With NSOperation, the QoS of an operation can be promoted by:
+• Enqueueing a higher QoS operation on the same queue
+• Using addDependency: with a higher QoS operation
+• waitUntilFinished: or waitUntilAllOperationsAreFinished:
+from a higher QoS thread
+
+
+sudo powermetrics --show-process-qos --samplers tasks
+sudo spindump -timeline MyApplication
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -48,7 +78,7 @@
 
 <h1 id="">基本概念</h1>
 
-<p>我们在编程时，系统可以分为三个状态：空闲（idle state）、中间（intermidate state）、工作（active）。空闲时消耗的能量代，中间态有Fixed cost，工作态有Dynamic cost和Fixed cost。<em>所以我们应该将小的，分开的事情集中在一起做</em>，这样可以节省电量。</p>
+<p>我们在编程时，系统可以分为三个状态：空闲（idle state）、中间（intermidate state）、工作（active）。空闲时消耗的能量低，中间态有Fixed cost，工作态有Dynamic cost和Fixed cost。<em>所以我们应该将小的，间歇性的事情集中在一起做</em>，这样可以节省电量。</p>
 
 <p>总结：</p>
 
@@ -57,7 +87,42 @@
 <li>密集的工作，Dynamic cost占的比例多</li>
 </ol>
 
-<h1 id="">不要做</h1>
+<h1 id="doitnever">不要做（Do it never）</h1>
+
+<p>在用户看不到的情况下，不要做更新UI等不需要做的事情。</p>
+
+<p>比如：iOS中没有didResignActive方法，我给放在了willResignActive里</p>
+
+<pre><code>- (void)applicationWillResignActive:(UIApplication *)application {
+// Pause animations and UI updates
+}
+!
+- (void)applicationDidBecomeActive:(UIApplication *)application; {
+// Resume animations and UI updates
+}
+</code></pre>
+
+<h1 id="doitatabettertime">更好的时机做（Do it at a better time）</h1>
+
+<ol>
+<li>NSURLSession Background Session</li>
+<li>Discretionary Tasks：NSURLSessionConfiguration.discretionary</li>
+</ol>
+
+<h1 id="doitmoreefficiently">更高效的做（Do it more efficiently）</h1>
+
+<p>这里着重介绍了Quality of Service和其应用。</p>
+
+<h1 id="doitless">少做（Do it less）</h1>
+
+<p>With NSOperation, the QoS of an operation can be promoted by:
+• Enqueueing a higher QoS operation on the same queue
+• Using addDependency: with a higher QoS operation
+• waitUntilFinished: or waitUntilAllOperationsAreFinished:
+from a higher QoS thread</p>
+
+<p>sudo powermetrics --show-process-qos --samplers tasks
+sudo spindump -timeline MyApplication</p>
 <!-- content end -->
 </div>
 <br>
