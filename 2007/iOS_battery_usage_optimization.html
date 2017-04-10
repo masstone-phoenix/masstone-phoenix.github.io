@@ -116,7 +116,7 @@ dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
 - 减小绘图内容，只在需要的时候绘制
 - 使用profile中的Core Animation，在Debug Options中说"Flash Screen Regions"
 - 不要在半透明的地方画图或做动画，这样绘图的计算会很多
-
+- 在做动画时，使用恒定的帧速率；在同一屏幕上绘制的帧速率也最好相同。比如，在一个游戏中，人物以60 fps移动，云朵以30 fps移动，那最好都以60 fps的速率绘制
 
 ##Minimize I/O
 - 写Flash开销大，最好写的地方集中在一起写入，而不是分开写
@@ -227,6 +227,7 @@ dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
 <li>减小绘图内容，只在需要的时候绘制</li>
 <li>使用profile中的Core Animation，在Debug Options中说"Flash Screen Regions"</li>
 <li>不要在半透明的地方画图或做动画，这样绘图的计算会很多</li>
+<li>在做动画时，使用恒定的帧速率；在同一屏幕上绘制的帧速率也最好相同。比如，在一个游戏中，人物以60 fps移动，云朵以30 fps移动，那最好都以60 fps的速率绘制</li>
 </ul>
 
 <h2 id="minimizeio">Minimize I/O</h2>
