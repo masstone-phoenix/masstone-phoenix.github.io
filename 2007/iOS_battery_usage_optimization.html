@@ -160,7 +160,13 @@ dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
 - 写Flash开销大，最好写的地方集中在一起写入，而不是分开写
 - 任何I/O操作都会将系统从低功耗状态中唤醒，可以使用cache来减小这方面的energy消耗
 
+##Location
+1. 连续模式： [locationManager startUpdatingLocation]
+2. defer模式（也可以很精确）：[locationManager allowDeferredLocationUpdatesUntilTraveled: timeout:]
+3. 较大的位置变化：[locationManager startMonitoringSignificantLocationChanges]
+4. 区域监测：[locationManager startMonitoringForRegion:(CLRegion *)]
 
+功耗依次凑活，根据App需求选择合适的模式。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -313,6 +319,17 @@ dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
 <li>写Flash开销大，最好写的地方集中在一起写入，而不是分开写</li>
 <li>任何I/O操作都会将系统从低功耗状态中唤醒，可以使用cache来减小这方面的energy消耗</li>
 </ul>
+
+<h2 id="location">Location</h2>
+
+<ol>
+<li>连续模式： [locationManager startUpdatingLocation]</li>
+<li>defer模式（也可以很精确）：[locationManager allowDeferredLocationUpdatesUntilTraveled: timeout:]</li>
+<li>较大的位置变化：[locationManager startMonitoringSignificantLocationChanges]</li>
+<li>区域监测：[locationManager startMonitoringForRegion:(CLRegion *)]</li>
+</ol>
+
+<p>功耗依次凑活，根据App需求选择合适的模式。</p>
 <!-- content end -->
 </div>
 <br>
