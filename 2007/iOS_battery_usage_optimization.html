@@ -46,7 +46,7 @@
 - (void)applicationWillResignActive:(UIApplication *)application {
 // Pause animations and UI updates
 }
-!
+
 - (void)applicationDidBecomeActive:(UIApplication *)application; {
 // Resume animations and UI updates
 }
@@ -55,7 +55,7 @@
 
 #更好的时机做（Do it at a better time）
 1.  在后台做：NSURLSession Background Session
-2.  系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary
+2.  系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary；NSURLSessionConfiguration.timeoutIntervalForResource(>=12 hours)
 
 检查host是否可达，如不可达就不要浪费电量发送请求了
 ```
@@ -172,7 +172,7 @@ dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
 <pre><code>- (void)applicationWillResignActive:(UIApplication *)application {
 // Pause animations and UI updates
 }
-!
+
 - (void)applicationDidBecomeActive:(UIApplication *)application; {
 // Resume animations and UI updates
 }
@@ -182,7 +182,7 @@ dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
 
 <ol>
 <li>在后台做：NSURLSession Background Session</li>
-<li>系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary</li>
+<li>系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary；NSURLSessionConfiguration.timeoutIntervalForResource(&gt;=12 hours)</li>
 </ol>
 
 <p>检查host是否可达，如不可达就不要浪费电量发送请求了</p>
