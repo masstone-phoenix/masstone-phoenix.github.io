@@ -57,6 +57,21 @@
 1.  在后台做：NSURLSession Background Session
 2.  系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary；NSURLSessionConfiguration.timeoutIntervalForResource(>=12 hours)
 
+e.g.:
+```
+NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@“com.apple.App.UserRestore”];
+[config setAllowsCellularAccess:NO];
+[config setDiscretionary:YES];
+config.timeoutIntervalForResource = 18 * 60 * 60;
+
+NSURLSession *session = [NSURLSession sessionWithConfiguration:config
+delegate:self delegateQueue:nil];
+
+NSURL *url = [NSURL URLWithString:@“http://www.foo.com/interesting_thing”];
+NSURLSessionTask *task = [session downloadTaskWithURL:url];
+[task resume];
+```
+
 检查host是否可达，如不可达就不要浪费电量发送请求了
 ```
 #import "SystemConfiguration/SCNetworkReachability.h"
@@ -184,6 +199,21 @@ dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
 <li>在后台做：NSURLSession Background Session</li>
 <li>系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary；NSURLSessionConfiguration.timeoutIntervalForResource(&gt;=12 hours)</li>
 </ol>
+
+<p>e.g.:</p>
+
+<pre><code>NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@“com.apple.App.UserRestore”];
+[config setAllowsCellularAccess:NO];
+[config setDiscretionary:YES];
+config.timeoutIntervalForResource = 18 * 60 * 60;
+
+NSURLSession *session = [NSURLSession sessionWithConfiguration:config
+delegate:self delegateQueue:nil];
+
+NSURL *url = [NSURL URLWithString:@“http://www.foo.com/interesting_thing”];
+NSURLSessionTask *task = [session downloadTaskWithURL:url];
+[task resume];
+</code></pre>
 
 <p>检查host是否可达，如不可达就不要浪费电量发送请求了</p>
 
