@@ -57,6 +57,29 @@
 1.  在后台做：NSURLSession Background Session
 2.  系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary
 
+检查host是否可达，如不可达就不要浪费电量发送请求了
+```
+#import "SystemConfiguration/SCNetworkReachability.h"
+...
+// Create a reachability object for the desired host
+NSString *hostName = @"someHostName";
+SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(NULL, [hostName UTF8String]);
+ 
+// Create a place in memory for reachability flags
+SCNetworkReachabilityFlags flags;
+ 
+// Check the reachability of the host
+SCNetworkReachabilityGetFlags(reachability, &flags);
+ 
+// Release the reachability object
+CFRelease(reachability);
+ 
+// Check to see if the reachable flag is set
+if ((flags & kSCNetworkReachabilityFlagsReachable) == 0) {
+   // The target host is not reachable
+   // Alert the user or defer the activity
+}
+```
 
 #更高效的做（Do it more efficiently）
 这里着重介绍了Quality of Service和其应用。
@@ -161,6 +184,30 @@ dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
 <li>在后台做：NSURLSession Background Session</li>
 <li>系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary</li>
 </ol>
+
+<p>检查host是否可达，如不可达就不要浪费电量发送请求了</p>
+
+<pre><code>#import "SystemConfiguration/SCNetworkReachability.h"
+...
+// Create a reachability object for the desired host
+NSString *hostName = @"someHostName";
+SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithName(NULL, [hostName UTF8String]);
+
+// Create a place in memory for reachability flags
+SCNetworkReachabilityFlags flags;
+
+// Check the reachability of the host
+SCNetworkReachabilityGetFlags(reachability, &amp;flags);
+
+// Release the reachability object
+CFRelease(reachability);
+
+// Check to see if the reachable flag is set
+if ((flags &amp; kSCNetworkReachabilityFlagsReachable) == 0) {
+   // The target host is not reachable
+   // Alert the user or defer the activity
+}
+</code></pre>
 
 <h1 id="doitmoreefficiently">更高效的做（Do it more efficiently）</h1>
 
