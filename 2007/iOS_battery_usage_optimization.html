@@ -54,8 +54,8 @@
 ```
 
 #更好的时机做（Do it at a better time）
-1. NSURLSession Background Session
-2. Discretionary Tasks：NSURLSessionConfiguration.discretionary
+1.  在后台做：NSURLSession Background Session
+2.  系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary
 
 
 #更高效的做（Do it more efficiently）
@@ -65,16 +65,64 @@ QoS分为如下4种：
 选择方法如下：
 ![](https://masstone-phoenix.github.io/image/Qos/how_to_choose_Qos.png)
 
-#少做（Do it less）
+QoS的级别也是可以动态修改的，如下：
 With NSOperation, the QoS of an operation can be promoted by:
-• Enqueueing a higher QoS operation on the same queue
-• Using addDependency: with a higher QoS operation
-• waitUntilFinished: or waitUntilAllOperationsAreFinished:
-from a higher QoS thread
 
+- Enqueueing a higher QoS operation on the same queue
+- Using <font color=blue>addDependency:</font> with a higher QoS operation
+- <font color=blue>waitUntilFinished:</font> or <font color=blue>waitUntilAllOperationsAreFinished:</font>from a higher QoS thread
 
+e.g.
+
+```
+Image Click Event
+// Find operation for image
+operation.queuePriority = NSOperationQueuePriorityVeryHigh;
+operation.qualityOfService = NSQualityOfServiceUserInitiated;
+```
+
+##QoS的调试
+- Set breakpoints to confirm requested QoS
+- Use powermetrics to confirm which QoS is in use
+- Use spindump to determine the QoS code is executing with
+```
 sudo powermetrics --show-process-qos --samplers tasks
 sudo spindump -timeline MyApplication
+```
+
+
+#少做（Do it less）
+
+##Profile and monitor CPU
+
+##Reduce timers
+1. 尽量减小Timer的数量——定时器是有开销的
+2. 使用系统提供的Timer Coalescing——设置Timer Tolerance
+```
+[myTimer setTolerance:60.0];
+
+CFRunLoopTimerSetTolerance(myTimer, 60.0);
+
+dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
+                                           30 * NSEC_PER_SEC, 60 * NSEC_PER_SEC);//最后一个参数
+```
+
+以下是调试时看Timer wake数的方法，在图的右上部分：
+![](https://masstone-phoenix.github.io/image/Qos/xcode_energy_debug.png)
+
+
+##Be efficient in the use of graphics
+
+- 减小绘图内容，只在需要的时候绘制
+- 使用profile中的Core Animation，在Debug Options中说"Flash Screen Regions"
+- 不要在半透明的地方画图或做动画，这样绘图的计算会很多
+
+
+##Minimize I/O
+- 写Flash开销大，最好写的地方集中在一起写入，而不是分开写
+- 任何I/O操作都会将系统从低功耗状态中唤醒，可以使用cache来减小这方面的energy消耗
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -110,8 +158,8 @@ sudo spindump -timeline MyApplication
 <h1 id="doitatabettertime">更好的时机做（Do it at a better time）</h1>
 
 <ol>
-<li>NSURLSession Background Session</li>
-<li>Discretionary Tasks：NSURLSessionConfiguration.discretionary</li>
+<li>在后台做：NSURLSession Background Session</li>
+<li>系统决定的时机做：Discretionary Tasks——NSURLSessionConfiguration.discretionary</li>
 </ol>
 
 <h1 id="doitmoreefficiently">更高效的做（Do it more efficiently）</h1>
@@ -122,16 +170,71 @@ QoS分为如下4种：
 选择方法如下：
 <img src="https://masstone-phoenix.github.io/image/Qos/how_to_choose_Qos.png" alt="" title=""></p>
 
+<p>QoS的级别也是可以动态修改的，如下：
+With NSOperation, the QoS of an operation can be promoted by:</p>
+
+<ul>
+<li>Enqueueing a higher QoS operation on the same queue</li>
+<li>Using <font color="blue">addDependency:</font> with a higher QoS operation</li>
+<li><font color="blue">waitUntilFinished:</font> or <font color="blue">waitUntilAllOperationsAreFinished:</font>from a higher QoS thread</li>
+</ul>
+
+<p>e.g.</p>
+
+<pre><code>Image Click Event
+// Find operation for image
+operation.queuePriority = NSOperationQueuePriorityVeryHigh;
+operation.qualityOfService = NSQualityOfServiceUserInitiated;
+</code></pre>
+
+<h2 id="qos">QoS的调试</h2>
+
+<ul>
+<li>Set breakpoints to confirm requested QoS</li>
+<li>Use powermetrics to confirm which QoS is in use</li>
+<li>Use spindump to determine the QoS code is executing with</li>
+</ul>
+
+<pre><code>sudo powermetrics --show-process-qos --samplers tasks
+sudo spindump -timeline MyApplication
+</code></pre>
+
 <h1 id="doitless">少做（Do it less）</h1>
 
-<p>With NSOperation, the QoS of an operation can be promoted by:
-• Enqueueing a higher QoS operation on the same queue
-• Using addDependency: with a higher QoS operation
-• waitUntilFinished: or waitUntilAllOperationsAreFinished:
-from a higher QoS thread</p>
+<h2 id="profileandmonitorcpu">Profile and monitor CPU</h2>
 
-<p>sudo powermetrics --show-process-qos --samplers tasks
-sudo spindump -timeline MyApplication</p>
+<h2 id="reducetimers">Reduce timers</h2>
+
+<ol>
+<li>尽量减小Timer的数量——定时器是有开销的</li>
+<li>使用系统提供的Timer Coalescing——设置Timer Tolerance</li>
+</ol>
+
+<pre><code>[myTimer setTolerance:60.0];
+
+CFRunLoopTimerSetTolerance(myTimer, 60.0);
+
+dispatch_source_set_timer(my_timer, DISPATCH_TIME_NOW,
+                                           30 * NSEC_PER_SEC, 60 * NSEC_PER_SEC);//最后一个参数
+</code></pre>
+
+<p>以下是调试时看Timer wake数的方法，在图的右上部分：
+<img src="https://masstone-phoenix.github.io/image/Qos/xcode_energy_debug.png" alt="" title=""></p>
+
+<h2 id="beefficientintheuseofgraphics">Be efficient in the use of graphics</h2>
+
+<ul>
+<li>减小绘图内容，只在需要的时候绘制</li>
+<li>使用profile中的Core Animation，在Debug Options中说"Flash Screen Regions"</li>
+<li>不要在半透明的地方画图或做动画，这样绘图的计算会很多</li>
+</ul>
+
+<h2 id="minimizeio">Minimize I/O</h2>
+
+<ul>
+<li>写Flash开销大，最好写的地方集中在一起写入，而不是分开写</li>
+<li>任何I/O操作都会将系统从低功耗状态中唤醒，可以使用cache来减小这方面的energy消耗</li>
+</ul>
 <!-- content end -->
 </div>
 <br>
