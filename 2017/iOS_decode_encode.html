@@ -68,9 +68,10 @@ iOS系统上视频的处理由顶层到底层分别是AVKit->AVFoundation->Video
 ![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/CMSampleBuffer.png)
 
 ##CMClock
-只有一个读取函数CMClockGetHostTimeClock()；它通过 mach_absolute_time()实现。它在设备休眠时会暂停。
+只有一个读取函数CMClockGetHostTimeClock()；它通过 ```mach_absolute_time()```实现。它在设备休眠时会暂停。
 
 ##CMTimebase
+我们改变媒体时间的接口，内部通过CMClock实现。
 
 剩下主要介绍AVFoundation和Video Toolbox。
 
@@ -248,9 +249,11 @@ import JavaScriptCore
 
 <h2 id="cmclock">CMClock</h2>
 
-<p>只有一个读取函数CMClockGetHostTimeClock()；它通过 mach<em>absolute</em>time()实现。它在设备休眠时会暂停。</p>
+<p>只有一个读取函数CMClockGetHostTimeClock()；它通过 <code>mach_absolute_time()</code>实现。它在设备休眠时会暂停。</p>
 
 <h2 id="cmtimebase">CMTimebase</h2>
+
+<p>我们改变媒体时间的接口，内部通过CMClock实现。</p>
 
 <p>剩下主要介绍AVFoundation和Video Toolbox。</p>
 
