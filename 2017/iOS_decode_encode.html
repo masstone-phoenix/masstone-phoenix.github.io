@@ -41,6 +41,15 @@ iOS系统上视频的处理由顶层到底层分别是AVKit->AVFoundation->Video
 
 ![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/obtaining_frames_2x.png)
 
+剩下主要介绍AVFoundation和Video Toolbox。
+
+#AVFoundation
+AVFoundation主要作用是直接显示码流、将数据直接编码成文件。
+
+
+#Video Toolbox
+Video Toolbox的主要作用是解码流解压到CVPixelBuffer中、将原始数据编码到CMSampleBuffer中。
+
 ![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/jcorevideo_pipeline_2x.png)
 
 #调用JS方法
@@ -172,6 +181,16 @@ import JavaScriptCore
 </ul>
 
 <p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/obtaining_frames_2x.png" alt="" title=""></p>
+
+<p>剩下主要介绍AVFoundation和Video Toolbox。</p>
+
+<h1 id="avfoundation">AVFoundation</h1>
+
+<p>AVFoundation主要作用是直接显示码流、将数据直接编码成文件。</p>
+
+<h1 id="videotoolbox">Video Toolbox</h1>
+
+<p>Video Toolbox的主要作用是解码流解压到CVPixelBuffer中、将原始数据编码到CMSampleBuffer中。</p>
 
 <p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/jcorevideo_pipeline_2x.png" alt="" title=""></p>
 
