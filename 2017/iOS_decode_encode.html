@@ -162,6 +162,39 @@ Using AVAudioMix
 
 ```
 
+##视频过渡动画
+AVMutableVideoComposition有一个内容为AVVideoCompositionInstruction的数组来进行视频处理。通过AVVideoCompositionInstruction，我们可以改变视频的背景色，使用后处理或应用图层指令（AVMutableVideoCompositionLayerInstruction）。
+
+使用AVMutableVideoCompositionLayerInstruction，我们可以应用透明度、transform等。
+
+```
+AVAsset *firstVideoAssetTrack = <#AVAssetTrack representing the first video segment played in the composition#>;
+AVAsset *secondVideoAssetTrack = <#AVAssetTrack representing the second video segment played in the composition#>;
+// Create the first video composition instruction.
+AVMutableVideoCompositionInstruction *firstVideoCompositionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+// Set its time range to span the duration of the first video track.
+firstVideoCompositionInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, firstVideoAssetTrack.timeRange.duration);
+// Create the layer instruction and associate it with the composition video track.
+AVMutableVideoCompositionLayerInstruction *firstVideoLayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:mutableCompositionVideoTrack];
+// Create the opacity ramp to fade out the first video track over its entire duration.
+[firstVideoLayerInstruction setOpacityRampFromStartOpacity:1.f toEndOpacity:0.f timeRange:CMTimeRangeMake(kCMTimeZero, firstVideoAssetTrack.timeRange.duration)];
+// Create the second video composition instruction so that the second video track isn't transparent.
+AVMutableVideoCompositionInstruction *secondVideoCompositionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+// Set its time range to span the duration of the second video track.
+secondVideoCompositionInstruction.timeRange = CMTimeRangeMake(firstVideoAssetTrack.timeRange.duration, CMTimeAdd(firstVideoAssetTrack.timeRange.duration, secondVideoAssetTrack.timeRange.duration));
+// Create the second layer instruction and associate it with the composition video track.
+AVMutableVideoCompositionLayerInstruction *secondVideoLayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:mutableCompositionVideoTrack];
+// Attach the first layer instruction to the first video composition instruction.
+firstVideoCompositionInstruction.layerInstructions = @[firstVideoLayerInstruction];
+// Attach the second layer instruction to the second video composition instruction.
+secondVideoCompositionInstruction.layerInstructions = @[secondVideoLayerInstruction];
+// Attach both of the video composition instructions to the video composition.
+AVMutableVideoComposition *mutableVideoComposition = [AVMutableVideoComposition videoComposition];
+mutableVideoComposition.instructions = @[firstVideoCompositionInstruction, secondVideoCompositionInstruction];
+
+```
+
+
 ##读写音视频文件
 
 ###读文件
@@ -426,6 +459,37 @@ Using AVAudioMix
     exportSession.audioMix = audioMix;
 • To apply AVAudioMix for sample reading:
     assetReaderAudioMixOutput.audioMix = audioMix;
+</code></pre>
+
+<h2 id="">视频过渡动画</h2>
+
+<p>AVMutableVideoComposition有一个内容为AVVideoCompositionInstruction的数组来进行视频处理。通过AVVideoCompositionInstruction，我们可以改变视频的背景色，使用后处理或应用图层指令（AVMutableVideoCompositionLayerInstruction）。</p>
+
+<p>使用AVMutableVideoCompositionLayerInstruction，我们可以应用透明度、transform等。</p>
+
+<pre><code>AVAsset *firstVideoAssetTrack = &lt;#AVAssetTrack representing the first video segment played in the composition#&gt;;
+AVAsset *secondVideoAssetTrack = &lt;#AVAssetTrack representing the second video segment played in the composition#&gt;;
+// Create the first video composition instruction.
+AVMutableVideoCompositionInstruction *firstVideoCompositionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+// Set its time range to span the duration of the first video track.
+firstVideoCompositionInstruction.timeRange = CMTimeRangeMake(kCMTimeZero, firstVideoAssetTrack.timeRange.duration);
+// Create the layer instruction and associate it with the composition video track.
+AVMutableVideoCompositionLayerInstruction *firstVideoLayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:mutableCompositionVideoTrack];
+// Create the opacity ramp to fade out the first video track over its entire duration.
+[firstVideoLayerInstruction setOpacityRampFromStartOpacity:1.f toEndOpacity:0.f timeRange:CMTimeRangeMake(kCMTimeZero, firstVideoAssetTrack.timeRange.duration)];
+// Create the second video composition instruction so that the second video track isn't transparent.
+AVMutableVideoCompositionInstruction *secondVideoCompositionInstruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+// Set its time range to span the duration of the second video track.
+secondVideoCompositionInstruction.timeRange = CMTimeRangeMake(firstVideoAssetTrack.timeRange.duration, CMTimeAdd(firstVideoAssetTrack.timeRange.duration, secondVideoAssetTrack.timeRange.duration));
+// Create the second layer instruction and associate it with the composition video track.
+AVMutableVideoCompositionLayerInstruction *secondVideoLayerInstruction = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:mutableCompositionVideoTrack];
+// Attach the first layer instruction to the first video composition instruction.
+firstVideoCompositionInstruction.layerInstructions = @[firstVideoLayerInstruction];
+// Attach the second layer instruction to the second video composition instruction.
+secondVideoCompositionInstruction.layerInstructions = @[secondVideoLayerInstruction];
+// Attach both of the video composition instructions to the video composition.
+AVMutableVideoComposition *mutableVideoComposition = [AVMutableVideoComposition videoComposition];
+mutableVideoComposition.instructions = @[firstVideoCompositionInstruction, secondVideoCompositionInstruction];
 </code></pre>
 
 <h2 id="">读写音视频文件</h2>
