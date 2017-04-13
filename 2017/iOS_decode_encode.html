@@ -41,6 +41,24 @@ iOS系统上视频的处理由顶层到底层分别是AVKit->AVFoundation->Video
 
 ![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/obtaining_frames_2x.png)
 
+#用到的数据类型
+
+##CVPixelBuffer
+存放已解压缩的raw数据。
+
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/CVPixelBuffer.png)
+
+##CVPixelBufferPool
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/CVPixelBufferPool.png)
+
+##pixelBufferAttributes
+##CMTime
+##CMVideoFormatDescription
+##CMBlockBuffer
+##CMSampleBuffer
+##CMClock
+##CMTimebase
+
 剩下主要介绍AVFoundation和Video Toolbox。
 
 #AVFoundation
@@ -50,7 +68,7 @@ AVFoundation主要作用是直接显示码流、将数据直接编码成文件�
 #Video Toolbox
 Video Toolbox的主要作用是解码流解压到CVPixelBuffer中、将原始数据编码到CMSampleBuffer中。
 
-![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/jcorevideo_pipeline_2x.png)
+
 
 #调用JS方法
 
@@ -182,6 +200,32 @@ import JavaScriptCore
 
 <p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/obtaining_frames_2x.png" alt="" title=""></p>
 
+<h1 id="">用到的数据类型</h1>
+
+<h2 id="cvpixelbuffer">CVPixelBuffer</h2>
+
+<p>存放已解压缩的raw数据。</p>
+
+<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/CVPixelBuffer.png" alt="" title=""></p>
+
+<h2 id="cvpixelbufferpool">CVPixelBufferPool</h2>
+
+<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/CVPixelBufferPool.png" alt="" title=""></p>
+
+<h2 id="pixelbufferattributes">pixelBufferAttributes</h2>
+
+<h2 id="cmtime">CMTime</h2>
+
+<h2 id="cmvideoformatdescription">CMVideoFormatDescription</h2>
+
+<h2 id="cmblockbuffer">CMBlockBuffer</h2>
+
+<h2 id="cmsamplebuffer">CMSampleBuffer</h2>
+
+<h2 id="cmclock">CMClock</h2>
+
+<h2 id="cmtimebase">CMTimebase</h2>
+
 <p>剩下主要介绍AVFoundation和Video Toolbox。</p>
 
 <h1 id="avfoundation">AVFoundation</h1>
@@ -191,8 +235,6 @@ import JavaScriptCore
 <h1 id="videotoolbox">Video Toolbox</h1>
 
 <p>Video Toolbox的主要作用是解码流解压到CVPixelBuffer中、将原始数据编码到CMSampleBuffer中。</p>
-
-<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/jcorevideo_pipeline_2x.png" alt="" title=""></p>
 
 <h1 id="js">调用JS方法</h1>
 
