@@ -195,6 +195,37 @@ if (!success) {
 
 ```
 
+####音频视频交织
+
+1. pull model
+
+```
+[myAVAssetWriterInput requestMediaDataWhenReadyOnQueue:queue usingBlock:^{
+    while (myAVAssetWriterInput.readyForMoreMediaData) {
+        CMSampleBufferRef sampleBuffer = ...;
+        if (sampleBuffer) {
+            [myAVAssetWriterInput appendSampleBuffer:sampleBuffer];
+            CFRelease(sampleBuffer);
+         } else {
+            [myAVAssetWriterInput markAsFinished];
+            break;
+        }
+     }
+}];
+```
+2. push model
+
+```
+- captureOutput:... didOutputSampleBuffer:sampleBuffer fromConnection:...
+{
+    if (assetWriterInput.readyForMoreMediaData) {
+        // perform real-time processing
+    [assetWriterInput appendSampleBuffer:sampleBuffer];
+    } else {
+        // drop video frames, potentially throttle upstream
+    }
+}
+```
 
 
 #Video Toolbox
@@ -396,6 +427,41 @@ success = [assetWriter finishWriting];
 if (!success) {
     NSError *error = assetWriter.error;
     // deal with error
+}
+</code></pre>
+
+<h4 id="">音频视频交织</h4>
+
+<ol>
+<li>pull model</li>
+</ol>
+
+<pre><code>[myAVAssetWriterInput requestMediaDataWhenReadyOnQueue:queue usingBlock:^{
+    while (myAVAssetWriterInput.readyForMoreMediaData) {
+        CMSampleBufferRef sampleBuffer = ...;
+        if (sampleBuffer) {
+            [myAVAssetWriterInput appendSampleBuffer:sampleBuffer];
+            CFRelease(sampleBuffer);
+         } else {
+            [myAVAssetWriterInput markAsFinished];
+            break;
+        }
+     }
+}];
+</code></pre>
+
+<ol>
+<li>push model</li>
+</ol>
+
+<pre><code>- captureOutput:... didOutputSampleBuffer:sampleBuffer fromConnection:...
+{
+    if (assetWriterInput.readyForMoreMediaData) {
+        // perform real-time processing
+    [assetWriterInput appendSampleBuffer:sampleBuffer];
+    } else {
+        // drop video frames, potentially throttle upstream
+    }
 }
 </code></pre>
 
