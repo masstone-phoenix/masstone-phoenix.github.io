@@ -78,6 +78,60 @@ iOS系统上视频的处理由顶层到底层分别是AVKit->AVFoundation->Video
 #AVFoundation
 AVFoundation主要作用是直接显示码流、将数据直接编码成文件。
 
+##Export and Trimming
+```
+AVAssetExportSession *exportSession = [[AVAssetExportSession alloc]
+initWithAsset:asset presetName:AVAssetExportPresetMediumQuality];
+exportSession.outputURL = ...;
+exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+exportSession.timeRange = CMTimeRangeMake(startTime, duration);
+exportSession.metadata = ...;
+[exportSession exportAsynchronouslyWithCompletionHandler:handlerBlock];
+
+void (^handlerBlock)(void) = ^{
+    switch (exportSession.status) {
+        case AVAssetExportSessionStatusCompleted:
+            /* export complete */
+            break;
+        case AVAssetExportSessionStatusFailed:
+            /* export error (see exportSession.error) */
+            break;
+        case AVAssetExportSessionStatusCancelled:
+            /* export cancelled */
+            break;
+    }
+}
+
+```
+需要注意：
+
+- AVAssetExportSession will not overwrite files
+- AVAssetExportSession will not write files outside of your sandbox
+
+##使用AVComposition剪辑视频
+- 剪辑一个composition的所有track：
+```
+[composition insertTimeRange:... ofAsset:... atTime:... error:...]
+```
+- 剪辑单个视频：
+```
+[compositionTrack insertTimeRange:... ofTrack:... atTime:... error:...];
+[compositionTrack insertTimeRanges:... ofTracks:... atTime:... error:...];
+```
+- 直接编辑segment array：
+```
+[compositionTrack setSegments:...];
+```
+
+e.g.：
+```
+AVMutableComposition *composition = [AVMutableComposition composition];
+AVMutableCompositionTrack *compositionVideoTrack =
+    [composition addMutableTrackWithMediaType:AVMediaTypeVideo
+                                                    preferredTrackID:...];
+[compositionVideoTrack insertTimeRange:... ofTrack:clipVideoTrack atTime:... error:...];
+```
+
 
 #Video Toolbox
 Video Toolbox的主要作用是解码流解压到CVPixelBuffer中、将原始数据编码到CMSampleBuffer中。
@@ -260,6 +314,71 @@ import JavaScriptCore
 <h1 id="avfoundation">AVFoundation</h1>
 
 <p>AVFoundation主要作用是直接显示码流、将数据直接编码成文件。</p>
+
+<h2 id="exportandtrimming">Export and Trimming</h2>
+
+<pre><code>AVAssetExportSession *exportSession = [[AVAssetExportSession alloc]
+initWithAsset:asset presetName:AVAssetExportPresetMediumQuality];
+exportSession.outputURL = ...;
+exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+exportSession.timeRange = CMTimeRangeMake(startTime, duration);
+exportSession.metadata = ...;
+[exportSession exportAsynchronouslyWithCompletionHandler:handlerBlock];
+
+void (^handlerBlock)(void) = ^{
+    switch (exportSession.status) {
+        case AVAssetExportSessionStatusCompleted:
+            /* export complete */
+            break;
+        case AVAssetExportSessionStatusFailed:
+            /* export error (see exportSession.error) */
+            break;
+        case AVAssetExportSessionStatusCancelled:
+            /* export cancelled */
+            break;
+    }
+}
+</code></pre>
+
+<p>需要注意：</p>
+
+<ul>
+<li>AVAssetExportSession will not overwrite files</li>
+<li>AVAssetExportSession will not write files outside of your sandbox</li>
+</ul>
+
+<h2 id="avcomposition">使用AVComposition剪辑视频</h2>
+
+<ul>
+<li>剪辑一个composition的所有track：</li>
+</ul>
+
+<pre><code>[composition insertTimeRange:... ofAsset:... atTime:... error:...]
+</code></pre>
+
+<ul>
+<li>剪辑单个视频：</li>
+</ul>
+
+<pre><code>[compositionTrack insertTimeRange:... ofTrack:... atTime:... error:...];
+[compositionTrack insertTimeRanges:... ofTracks:... atTime:... error:...];
+</code></pre>
+
+<ul>
+<li>直接编辑segment array：</li>
+</ul>
+
+<pre><code>[compositionTrack setSegments:...];
+</code></pre>
+
+<p>e.g.：</p>
+
+<pre><code>AVMutableComposition *composition = [AVMutableComposition composition];
+AVMutableCompositionTrack *compositionVideoTrack =
+    [composition addMutableTrackWithMediaType:AVMediaTypeVideo
+                                                    preferredTrackID:...];
+[compositionVideoTrack insertTimeRange:... ofTrack:clipVideoTrack atTime:... error:...];
+</code></pre>
 
 <h1 id="videotoolbox">Video Toolbox</h1>
 
