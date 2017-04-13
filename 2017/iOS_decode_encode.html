@@ -192,6 +192,19 @@ secondVideoCompositionInstruction.layerInstructions = @[secondVideoLayerInstruct
 AVMutableVideoComposition *mutableVideoComposition = [AVMutableVideoComposition videoComposition];
 mutableVideoComposition.instructions = @[firstVideoCompositionInstruction, secondVideoCompositionInstruction];
 
+
+
+使用AVVideoComposition
+• For playback:
+    playerItem.videoComposition = videoComposition;
+• For image generation:
+    assetImageGenerator.videoComposition = videoComposition;
+• For export:
+    assetExportSession.videoComposition = videoComposition;
+• To retrieve rendered frames:
+    assetReaderVideoCompositionOutput.videoComposition
+                                                            = videoComposition;
+
 ```
 
 
@@ -490,6 +503,19 @@ secondVideoCompositionInstruction.layerInstructions = @[secondVideoLayerInstruct
 // Attach both of the video composition instructions to the video composition.
 AVMutableVideoComposition *mutableVideoComposition = [AVMutableVideoComposition videoComposition];
 mutableVideoComposition.instructions = @[firstVideoCompositionInstruction, secondVideoCompositionInstruction];
+
+
+
+使用AVVideoComposition
+• For playback:
+    playerItem.videoComposition = videoComposition;
+• For image generation:
+    assetImageGenerator.videoComposition = videoComposition;
+• For export:
+    assetExportSession.videoComposition = videoComposition;
+• To retrieve rendered frames:
+    assetReaderVideoCompositionOutput.videoComposition
+                                                            = videoComposition;
 </code></pre>
 
 <h2 id="">读写音视频文件</h2>
