@@ -223,6 +223,7 @@ if (!success) {
     [assetWriterInput appendSampleBuffer:sampleBuffer];
     } else {
         // drop video frames, potentially throttle upstream
+        // Avoid queueing, if possible
     }
 }
 ```
@@ -461,6 +462,7 @@ if (!success) {
     [assetWriterInput appendSampleBuffer:sampleBuffer];
     } else {
         // drop video frames, potentially throttle upstream
+        // Avoid queueing, if possible
     }
 }
 </code></pre>
