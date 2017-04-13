@@ -132,6 +132,36 @@ AVMutableCompositionTrack *compositionVideoTrack =
 [compositionVideoTrack insertTimeRange:... ofTrack:clipVideoTrack atTime:... error:...];
 ```
 
+注意：不要在播放，生成图片、export或读取AVMutableComposition时修改它。make a copy。
+
+##混音
+使用AVAudioMix对音频track进行混音，它有一个AVMutableAudioMixInputParameters的数组，通过这个数组的输入对音频进行混音。
+
+```
+AVMutableAudioMixInputParameters *trackMix =
+    [AVMutableAudioMixInputParameters
+        audioMixInputParametersWithTrack:mainAudioTrack];
+[trackMix setVolume:1.0 atTime:kCMTimeZero];
+
+[trackMix setVolumeRampFromStartVolume:1.0
+        toEndVolume:0.2
+        timeRange:CMTimeRangeMake(x,y-x)];
+...
+
+AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
+audioMix.inputParameters = [NSArray arrayWithObject:trackMix];
+
+
+Using AVAudioMix
+• To apply AVAudioMix for playback:
+    playerItem.audioMix = audioMix;
+• To apply AVAudioMix for export:
+    exportSession.audioMix = audioMix;
+• To apply AVAudioMix for sample reading:
+    assetReaderAudioMixOutput.audioMix = audioMix;
+
+```
+
 ##读写音视频文件
 
 ###读文件
@@ -367,6 +397,35 @@ AVMutableCompositionTrack *compositionVideoTrack =
     [composition addMutableTrackWithMediaType:AVMediaTypeVideo
                                                     preferredTrackID:...];
 [compositionVideoTrack insertTimeRange:... ofTrack:clipVideoTrack atTime:... error:...];
+</code></pre>
+
+<p>注意：不要在播放，生成图片、export或读取AVMutableComposition时修改它。make a copy。</p>
+
+<h2 id="">混音</h2>
+
+<p>使用AVAudioMix对音频track进行混音，它有一个AVMutableAudioMixInputParameters的数组，通过这个数组的输入对音频进行混音。</p>
+
+<pre><code>AVMutableAudioMixInputParameters *trackMix =
+    [AVMutableAudioMixInputParameters
+        audioMixInputParametersWithTrack:mainAudioTrack];
+[trackMix setVolume:1.0 atTime:kCMTimeZero];
+
+[trackMix setVolumeRampFromStartVolume:1.0
+        toEndVolume:0.2
+        timeRange:CMTimeRangeMake(x,y-x)];
+...
+
+AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
+audioMix.inputParameters = [NSArray arrayWithObject:trackMix];
+
+
+Using AVAudioMix
+• To apply AVAudioMix for playback:
+    playerItem.audioMix = audioMix;
+• To apply AVAudioMix for export:
+    exportSession.audioMix = audioMix;
+• To apply AVAudioMix for sample reading:
+    assetReaderAudioMixOutput.audioMix = audioMix;
 </code></pre>
 
 <h2 id="">读写音视频文件</h2>
