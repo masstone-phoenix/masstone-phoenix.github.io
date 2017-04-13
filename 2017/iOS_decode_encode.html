@@ -44,7 +44,7 @@ iOS系统上视频的处理由顶层到底层分别是AVKit->AVFoundation->Video
 #用到的数据类型
 
 ##CVPixelBuffer
-存放已解压缩的raw数据。
+存放已解压缩的光栅数据。
 
 ![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/CVPixelBuffer.png)
 
@@ -55,10 +55,21 @@ iOS系统上视频的处理由顶层到底层分别是AVKit->AVFoundation->Video
 宽、高，像素格式，兼容性等信息。
 
 ##CMTime
+包括64-bit Time Value (Numerator)和32-bit Time Scale (Denominator)。表示 value/timescale 秒 。
+参考<http://stackoverflow.com/questions/12902410/trying-to-understand-cmtime>。
+
 ##CMVideoFormatDescription
+描述视频格式的类型。
+
 ##CMBlockBuffer
+可以包含你任意数据。在视频处理的一般情况下，包含压缩的数据。
+
 ##CMSampleBuffer
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/CMSampleBuffer.png)
+
 ##CMClock
+只有一个读取函数CMClockGetHostTimeClock()；它通过 mach_absolute_time()实现。它在设备休眠时会暂停。
+
 ##CMTimebase
 
 剩下主要介绍AVFoundation和Video Toolbox。
@@ -206,7 +217,7 @@ import JavaScriptCore
 
 <h2 id="cvpixelbuffer">CVPixelBuffer</h2>
 
-<p>存放已解压缩的raw数据。</p>
+<p>存放已解压缩的光栅数据。</p>
 
 <p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/CVPixelBuffer.png" alt="" title=""></p>
 
@@ -220,13 +231,24 @@ import JavaScriptCore
 
 <h2 id="cmtime">CMTime</h2>
 
+<p>包括64-bit Time Value (Numerator)和32-bit Time Scale (Denominator)。表示 value/timescale 秒 。
+参考<a href="http://stackoverflow.com/questions/12902410/trying-to-understand-cmtime">http://stackoverflow.com/questions/12902410/trying-to-understand-cmtime</a>。</p>
+
 <h2 id="cmvideoformatdescription">CMVideoFormatDescription</h2>
+
+<p>描述视频格式的类型。</p>
 
 <h2 id="cmblockbuffer">CMBlockBuffer</h2>
 
+<p>可以包含你任意数据。在视频处理的一般情况下，包含压缩的数据。</p>
+
 <h2 id="cmsamplebuffer">CMSampleBuffer</h2>
 
+<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/CMSampleBuffer.png" alt="" title=""></p>
+
 <h2 id="cmclock">CMClock</h2>
+
+<p>只有一个读取函数CMClockGetHostTimeClock()；它通过 mach<em>absolute</em>time()实现。它在设备休眠时会暂停。</p>
 
 <h2 id="cmtimebase">CMTimebase</h2>
 
