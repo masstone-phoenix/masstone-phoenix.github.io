@@ -384,7 +384,42 @@ CMTimebaseSetRate(sbDisplayLayer.controlTimebase, 1.0);
 }];
 ```
 
+这里使用VTDecompressionSession来完成从CMSampleBuffer到CVPixelBuffer的解码工作。
 
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/VTDecompressionSession.png)
+
+###创建VTDecompressionSession
+需要视频格式信息CMVideoFormatDescription，输出buffer的属性pixelBufferAttributes以及VTDecompressionOutputCallback。
+```
+OSStatus VTDecompressionSessionCreate(CFAllocatorRef allocator, CMVideoFormatDescriptionRef videoFormatDescription, CFDictionaryRef videoDecoderSpecification, CFDictionaryRef destinationImageBufferAttributes, const VTDecompressionOutputCallbackRecord *outputCallback, VTDecompressionSessionRef  _Nullable *decompressionSessionOut);
+```
+
+###使用VTDecompressionSession解码
+需要按***解码顺序（Decode order）***提供给VTDecompressionSession，默认情况下是同步的，即callback会在函数返回前被调用。
+
+```
+err = VTDecompressionSessionDecodeFrame( session, sbuf, inFlags, refCon, &outFlags );
+
+//Set kVTDecodeFrame_EnableAsynchronousDecompression for async
+```
+
+###处理编码结果（CVPixelBuffer）
+当解码器有输出时，会调用VTCompressionOutputCallback，它会提供：
+
+- CVPixelBuffer
+- 显示时间（Presentation time stamp）
+- 解码错误code
+- 掉帧
+
+
+###改变CMVideoFormatDescription
+
+```
+err = VTDecompressionSessionCreate( kCFAllocatorDefault, formatDesc1, … ,&session );
+Boolean needNewSession = ( VTDecompressionSessionCanAcceptFormatDescription(session, formatDesc2 ) == false);
+
+//如果需要新的session,则新建一个
+```
 
 
 
@@ -783,6 +818,45 @@ CMTimebaseSetRate(sbDisplayLayer.controlTimebase, 1.0);
         CFRelease(sbuf);
     }
 }];
+</code></pre>
+
+<p>这里使用VTDecompressionSession来完成从CMSampleBuffer到CVPixelBuffer的解码工作。</p>
+
+<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/VTDecompressionSession.png" alt="" title=""></p>
+
+<h3 id="vtdecompressionsession">创建VTDecompressionSession</h3>
+
+<p>需要视频格式信息CMVideoFormatDescription，输出buffer的属性pixelBufferAttributes以及VTDecompressionOutputCallback。</p>
+
+<pre><code>OSStatus VTDecompressionSessionCreate(CFAllocatorRef allocator, CMVideoFormatDescriptionRef videoFormatDescription, CFDictionaryRef videoDecoderSpecification, CFDictionaryRef destinationImageBufferAttributes, const VTDecompressionOutputCallbackRecord *outputCallback, VTDecompressionSessionRef  _Nullable *decompressionSessionOut);
+</code></pre>
+
+<h3 id="vtdecompressionsession">使用VTDecompressionSession解码</h3>
+
+<p>需要按<strong><em>解码顺序（Decode order）</em></strong>提供给VTDecompressionSession，默认情况下是同步的，即callback会在函数返回前被调用。</p>
+
+<pre><code>err = VTDecompressionSessionDecodeFrame( session, sbuf, inFlags, refCon, &amp;outFlags );
+
+//Set kVTDecodeFrame_EnableAsynchronousDecompression for async
+</code></pre>
+
+<h3 id="cvpixelbuffer">处理编码结果（CVPixelBuffer）</h3>
+
+<p>当解码器有输出时，会调用VTCompressionOutputCallback，它会提供：</p>
+
+<ul>
+<li>CVPixelBuffer</li>
+<li>显示时间（Presentation time stamp）</li>
+<li>解码错误code</li>
+<li>掉帧</li>
+</ul>
+
+<h3 id="cmvideoformatdescription">改变CMVideoFormatDescription</h3>
+
+<pre><code>err = VTDecompressionSessionCreate( kCFAllocatorDefault, formatDesc1, … ,&amp;session );
+Boolean needNewSession = ( VTDecompressionSessionCanAcceptFormatDescription(session, formatDesc2 ) == false);
+
+//如果需要新的session,则新建一个
 </code></pre>
 <!-- content end -->
 </div>
