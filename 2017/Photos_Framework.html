@@ -28,11 +28,33 @@
 在iOS 8.0之前，iOS是使用Asset来管理相册中的照片和视频的，8.0后，Apple引入了新的Photos Framework来替代Asset。之前也曾经用过这个Framework在相册中新建一个类别并向其中写入图片，但过了几个月不用就有点忘记了，这里把它总结下，以后忘记的时候就可以很快的找到想要的了。
 
 
+#一些概念
+PHAsset是单个的图片、视频的抽象。PHAssetCollection是相册的抽象。 PHCollectionList相簿（包括一个或多个相册）的抽象。它们都是只读的，只包含元数据（metadata）。
+
+我们先获得（fetch）上述数据类型，再通过它们去获取我们真正需要的数据。对于修改操作，需要创建请求（request ）, 然后显示的向shared PHPhotoLibrary对象提交它。
+
+我们可以通过观察者模式来对改变进行响应，即注册一个改变的handler，当观察的asset发生变化时，系统会调用我们注册的handler。
+
+Use the PHImageManager class to request images of assets at a specified size, or AV Foundation objects to work with video assets. 
+
+ PHObjectPlaceholder：创建了新的object但是还没添加到相册中时需要用到它，用来fetch新建的object。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
 <p>在iOS 8.0之前，iOS是使用Asset来管理相册中的照片和视频的，8.0后，Apple引入了新的Photos Framework来替代Asset。之前也曾经用过这个Framework在相册中新建一个类别并向其中写入图片，但过了几个月不用就有点忘记了，这里把它总结下，以后忘记的时候就可以很快的找到想要的了。</p>
+
+<h1 id="">一些概念</h1>
+
+<p>PHAsset是单个的图片、视频的抽象。PHAssetCollection是相册的抽象。 PHCollectionList相簿（包括一个或多个相册）的抽象。它们都是只读的，只包含元数据（metadata）。</p>
+
+<p>我们先获得（fetch）上述数据类型，再通过它们去获取我们真正需要的数据。对于修改操作，需要创建请求（request ）, 然后显示的向shared PHPhotoLibrary对象提交它。</p>
+
+<p>我们可以通过观察者模式来对改变进行响应，即注册一个改变的handler，当观察的asset发生变化时，系统会调用我们注册的handler。</p>
+
+<p>Use the PHImageManager class to request images of assets at a specified size, or AV Foundation objects to work with video assets. </p>
+
+<p>PHObjectPlaceholder：创建了新的object但是还没添加到相册中时需要用到它，用来fetch新建的object。</p>
 <!-- content end -->
 </div>
 <br>
