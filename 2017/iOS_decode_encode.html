@@ -308,6 +308,48 @@ if (!success) {
 #Video Toolbox
 Video Toolbox的主要作用是解码流解压到CVPixelBuffer中、将原始数据编码到CMSampleBuffer中。
 
+##编码
+使用VTCompressionSession进行视频的编码。框架如下：
+
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/VTCompressionSession.png)
+
+###创建一个VTCompressionSession
+需要视频的宽高、编码格式、VTCompressionOutputCallback和可选的sourceImageBufferAttributes。
+```
+OSStatus VTCompressionSessionCreate(CFAllocatorRef allocator, int32_t width, int32_t height, CMVideoCodecType codecType, CFDictionaryRef encoderSpecification, CFDictionaryRef sourceImageBufferAttributes, CFAllocatorRef compressedDataAllocator, VTCompressionOutputCallback outputCallback, void *outputCallbackRefCon, VTCompressionSessionRef  _Nullable *compressionSessionOut);
+```
+
+###配置VTCompressionSession
+使用VTSessionSetProperty()配置VTCompressionSession。
+
+```
+kVTCompressionPropertyKey_AllowFrameReordering：允许调整帧的顺序
+kVTCompressionPropertyKey_AverageBitRate：设置平均码率
+kVTCompressionPropertyKey_H264EntropyMode（kVTH264EntropyMode_CAVLC/kVTH264EntropyMode_CABAC）：H264熵编码的算法，一般来说，CABAC压缩率更高但计算量更大
+kVTCompressionPropertyKey_RealTime：是否实时
+kVTCompressionPropertyKey_ProfileLevel：选择preset等级，比如kVTProfileLevel_H264_Main_AutoLevel
+```
+
+###开始编码
+使用```err = VTCompressionSessionEncodeFrame( session, pixelBuffer,presentationTime, … );```对帧进行编码，需要按***显示顺序（Presentation order）***提供给VTCompressionSession，输出可能会有延时，使用```VTCompressionSessionCompleteFrames()```来flush编码器。
+
+###处理编码结果（CMSampleBuffer）
+当编码器有输出时，会调用VTCompressionOutputCallback，它会提供：
+
+- CMSampleBuffer
+- 压缩错误码
+- 掉帧
+
+***需要说明的是，编码输出的顺序是decode order***
+
+###将编码得到的数据转化为基本流（Elementary Stream）
+以下都是针对H264：
+
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/ConversionOfPP.png)
+
+还需要将MPEG4的Header转换成NALU的3/4-byte开始码。
+##解码
+
 
 
 
@@ -621,6 +663,56 @@ if (!success) {
 <h1 id="videotoolbox">Video Toolbox</h1>
 
 <p>Video Toolbox的主要作用是解码流解压到CVPixelBuffer中、将原始数据编码到CMSampleBuffer中。</p>
+
+<h2 id="">编码</h2>
+
+<p>使用VTCompressionSession进行视频的编码。框架如下：</p>
+
+<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/VTCompressionSession.png" alt="" title=""></p>
+
+<h3 id="vtcompressionsession">创建一个VTCompressionSession</h3>
+
+<p>需要视频的宽高、编码格式、VTCompressionOutputCallback和可选的sourceImageBufferAttributes。</p>
+
+<pre><code>OSStatus VTCompressionSessionCreate(CFAllocatorRef allocator, int32_t width, int32_t height, CMVideoCodecType codecType, CFDictionaryRef encoderSpecification, CFDictionaryRef sourceImageBufferAttributes, CFAllocatorRef compressedDataAllocator, VTCompressionOutputCallback outputCallback, void *outputCallbackRefCon, VTCompressionSessionRef  _Nullable *compressionSessionOut);
+</code></pre>
+
+<h3 id="vtcompressionsession">配置VTCompressionSession</h3>
+
+<p>使用VTSessionSetProperty()配置VTCompressionSession。</p>
+
+<pre><code>kVTCompressionPropertyKey_AllowFrameReordering：允许调整帧的顺序
+kVTCompressionPropertyKey_AverageBitRate：设置平均码率
+kVTCompressionPropertyKey_H264EntropyMode（kVTH264EntropyMode_CAVLC/kVTH264EntropyMode_CABAC）：H264熵编码的算法，一般来说，CABAC压缩率更高但计算量更大
+kVTCompressionPropertyKey_RealTime：是否实时
+kVTCompressionPropertyKey_ProfileLevel：选择preset等级，比如kVTProfileLevel_H264_Main_AutoLevel
+</code></pre>
+
+<h3 id="">开始编码</h3>
+
+<p>使用<code>err = VTCompressionSessionEncodeFrame( session, pixelBuffer,presentationTime, … );</code>对帧进行编码，需要按<strong><em>显示顺序（Presentation order）</em></strong>提供给VTCompressionSession，输出可能会有延时，使用<code>VTCompressionSessionCompleteFrames()</code>来flush编码器。</p>
+
+<h3 id="cmsamplebuffer">处理编码结果（CMSampleBuffer）</h3>
+
+<p>当编码器有输出时，会调用VTCompressionOutputCallback，它会提供：</p>
+
+<ul>
+<li>CMSampleBuffer</li>
+<li>压缩错误码</li>
+<li>掉帧</li>
+</ul>
+
+<p><strong><em>需要说明的是，编码输出的顺序是decode order</em></strong></p>
+
+<h3 id="elementarystream">将编码得到的数据转化为基本流（Elementary Stream）</h3>
+
+<p>以下都是针对H264：</p>
+
+<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/ConversionOfPP.png" alt="" title=""></p>
+
+<p>还需要将MPEG4的Header转换成NALU的3/4-byte开始码。</p>
+
+<h2 id="">解码</h2>
 <!-- content end -->
 </div>
 <br>
