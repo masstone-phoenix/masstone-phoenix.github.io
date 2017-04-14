@@ -79,6 +79,9 @@ iOS系统上视频的处理由顶层到底层分别是AVKit->AVFoundation->Video
 AVFoundation主要作用是直接显示码流、将数据直接编码成文件。
 
 ##Export and Trimming
+
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/AVAssetExportSession.png)
+
 ```
 AVAssetExportSession *exportSession = [[AVAssetExportSession alloc]
 initWithAsset:asset presetName:AVAssetExportPresetMediumQuality];
@@ -209,6 +212,8 @@ mutableVideoComposition.instructions = @[firstVideoCompositionInstruction, secon
 
 
 ##读写音视频文件
+
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/AVAssetReaderWriter.png)
 
 ###读文件
 ![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/AVAssetReader.png)
@@ -495,6 +500,8 @@ Boolean needNewSession = ( VTDecompressionSessionCanAcceptFormatDescription(sess
 <p>AVFoundation主要作用是直接显示码流、将数据直接编码成文件。</p>
 
 <h2 id="exportandtrimming">Export and Trimming</h2>
+
+<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/AVAssetExportSession.png" alt="" title=""></p>
 
 <pre><code>AVAssetExportSession *exportSession = [[AVAssetExportSession alloc]
 initWithAsset:asset presetName:AVAssetExportPresetMediumQuality];
