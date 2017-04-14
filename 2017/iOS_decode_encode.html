@@ -348,7 +348,44 @@ kVTCompressionPropertyKey_ProfileLevel：选择preset等级，比如kVTProfileLe
 ![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/ConversionOfPP.png)
 
 还需要将MPEG4的Header转换成NALU的3/4-byte开始码。
+
 ##解码
+
+###转换
+首先，需要将基本流转化为MPEG-4的格式，与编码一样，有两个步骤：一个是转换参数，一个是转换头。
+
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/ToMPEG4.png)
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/NALHeaderToMPEG4.png)
+
+###得到压缩数据
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/build_CMSampleBuffer.png)
+
+这里，如果要显示，我们就可以使用AVSampleBufferDisplayLayer来解码同时播放视频了。
+![](https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/AVSampleBufferDisplayLayer_display.png)
+
+```
+//控制时间
+sbDisplayLayer.controlTimebase =
+CMTimebaseCreateWithMasterClock(CMClockGetHostTimeClock());
+CMTimebaseSetTime(sbDisplayLayer.controlTimebase, CMTimeMake(5, 1));
+CMTimebaseSetRate(sbDisplayLayer.controlTimebase, 1.0);
+
+//以下两种是根据数据源的不同而选择相应的提供数据方式
+//Periodic Source
+[sbDisplayLayer enqueueSampleBuffer:sbuf];
+
+//Unconstrained source
+[sbDisplayLayer requestMediaDataWhenReadyOnQueue:dispatchQueue usingBlock:^{
+    while ([sbDisplayLayer isReadyForMoreMediaData]) {
+        CMSampleBuffer sbuf = copyNextSBuf();
+        [sbDisplayLayer enqueueSampleBuffer:sbuf];
+        CFRelease(sbuf);
+    }
+}];
+```
+
+
+
 
 
 
@@ -713,6 +750,40 @@ kVTCompressionPropertyKey_ProfileLevel：选择preset等级，比如kVTProfileLe
 <p>还需要将MPEG4的Header转换成NALU的3/4-byte开始码。</p>
 
 <h2 id="">解码</h2>
+
+<h3 id="">转换</h3>
+
+<p>首先，需要将基本流转化为MPEG-4的格式，与编码一样，有两个步骤：一个是转换参数，一个是转换头。</p>
+
+<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/ToMPEG4.png" alt="" title="">
+<img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/NALHeaderToMPEG4.png" alt="" title=""></p>
+
+<h3 id="">得到压缩数据</h3>
+
+<p><img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/build_CMSampleBuffer.png" alt="" title=""></p>
+
+<p>这里，如果要显示，我们就可以使用AVSampleBufferDisplayLayer来解码同时播放视频了。
+<img src="https://masstone-phoenix.github.io/image/iOS_h264_wwdc2014_513/AVSampleBufferDisplayLayer_display.png" alt="" title=""></p>
+
+<pre><code>//控制时间
+sbDisplayLayer.controlTimebase =
+CMTimebaseCreateWithMasterClock(CMClockGetHostTimeClock());
+CMTimebaseSetTime(sbDisplayLayer.controlTimebase, CMTimeMake(5, 1));
+CMTimebaseSetRate(sbDisplayLayer.controlTimebase, 1.0);
+
+//以下两种是根据数据源的不同而选择相应的提供数据方式
+//Periodic Source
+[sbDisplayLayer enqueueSampleBuffer:sbuf];
+
+//Unconstrained source
+[sbDisplayLayer requestMediaDataWhenReadyOnQueue:dispatchQueue usingBlock:^{
+    while ([sbDisplayLayer isReadyForMoreMediaData]) {
+        CMSampleBuffer sbuf = copyNextSBuf();
+        [sbDisplayLayer enqueueSampleBuffer:sbuf];
+        CFRelease(sbuf);
+    }
+}];
+</code></pre>
 <!-- content end -->
 </div>
 <br>
