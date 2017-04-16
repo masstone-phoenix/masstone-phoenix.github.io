@@ -75,7 +75,14 @@ PHAuthorizationStatus oldStatus = [PHPhotoLibrary authorizationStatus];
     }];
 ```
 
-#写入文件
+#新建文件
+```
+PHAssetChangeRequest *createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+PHObjectPlaceholder *assetPlaceholder = createAssetRequest.placeholderForCreatedAsset;
+PHAssetCollectionChangeRequest *albumChangeRequest =
+    [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
+[albumChangeRequest addAssets:@[ assetPlaceholder ]];
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -132,7 +139,14 @@ PHAuthorizationStatus oldStatus = [PHPhotoLibrary authorizationStatus];
     }];
 </code></pre>
 
-<h1 id="">写入文件</h1>
+<h1 id="">新建文件</h1>
+
+<pre><code>PHAssetChangeRequest *createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+PHObjectPlaceholder *assetPlaceholder = createAssetRequest.placeholderForCreatedAsset;
+PHAssetCollectionChangeRequest *albumChangeRequest =
+    [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
+[albumChangeRequest addAssets:@[ assetPlaceholder ]];
+</code></pre>
 <!-- content end -->
 </div>
 <br>
