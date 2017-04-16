@@ -31,7 +31,9 @@
 #一些概念
 框架里的类都是继承自 PHObject 抽象基类，其公共接口只提供了一个 localIdentifier 属性。
 
-PHAsset是单个的图片、视频的抽象。PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList相簿（包括一个或多个相册）的抽象。它们都是只读的，只包含元数据（metadata）。
+PHAsset是单个的图片、视频的抽象。
+
+PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList相簿（包括一个或多个相册）的抽象。它们都是只读的，只包含元数据（metadata）。它们都是PHCollection的子类。
 
 我们先获得（fetch）上述数据类型，再通过它们去获取我们真正需要的数据。对于修改操作，需要创建请求（request ）, 然后显示的向shared PHPhotoLibrary对象提交它。
 
@@ -65,7 +67,9 @@ PHAsset是单个的图片、视频的抽象。PHAssetCollection是相册、Momen
 
 <p>框架里的类都是继承自 PHObject 抽象基类，其公共接口只提供了一个 localIdentifier 属性。</p>
 
-<p>PHAsset是单个的图片、视频的抽象。PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList相簿（包括一个或多个相册）的抽象。它们都是只读的，只包含元数据（metadata）。</p>
+<p>PHAsset是单个的图片、视频的抽象。</p>
+
+<p>PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList相簿（包括一个或多个相册）的抽象。它们都是只读的，只包含元数据（metadata）。它们都是PHCollection的子类。</p>
 
 <p>我们先获得（fetch）上述数据类型，再通过它们去获取我们真正需要的数据。对于修改操作，需要创建请求（request ）, 然后显示的向shared PHPhotoLibrary对象提交它。</p>
 
