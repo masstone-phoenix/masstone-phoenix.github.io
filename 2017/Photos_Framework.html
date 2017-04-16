@@ -39,7 +39,7 @@ PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList
 
 我们可以通过观察者模式来对改变进行响应，即注册一个改变的handler，当观察的asset发生变化时，系统会调用我们注册的handler。
 
-使用PHImageManager来攻取PHAsset表示的图像或视频的原始数据。
+使用PHImageManager来攻取PHAsset表示的图像或视频的原始数据。这个API对于iCloud和设备上的照片或视频是一视同仁的，如果不需要访问iCloud，可以将```networkAccessAllowed ```设为NO。
 
  PHObjectPlaceholder：创建了新的object但是还没添加到相册中时需要用到它，用来fetch新建的object。
 
@@ -57,6 +57,8 @@ PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList
 对于一个资源，如果其 PHAsset 的 ```representsBurst``` 属性为 true，则表示这个资源是一系列连拍照片中的代表照片 (多张照片是在用户按住快门时拍摄的)。它还有一个属性是``` burstIdentifier```，如果想要获取连拍照片中的剩余的其他照片，可以通过将这个值传入``` fetchAssetsWithBurstIdentifier(...) ```方法来获取。
 
 用户可以在连拍的照片中做标记；此外，系统也会自动用各种试探来标记用户可能会选择的潜在代表照片。这个元数据是可以通过 PHAsset 的 ```burstSelectionTypes``` 属性来访问。这个属性是用三个常量组成的位掩码：.UserPick 表示用户手动标记的资源，.AutoPick 表示用户可能标记的潜在资源，.None 表示没有标记的资源。
+
+#取得权限
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -75,7 +77,7 @@ PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList
 
 <p>我们可以通过观察者模式来对改变进行响应，即注册一个改变的handler，当观察的asset发生变化时，系统会调用我们注册的handler。</p>
 
-<p>使用PHImageManager来攻取PHAsset表示的图像或视频的原始数据。</p>
+<p>使用PHImageManager来攻取PHAsset表示的图像或视频的原始数据。这个API对于iCloud和设备上的照片或视频是一视同仁的，如果不需要访问iCloud，可以将<code>networkAccessAllowed</code>设为NO。</p>
 
 <p>PHObjectPlaceholder：创建了新的object但是还没添加到相册中时需要用到它，用来fetch新建的object。</p>
 
@@ -96,6 +98,8 @@ PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList
 <p>对于一个资源，如果其 PHAsset 的 <code>representsBurst</code> 属性为 true，则表示这个资源是一系列连拍照片中的代表照片 (多张照片是在用户按住快门时拍摄的)。它还有一个属性是<code>burstIdentifier</code>，如果想要获取连拍照片中的剩余的其他照片，可以通过将这个值传入<code>fetchAssetsWithBurstIdentifier(...)</code>方法来获取。</p>
 
 <p>用户可以在连拍的照片中做标记；此外，系统也会自动用各种试探来标记用户可能会选择的潜在代表照片。这个元数据是可以通过 PHAsset 的 <code>burstSelectionTypes</code> 属性来访问。这个属性是用三个常量组成的位掩码：.UserPick 表示用户手动标记的资源，.AutoPick 表示用户可能标记的潜在资源，.None 表示没有标记的资源。</p>
+
+<h1 id="">取得权限</h1>
 <!-- content end -->
 </div>
 <br>
