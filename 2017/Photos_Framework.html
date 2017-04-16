@@ -39,7 +39,7 @@ PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList
 
 我们可以通过观察者模式来对改变进行响应，即注册一个改变的handler，当观察的asset发生变化时，系统会调用我们注册的handler。
 
-使用PHImageManager来攻取PHAsset表示的图像或视频的原始数据。这个API对于iCloud和设备上的照片或视频是一视同仁的，如果不需要访问iCloud，可以将```networkAccessAllowed ```设为NO。
+使用PHImageManager来攻取PHAsset表示的图像或视频的原始数据。这个API对于iCloud和设备上的照片或视频是一视同仁的，如果不需要访问iCloud，可以将PHImageRequestOptions中的```networkAccessAllowed ```设为NO。顺带一提，还有一个progressHandler，是在从iCloud下载图片时定期调用。
 
  PHObjectPlaceholder：创建了新的object但是还没添加到相册中时需要用到它，用来fetch新建的object。
 
@@ -77,7 +77,7 @@ PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList
 
 <p>我们可以通过观察者模式来对改变进行响应，即注册一个改变的handler，当观察的asset发生变化时，系统会调用我们注册的handler。</p>
 
-<p>使用PHImageManager来攻取PHAsset表示的图像或视频的原始数据。这个API对于iCloud和设备上的照片或视频是一视同仁的，如果不需要访问iCloud，可以将<code>networkAccessAllowed</code>设为NO。</p>
+<p>使用PHImageManager来攻取PHAsset表示的图像或视频的原始数据。这个API对于iCloud和设备上的照片或视频是一视同仁的，如果不需要访问iCloud，可以将PHImageRequestOptions中的<code>networkAccessAllowed</code>设为NO。顺带一提，还有一个progressHandler，是在从iCloud下载图片时定期调用。</p>
 
 <p>PHObjectPlaceholder：创建了新的object但是还没添加到相册中时需要用到它，用来fetch新建的object。</p>
 
