@@ -59,6 +59,21 @@ PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList
 用户可以在连拍的照片中做标记；此外，系统也会自动用各种试探来标记用户可能会选择的潜在代表照片。这个元数据是可以通过 PHAsset 的 ```burstSelectionTypes``` 属性来访问。这个属性是用三个常量组成的位掩码：.UserPick 表示用户手动标记的资源，.AutoPick 表示用户可能标记的潜在资源，.None 表示没有标记的资源。
 
 #取得权限
+
+```
+PHAuthorizationStatus oldStatus = [PHPhotoLibrary authorizationStatus];
+    //get the  auth
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        if (status == PHAuthorizationStatusAuthorized) {
+            completion();
+        }
+        else if ( (oldStatus != PHAuthorizationStatusNotDetermined) &&
+                 (status == PHAuthorizationStatusDenied) ) {
+            //以前拒绝，现在又想用，应该给出提示
+            errorHandler();
+        }
+    }];
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -100,6 +115,20 @@ PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList
 <p>用户可以在连拍的照片中做标记；此外，系统也会自动用各种试探来标记用户可能会选择的潜在代表照片。这个元数据是可以通过 PHAsset 的 <code>burstSelectionTypes</code> 属性来访问。这个属性是用三个常量组成的位掩码：.UserPick 表示用户手动标记的资源，.AutoPick 表示用户可能标记的潜在资源，.None 表示没有标记的资源。</p>
 
 <h1 id="">取得权限</h1>
+
+<pre><code>PHAuthorizationStatus oldStatus = [PHPhotoLibrary authorizationStatus];
+    //get the  auth
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        if (status == PHAuthorizationStatusAuthorized) {
+            completion();
+        }
+        else if ( (oldStatus != PHAuthorizationStatusNotDetermined) &amp;&amp;
+                 (status == PHAuthorizationStatusDenied) ) {
+            //以前拒绝，现在又想用，应该给出提示
+            errorHandler();
+        }
+    }];
+</code></pre>
 <!-- content end -->
 </div>
 <br>
