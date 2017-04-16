@@ -75,13 +75,20 @@ PHAuthorizationStatus oldStatus = [PHPhotoLibrary authorizationStatus];
     }];
 ```
 
-#新建文件
+#新建删除文件
 ```
 PHAssetChangeRequest *createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
 PHObjectPlaceholder *assetPlaceholder = createAssetRequest.placeholderForCreatedAsset;
 PHAssetCollectionChangeRequest *albumChangeRequest =
     [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
 [albumChangeRequest addAssets:@[ assetPlaceholder ]];
+
+PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionFetchResults[indexPath.section][indexPath.row]
+                                                                   options:nil];
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            //detele all
+            [PHAssetChangeRequest deleteAssets: albumPhotos];
+        } completionHandler:completionHandler];
 ```
 <!-- markdown end -->
 </div>
@@ -139,13 +146,20 @@ PHAssetCollectionChangeRequest *albumChangeRequest =
     }];
 </code></pre>
 
-<h1 id="">新建文件</h1>
+<h1 id="">新建删除文件</h1>
 
 <pre><code>PHAssetChangeRequest *createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
 PHObjectPlaceholder *assetPlaceholder = createAssetRequest.placeholderForCreatedAsset;
 PHAssetCollectionChangeRequest *albumChangeRequest =
     [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
 [albumChangeRequest addAssets:@[ assetPlaceholder ]];
+
+PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionFetchResults[indexPath.section][indexPath.row]
+                                                                   options:nil];
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            //detele all
+            [PHAssetChangeRequest deleteAssets: albumPhotos];
+        } completionHandler:completionHandler];
 </code></pre>
 <!-- content end -->
 </div>
