@@ -27,7 +27,9 @@
 <!-- markdown -->
 最近，遇到了```__attribute__```，这里学习下，主要参考<http://nshipster.com/__attribute__/>。
 
+
 ```__attribute__```是一个编译器指令，用法是后面加两个括号，括号是以逗号为分隔符，表示attributes的列表。```__attribute__```放在函数、变量、类型的后面。比如：
+
 
 ```
 // Return the square of a number
@@ -44,6 +46,12 @@ extern void die(const char *format, ...)
 
 最后一个参考<https://gcc.gnu.org/onlinedocs/gcc-3.4.5/gcc/Function-Attributes.html#Function-Attributes>，我们就知道这个是什么意思了。其它的以此类推。
 
+
+###NSObject
+```
+@property (nonatomic,strong) __attribute__((NSObject)) CFDictionaryRef myDictionary;
+```
+CFDictionaryRef属于CoreFoundation框架的,也就是非OC对象,加上attribute((NSObject))后,myDictionary的内存管理会被当做OC对象来对待。印象中苹果官方不建议这样使用，学习下就好。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -62,10 +70,17 @@ void f(void)
 
 <p>// Send printf-like message to stderr and exit
 extern void die(const char *format, ...)
-  <strong>attribute</strong>((noreturn, format(printf, 1, 2)));
-```</p>
+  <strong>attribute</strong>((noreturn, format(printf, 1, 2)));</p>
 
-<p>最后一个参考<a href="https://gcc.gnu.org/onlinedocs/gcc-3.4.5/gcc/Function-Attributes.html#Function-Attributes">https://gcc.gnu.org/onlinedocs/gcc-3.4.5/gcc/Function-Attributes.html#Function-Attributes</a>，我们就知道这个是什么意思了。其它的以此类推。</p>
+<pre><code>最后一个参考&lt;https://gcc.gnu.org/onlinedocs/gcc-3.4.5/gcc/Function-Attributes.html#Function-Attributes&gt;，我们就知道这个是什么意思了。其它的以此类推。
+
+
+###NSObject
+</code></pre>
+
+<p>@property (nonatomic,strong) <strong>attribute</strong>((NSObject)) CFDictionaryRef myDictionary;
+```
+CFDictionaryRef属于CoreFoundation框架的,也就是非OC对象,加上attribute((NSObject))后,myDictionary的内存管理会被当做OC对象来对待。印象中苹果官方不建议这样使用，学习下就好。</p>
 <!-- content end -->
 </div>
 <br>
