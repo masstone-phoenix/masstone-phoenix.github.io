@@ -131,10 +131,10 @@ PHAuthorizationStatus oldStatus = [PHPhotoLibrary authorizationStatus];
 ```
 PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionFetchResults[indexPath.section][indexPath.row]
                                                                    options:nil];
-        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-            //detele all
-            [PHAssetChangeRequest deleteAssets: albumPhotos];
-        } completionHandler:completionHandler];
+[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        //detele all
+         PHAssetChangeRequest deleteAssets: albumPhotos];
+    } completionHandler:completionHandler];
 ```
 <!-- markdown end -->
 </div>
@@ -248,10 +248,10 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
 
 <pre><code>PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionFetchResults[indexPath.section][indexPath.row]
                                                                    options:nil];
-        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-            //detele all
-            [PHAssetChangeRequest deleteAssets: albumPhotos];
-        } completionHandler:completionHandler];
+[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        //detele all
+         PHAssetChangeRequest deleteAssets: albumPhotos];
+    } completionHandler:completionHandler];
 </code></pre>
 <!-- content end -->
 </div>
