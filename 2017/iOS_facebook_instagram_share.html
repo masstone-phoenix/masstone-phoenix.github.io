@@ -40,11 +40,6 @@
 #Facebook分享
 
 ##图片分享
-
-#Instagram分享
-官方参考文档<https://www.instagram.com/developer/mobile-sharing/iphone-hooks/>，图片说明到是还可以（也许我是对着code看所以清晰），视频分享就不知所云了。
-
-##图片分享
 ```
 NSData *sharedImageData;
 //得到分享数据的data
@@ -60,7 +55,33 @@ if ([[self imageMIME] isEqualToString:@"image/gif"]) {
 } else {
         sharedImageData = [self emojiData];
 }
-//转成instagram的igo格式文件
+//使用FB SDK分享
+FBSDKSharePhoto *photo = [[FBSDKSharePhoto alloc] init];
+photo.image = sharedImage;
+photo.userGenerated = YES;
+FBSDKSharePhotoContent *content = [[FBSDKSharePhotoContent alloc] init];
+content.photos = @[photo];
+[FBSDKShareDialog showFromViewController:self.presentController withContent:content delegate:self];
+
+//最后通过代理方法来得到用户是分享还是取消了
+- (void)sharer:(id<FBSDKSharing>)sharer didCompleteWithResults:(NSDictionary *)results {
+    self.block(ShareResultStateSuccessed);
+}
+
+- (void)sharer:(id<FBSDKSharing>)sharer didFailWithError:(NSError *)error{
+    self.block(ShareResultStateFailed);
+}
+```
+
+#Instagram分享
+官方参考文档<https://www.instagram.com/developer/mobile-sharing/iphone-hooks/>，图片说明到是还可以（也许我是对着code看所以清晰），视频分享就不知所云了。
+
+##图片分享
+```
+//得到分享数据的data
+NSData *sharedImageData = ...;
+
+//将数据sharedImageData转成instagram的igo格式文件
 if (!imageData || !file) {
     return NO;
 }
@@ -187,12 +208,6 @@ if ([[NSFileManager defaultManager] fileExistsAtPath:_emojiPath]) {
 
 <h2 id="">图片分享</h2>
 
-<h1 id="instagram">Instagram分享</h1>
-
-<p>官方参考文档<a href="https://www.instagram.com/developer/mobile-sharing/iphone-hooks/">https://www.instagram.com/developer/mobile-sharing/iphone-hooks/</a>，图片说明到是还可以（也许我是对着code看所以清晰），视频分享就不知所云了。</p>
-
-<h2 id="">图片分享</h2>
-
 <pre><code>NSData *sharedImageData;
 //得到分享数据的data
 if ([[self imageMIME] isEqualToString:@"image/gif"]) {
@@ -207,7 +222,34 @@ if ([[self imageMIME] isEqualToString:@"image/gif"]) {
 } else {
         sharedImageData = [self emojiData];
 }
-//转成instagram的igo格式文件
+//使用FB SDK分享
+FBSDKSharePhoto *photo = [[FBSDKSharePhoto alloc] init];
+photo.image = sharedImage;
+photo.userGenerated = YES;
+FBSDKSharePhotoContent *content = [[FBSDKSharePhotoContent alloc] init];
+content.photos = @[photo];
+[FBSDKShareDialog showFromViewController:self.presentController withContent:content delegate:self];
+
+//最后通过代理方法来得到用户是分享还是取消了
+- (void)sharer:(id&lt;FBSDKSharing&gt;)sharer didCompleteWithResults:(NSDictionary *)results {
+    self.block(ShareResultStateSuccessed);
+}
+
+- (void)sharer:(id&lt;FBSDKSharing&gt;)sharer didFailWithError:(NSError *)error{
+    self.block(ShareResultStateFailed);
+}
+</code></pre>
+
+<h1 id="instagram">Instagram分享</h1>
+
+<p>官方参考文档<a href="https://www.instagram.com/developer/mobile-sharing/iphone-hooks/">https://www.instagram.com/developer/mobile-sharing/iphone-hooks/</a>，图片说明到是还可以（也许我是对着code看所以清晰），视频分享就不知所云了。</p>
+
+<h2 id="">图片分享</h2>
+
+<pre><code>//得到分享数据的data
+NSData *sharedImageData = ...;
+
+//将数据sharedImageData转成instagram的igo格式文件
 if (!imageData || !file) {
     return NO;
 }
