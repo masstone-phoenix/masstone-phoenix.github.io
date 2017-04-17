@@ -28,7 +28,9 @@
 最近，遇到了```__attribute__```，这里学习下，主要参考<http://nshipster.com/__attribute__/>。
 
 
-```__attribute__```是一个编译器指令，用法是后面加两个括号，括号是以逗号为分隔符，表示attributes的列表。```__attribute__```放在函数、变量、类型的后面。比如：
+```__attribute__```是一个编译器指令，用法是后面加两个括号，括号是以逗号为分隔符，表示attributes的列表。```__attribute__```放在函数、变量、类型的后面。
+
+
 
 
 ```
@@ -52,13 +54,18 @@ extern void die(const char *format, ...)
 @property (nonatomic,strong) __attribute__((NSObject)) CFDictionaryRef myDictionary;
 ```
 CFDictionaryRef属于CoreFoundation框架的,也就是非OC对象,加上attribute((NSObject))后,myDictionary的内存管理会被当做OC对象来对待。印象中苹果官方不建议这样使用，学习下就好。
+
+###```objc_subclassing_restricted```
+
+用来修饰类，类似Java中的```final```类。
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
 <p>最近，遇到了<code>__attribute__</code>，这里学习下，主要参考<a href="http://nshipster.com/__attribute__/">http://nshipster.com/__attribute__/</a>。</p>
 
-<pre><code class="__attribute__```是一个编译器指令，用法是后面加两个括号，括号是以逗号为分隔符，表示attributes的列表。```__attribute__```放在函数、变量、类型的后面。比如：">
+<pre><code class="__attribute__```是一个编译器指令，用法是后面加两个括号，括号是以逗号为分隔符，表示attributes的列表。```__attribute__```放在函数、变量、类型的后面。">
 </code></pre>
 
 <p>// Return the square of a number
@@ -81,6 +88,10 @@ extern void die(const char *format, ...)
 <p>@property (nonatomic,strong) <strong>attribute</strong>((NSObject)) CFDictionaryRef myDictionary;
 ```
 CFDictionaryRef属于CoreFoundation框架的,也就是非OC对象,加上attribute((NSObject))后,myDictionary的内存管理会被当做OC对象来对待。印象中苹果官方不建议这样使用，学习下就好。</p>
+
+<h3 id="objc_subclassing_restricted"><code>objc_subclassing_restricted</code></h3>
+
+<p>用来修饰类，类似Java中的<code>final</code>类。</p>
 <!-- content end -->
 </div>
 <br>
