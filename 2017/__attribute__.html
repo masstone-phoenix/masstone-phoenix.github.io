@@ -25,200 +25,47 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-最近，再开发一个视频分享的小功能，经过一天的折腾，终于搞定了，这里记录一下，供大家参考，如果有更好的方法，请发邮件<asdemon235b@126.com>。
+最近，遇到了```__attribute__```，这里学习下，主要参考<http://nshipster.com/__attribute__/>。
 
-需求：将程序生成的视频分享到Facebook和Instagram。
-
-目前情况：已经实现了分享图片到Facebook和Instagram。
-
-走的弯路：首先，Instagram对于视频的时长有要求，经测试，目前是3.0s，这就对生成的视频有了新的限制，如果小于这个长度，需要再次循环播放一遍。其次，开始时以为分享图片和视频的实现方式是一样的，后来发现完全不同，浪费了点时间。最后，Facebook和Instagram的视频分享不像图片那样，文件在程序的沙盒内即可，视频必须在系统的Photo App中才能分享，URL必须是aaset url，要知道苹果已经用Photo Framework代替AssetsLibrary了，此处省略三千字。。。 。
-
-
-
-- 
-
-#Facebook分享
-
-##图片分享
-```
-NSData *sharedImageData;
-//得到分享数据的data
-if ([[self imageMIME] isEqualToString:@"image/gif"]) {
-        HSKeyboardGIFImage *gifImage = [self gifImage];
-        if (gifImage.frameCount > 0) {
-                UIImage *image =  [gifImage imageAtIndex:gifImage.frameCount > 1 ? 1 : 0];
-                sharedImageData = UIImagePNGRepresentation(image);
-        } else {
-                self.block(ShareResultStateFailed);
-                return NO;
-        }
-} else {
-        sharedImageData = [self emojiData];
-}
-//使用FB SDK分享
-FBSDKSharePhoto *photo = [[FBSDKSharePhoto alloc] init];
-photo.image = sharedImage;
-photo.userGenerated = YES;
-FBSDKSharePhotoContent *content = [[FBSDKSharePhotoContent alloc] init];
-content.photos = @[photo];
-[FBSDKShareDialog showFromViewController:self.presentController withContent:content delegate:self];
-
-//最后通过代理方法来得到用户是分享还是取消了
-- (void)sharer:(id<FBSDKSharing>)sharer didCompleteWithResults:(NSDictionary *)results {
-    self.block(ShareResultStateSuccessed);
-}
-
-- (void)sharer:(id<FBSDKSharing>)sharer didFailWithError:(NSError *)error{
-    self.block(ShareResultStateFailed);
-}
-```
-
-##视频分享
-官方参考<https://developers.facebook.com/docs/sharing/ios>。
-
-主要是视频的URL必须是asset url，否则会报错。具体URL见下面代码。代理方法处理同上面的图片。
+```__attribute__```是一个编译器指令，用法是后面加两个括号，括号是以逗号为分隔符，表示attributes的列表。```__attribute__```放在函数、变量、类型的后面。比如：
 
 ```
-[FileUtils saveVideoToCameraRollWithFileUrl:[NSURL URLWithString:_emojiPath] completion:^(CameraRollSaveStatus status, NSString *localID) {
-    if (status == CameraRollSaveStatus_SaveSuccess) {
-        
-        NSString *urlString = [NSString stringWithFormat:@"assets-library://asset/asset.MP4?id=%@&ext=MP4", [localID componentsSeparatedByString:@"/"].firstObject ];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            FBSDKShareVideo *video = [FBSDKShareVideo videoWithVideoURL:[NSURL URLWithString:urlString]];
-            FBSDKShareVideoContent *content = [[FBSDKShareVideoContent alloc] init];
-            content.video = video;
-            [FBSDKShareDialog showFromViewController:self.presentController withContent:content delegate:self];
-        });
-    }
-    else {
-        self.block(ShareResultStateFailed);
-    }
-}]
+// Return the square of a number
+int square(int n) __attribute__((const));
+
+// Declare the availability of a particular API
+void f(void)
+  __attribute__((availability(macosx,introduced=10.4,deprecated=10.6)));
+
+// Send printf-like message to stderr and exit
+extern void die(const char *format, ...)
+  __attribute__((noreturn, format(printf, 1, 2)));
 ```
 
-#Instagram分享
-官方参考文档<https://www.instagram.com/developer/mobile-sharing/iphone-hooks/>，图片说明到是还可以（也许我是对着code看所以清晰），视频分享就不知所云了。
-
-##图片分享
-```
-//得到分享数据的data
-NSData *sharedImageData = ...;
-
-//将数据sharedImageData转成instagram的igo格式文件
-if (!imageData || !file) {
-    return NO;
-}
-NSString *pathImage = [NSTemporaryDirectory() tringByAppendingPathComponent:"zmojiinstagram.igo"];
-NSURL *urlImage = [imageData writeToFile:pathImage atomically:YES] ? [NSURL fileURLWithPath:pathImage] : nil;
-if (urlImage == nil) {
-    self.block(ShareResultStateFailed);
-    return NO;
-}
-
-//使用UIDocumentInteractionController分享图片
-NSDictionary *annotation = @{@"InstagramCaption": @""};
-BOOL result = [self shareViaInteractionControllerWithURL:urlImage andUTI:@"com.instagram.exclusivegram" andAnnotation:annotation];
-return result;
-
-
-//以下是辅助函数
-- (BOOL)shareViaInteractionControllerWithURL:(NSURL *)url andUTI:(NSString *)uti andAnnotation:(id)annotation {
-    UIDocumentInteractionController *controller;
-    if (url) {
-        controller = [UIDocumentInteractionController interactionControllerWithURL:url];
-    } else {
-        controller = [[UIDocumentInteractionController alloc] init];
-    }
-    if (uti) {
-        controller.UTI = uti;
-    }
-    if (annotation) {
-        controller.annotation = annotation;
-    }
-    controller.delegate = self;
-    self.interactionController = controller;
-    UIView *view = self.presentController.view;
-    CGRect rect = CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.width);
-    return [controller presentOpenInMenuFromRect:rect inView:view animated:YES];
-}
-
-- (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller {
-    self.interactionController = nil;
-    if (_interactionOptionSelected) {
-        self.block(ShareResultStateUnknown);
-    } else {
-        self.block(ShareResultStateCancelled);
-    }
-    _interactionOptionSelected = NO;
-}
-```
-
-##视频分享
-这里需要使用openURL这个API，具体参数<https://useyourloaf.com/blog/openurl-deprecated-in-ios10/>。
-
-思路是这样的：由于只允许分享相册中的视频，我们需要把自己的视频存入相册（需要权限），然后拿到这个视频的asset url，使用URL Scheme来分享视频，url为：```instagram://library?AssetPath=%@&InstagramCaption=%@```，%@为占位符。与Facebook SDK比这个就不知道用户是分享了还是取消了。
-
-```
-if ([[NSFileManager defaultManager] fileExistsAtPath:_emojiPath]) {
-            //先将文件写入系统相册中，结束后使用PHAsset的localIdentifier转化成asset url
-            [FileUtils saveVideoToCameraRollWithFileUrl:[NSURL URLWithString:_emojiPath] completion:^(CameraRollSaveStatus status, NSString *localID) {
-                if (status == CameraRollSaveStatus_SaveSuccess) {
-                    NSString *instagramURL = [NSString stringWithFormat:@"instagram://library?AssetPath=%@&InstagramCaption=%@",[self encodeToPercentEscapeString:(NSString *)[localID componentsSeparatedByString:@"/"].firstObject],[self encodeToPercentEscapeString:@""]];
-                    [self openScheme:instagramURL];
-                    self.block(ShareResultStateSuccessed);
-                }
-                else {
-                    self.block(ShareResultStateFailed);
-                }
-            }];
-            return NO;
-        }
-        else {
-            self.block(ShareResultStateFailed);
-            return NO;
-        }
-
-
-//以下是辅助函数
-- (void)openScheme:(NSString *)scheme {
-    UIApplication *application = [UIApplication sharedApplication];
-    NSURL *URL = [NSURL URLWithString:scheme];
-    
-    if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
-        [application openURL:URL options:@{}
-           completionHandler:^(BOOL success) {
-               NSLog(@"Open %@: %d",scheme,success);
-           }];
-    } else {
-        BOOL success = [application openURL:URL];
-        NSLog(@"Open %@: %d",scheme,success);
-    }
-}
-
--(NSString *)encodeToPercentEscapeString:(NSString *)string {
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
-                                                                                 (CFStringRef) string,
-                                                                                 NULL,
-                                                                                 (CFStringRef) @"!*'();:@&=+$,/?%#[]",
-                                                                                 kCFStringEncodingUTF8));
-}
-
--(NSString *)decodeFromPercentEscapeString:(NSString *)string {
-    return (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
-                                                                                                 (CFStringRef) string,
-                                                                                                 CFSTR(""),
-                                                                                                 kCFStringEncodingUTF8));
-}
-```
-
-总之，需要将视频放入系统相册才能分享。这真坑
+最后一个参考<https://gcc.gnu.org/onlinedocs/gcc-3.4.5/gcc/Function-Attributes.html#Function-Attributes>，我们就知道这个是什么意思了。其它的以此类推。
 
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>最近，遇到了<code>__attribute__</code>，这里学习下，主要参考<a href="http://nshipster.com/__attribute__/">http://nshipster.com/__attribute__/</a>。</p>
 
+<pre><code class="__attribute__```是一个编译器指令，用法是后面加两个括号，括号是以逗号为分隔符，表示attributes的列表。```__attribute__```放在函数、变量、类型的后面。比如：">
+</code></pre>
+
+<p>// Return the square of a number
+int square(int n) <strong>attribute</strong>((const));</p>
+
+<p>// Declare the availability of a particular API
+void f(void)
+  <strong>attribute</strong>((availability(macosx,introduced=10.4,deprecated=10.6)));</p>
+
+<p>// Send printf-like message to stderr and exit
+extern void die(const char *format, ...)
+  <strong>attribute</strong>((noreturn, format(printf, 1, 2)));
+```</p>
+
+<p>最后一个参考<a href="https://gcc.gnu.org/onlinedocs/gcc-3.4.5/gcc/Function-Attributes.html#Function-Attributes">https://gcc.gnu.org/onlinedocs/gcc-3.4.5/gcc/Function-Attributes.html#Function-Attributes</a>，我们就知道这个是什么意思了。其它的以此类推。</p>
 <!-- content end -->
 </div>
 <br>
