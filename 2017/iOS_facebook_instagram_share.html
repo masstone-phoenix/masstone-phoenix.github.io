@@ -1,0 +1,310 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+在iOS 8.0之前，iOS是使用Asset来管理相册中的照片和视频的，8.0后，Apple引入了新的Photos Framework来替代Asset。之前也曾经用过这个Framework在相册中新建一个类别并向其中写入图片，但过了几个月不用就有点忘记了，这里把它总结下，以后忘记的时候就可以很快的找到想要的了。
+
+
+#一些概念
+框架里的类都是继承自 PHObject 抽象基类，其公共接口只提供了一个 localIdentifier 属性。
+
+PHAsset是单个的图片、视频的抽象。
+
+PHAssetCollection是相册、Moments和智能相册的抽象。 PHCollectionList相簿（包括一个或多个相册）的抽象。它们都是只读的，只包含元数据（metadata）。它们都是PHCollection的子类。
+
+我们先获得（fetch）上述数据类型，再通过它们去获取我们真正需要的数据。对于修改操作，需要创建请求（request ）, 然后显示的向shared PHPhotoLibrary对象提交它。
+
+我们可以通过观察者模式来对改变进行响应，即注册一个改变的handler，当观察的asset发生变化时，系统会调用我们注册的handler。
+
+使用PHImageManager来攻取PHAsset表示的图像或视频的原始数据。这个API对于iCloud和设备上的照片或视频是一视同仁的，如果不需要访问iCloud，可以将PHImageRequestOptions中的```networkAccessAllowed ```设为NO。顺带一提，还有一个progressHandler，是在从iCloud下载图片时定期调用。
+
+ PHObjectPlaceholder：创建了新的object但是还没添加到相册中时需要用到它，用来fetch新建的object。
+
+
+##照片中的元数据
+引自<https://objccn.io/issue-21-4/>
+
+### HDR 和全景照片
+你可以使用照片资源的``` mediaSubtypes``` 属性验证资源库中的图像在捕捉时是否开启了 HDR，拍摄时是否使用了相机应用的全景模式。
+
+### 收藏和隐藏资源
+要验证一个资源是否被用户标记为收藏或被隐藏，只要检查 PHAsset 实例的``` favorite``` 和```hidden``` 属性即可。
+
+###连拍模式照片
+对于一个资源，如果其 PHAsset 的 ```representsBurst``` 属性为 true，则表示这个资源是一系列连拍照片中的代表照片 (多张照片是在用户按住快门时拍摄的)。它还有一个属性是``` burstIdentifier```，如果想要获取连拍照片中的剩余的其他照片，可以通过将这个值传入``` fetchAssetsWithBurstIdentifier(...) ```方法来获取。
+
+用户可以在连拍的照片中做标记；此外，系统也会自动用各种试探来标记用户可能会选择的潜在代表照片。这个元数据是可以通过 PHAsset 的 ```burstSelectionTypes``` 属性来访问。这个属性是用三个常量组成的位掩码：.UserPick 表示用户手动标记的资源，.AutoPick 表示用户可能标记的潜在资源，.None 表示没有标记的资源。
+
+#取得权限
+
+```
+PHAuthorizationStatus oldStatus = [PHPhotoLibrary authorizationStatus];
+    //get the  auth
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        if (status == PHAuthorizationStatusAuthorized) {
+            completion();
+        }
+        else if ( (oldStatus != PHAuthorizationStatusNotDetermined) &&
+                 (status == PHAuthorizationStatusDenied) ) {
+            //以前拒绝，现在又想用，应该给出提示
+            errorHandler();
+        }
+    }];
+```
+
+#新建删除文件
+
+创建一个相册的例子：
+```
++ (PHAssetCollection *)assetCollectionWithTitle:(NSString *)title {
+    PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+    for (PHAssetCollection *ac in assetCollections) {
+        if ([ac.localizedTitle isEqualToString:title]) {
+            return ac;
+        }
+    }
+    //来到这里表明没有当前相册
+    //创建相册
+    __block NSString *assetCollectionID = nil;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+        assetCollectionID = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title].placeholderForCreatedAssetCollection.localIdentifier;
+    } error:nil];
+    // 取得相册
+    PHAssetCollection *assetCollection = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[assetCollectionID] options:nil].firstObject;
+    return assetCollection;
+}
+
++ (void)saveEmoji:(NSURL *)emojiUrl isVideo:(BOOL)isVideo completion:(void (^)(CameraRollSaveStatus status)) completion{
+    PHAssetCollection *assetCollection = [self assetCollectionWithTitle:@"Moji Library"];
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        
+        //创建更改图片请求
+        PHAssetChangeRequest *createAssetRequest;
+        if (isVideo) {
+            createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:emojiUrl];
+        } else {
+            createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:emojiUrl];
+        }
+        
+        //创建更改相册请求
+        PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+        
+        // Get a placeholder for the new asset and add it to the album editing request.
+        PHObjectPlaceholder *assetPlaceholder = [createAssetRequest placeholderForCreatedAsset];
+        
+        [albumChangeRequest addAssets:@[ assetPlaceholder ]];
+        
+    } completionHandler:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            completion(CameraRollSaveStatus_SaveSuccess);
+        } else {
+            completion(CameraRollSaveStatus_SaveFailed);
+        }
+    }];
+}
+```
+
+删除文件的例子：
+```
+PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionFetchResults[indexPath.section][indexPath.row]
+                                                                   options:nil];
+[[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        //detele all
+         PHAssetChangeRequest deleteAssets: albumPhotos];
+    } completionHandler:completionHandler];
+```
+
+
+
+最后，稍微提下ALAssetsLibrary之前的用法，是enumerate，找到你感兴趣的东西；现在是fetch
+
+```
+- (void)startQuery {
+    ALAssetsLibrary *assetLibrary = [[ALAssetsLibrary alloc] init];
+    self.library = assetLibrary;
+    // Load Albums into assetGroups
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @autoreleasepool {
+            // Group enumerator Block
+            void (^assetGroupEnumerator)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
+            {
+                if (group == nil) {
+                    return;
+                }
+                
+                // 只要camera roll
+                NSUInteger nType = [[group valueForProperty:ALAssetsGroupPropertyType] intValue];
+                
+                if (nType == ALAssetsGroupSavedPhotos) {
+                    //[self.assetGroups insertObject:group atIndex:0];
+                    [group setAssetsFilter:self.assetFilter];
+                    [self preparePhotos:group];
+                }
+            };
+            
+            // Group Enumerator Failure Block
+            void (^assetGroupEnumberatorFailure)(NSError *) = ^(NSError *error) {
+                
+                self.photoAccessDisableVC.view.hidden = NO;
+                
+                [self.navigationItem setTitle:nil];
+                NSLog(@"A problem occured %@", [error description]);
+            };
+            
+            // Enumerate Albums
+            [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAll
+                                        usingBlock:assetGroupEnumerator
+                                      failureBlock:assetGroupEnumberatorFailure];
+        }
+    });
+}
+
+- (void)preparePhotos:(ALAssetsGroup *)assetGroup {
+    @autoreleasepool {
+        [self.photoItemArray removeAllObjects];
+        [assetGroup enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+            
+            if (result == nil) {
+                return;
+            }
+            
+            Asset *asset = [[Asset alloc] initWithAsset:result];
+            [self.photoItemArray addObject:asset];
+            
+        }];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.photoAccessDisableVC.view.hidden = YES;
+            [self reloadCollectioniView];
+            
+        });
+    }
+}
+```
+
+ALAssetsLibrary保存图片的例子：
+```
+- (void)saveImageToPhotoLibrary
+{
+    if (self.isSaving) {
+        return;
+    }
+    self.isSaving = YES;
+    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    if ([UIImage imageCanAnimateWithData:data]) {
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        NSData *data = [NSData dataWithContentsOfFile:imagePath];
+        [library writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+            if (error) {
+                [self showSaveSuccessAlert:NO];
+            } else {
+                [self showSaveSuccessAlert:YES];
+            }
+        }];
+    }
+    else {
+        UIImage *image = [[UIImage alloc] initWithContentsOfFile:imagePath];
+        UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+    }
+    [[HSAnalytics sharedInstance] logEvent:@"ChatView_PhotoView_SaveButton_Clicked"];
+}
+```
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "2017/iOS_facebook_instagram_share.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
