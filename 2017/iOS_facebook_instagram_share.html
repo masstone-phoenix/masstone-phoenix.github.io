@@ -61,21 +61,23 @@ if ([[self imageMIME] isEqualToString:@"image/gif"]) {
         sharedImageData = [self emojiData];
 }
 //转成instagram的igo格式文件
-    if (!imageData || !file) {
-        return nil;
-    }
-    NSString *pathImage = [NSTemporaryDirectory() stringByAppendingPathComponent:"zmojiinstagram.igo"];
-    NSURL *urlImage = [imageData writeToFile:pathImage atomically:YES] ? [NSURL fileURLWithPath:pathImage] : nil;
-    if (urlImage == nil) {
-        self.block(ShareResultStateFailed);
-        return NO;
-    }
+if (!imageData || !file) {
+    return nil;
+}
+NSString *pathImage = [NSTemporaryDirectory() tringByAppendingPathComponent:"zmojiinstagram.igo"];
+NSURL *urlImage = [imageData writeToFile:pathImage atomically:YES] ? [NSURL fileURLWithPath:pathImage] : nil;
+if (urlImage == nil) {
+    self.block(ShareResultStateFailed);
+    return NO;
+}
 
 //使用UIDocumentInteractionController分享图片
-    NSDictionary *annotation = @{@"InstagramCaption": @""};
-    BOOL result = [self shareViaInteractionControllerWithURL:urlImage andUTI:@"com.instagram.exclusivegram" andAnnotation:annotation];
-        return result;
+NSDictionary *annotation = @{@"InstagramCaption": @""};
+BOOL result = [self shareViaInteractionControllerWithURL:urlImage andUTI:@"com.instagram.exclusivegram" andAnnotation:annotation];
+return result;
 
+
+//以下是辅助函数
 - (BOOL)shareViaInteractionControllerWithURL:(NSURL *)url andUTI:(NSString *)uti andAnnotation:(id)annotation {
     UIDocumentInteractionController *controller;
     if (url) {
@@ -106,6 +108,63 @@ if ([[self imageMIME] isEqualToString:@"image/gif"]) {
     _interactionOptionSelected = NO;
 }
 ```
+
+##视频分享
+这里需要使用openUrl这个API，具体参数<https://useyourloaf.com/blog/openurl-deprecated-in-ios10/>。
+
+```
+if ([[NSFileManager defaultManager] fileExistsAtPath:_emojiPath]) {
+            //先将文件写入系统相册中，结束后使用PHAsset的localIdentifier转化成asset url
+            [FileUtils saveVideoToCameraRollWithFileUrl:[NSURL URLWithString:_emojiPath] completion:^(CameraRollSaveStatus status, NSString *localID) {
+                if (status == CameraRollSaveStatus_SaveSuccess) {
+                    NSString *instagramURL = [NSString stringWithFormat:@"instagram://library?AssetPath=%@&InstagramCaption=%@",[self encodeToPercentEscapeString:(NSString *)[localID componentsSeparatedByString:@"/"].firstObject],[self encodeToPercentEscapeString:@""]];
+                    [self openScheme:instagramURL];
+                    self.block(ShareResultStateSuccessed);
+                }
+                else {
+                    self.block(ShareResultStateFailed);
+                }
+            }];
+            return NO;
+        }
+        else {
+            self.block(ShareResultStateFailed);
+            return NO;
+        }
+
+
+//以下是辅助函数
+- (void)openScheme:(NSString *)scheme {
+    UIApplication *application = [UIApplication sharedApplication];
+    NSURL *URL = [NSURL URLWithString:scheme];
+    
+    if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+        [application openURL:URL options:@{}
+           completionHandler:^(BOOL success) {
+               NSLog(@"Open %@: %d",scheme,success);
+           }];
+    } else {
+        BOOL success = [application openURL:URL];
+        NSLog(@"Open %@: %d",scheme,success);
+    }
+}
+
+-(NSString *)encodeToPercentEscapeString:(NSString *)string {
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
+                                                                                 (CFStringRef) string,
+                                                                                 NULL,
+                                                                                 (CFStringRef) @"!*'();:@&=+$,/?%#[]",
+                                                                                 kCFStringEncodingUTF8));
+}
+
+-(NSString *)   decodeFromPercentEscapeString:(NSString *)string {
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
+                                                                                                 (CFStringRef) string,
+                                                                                                 CFSTR(""),
+                                                                                                 kCFStringEncodingUTF8));
+}
+```
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -147,21 +206,23 @@ if ([[self imageMIME] isEqualToString:@"image/gif"]) {
         sharedImageData = [self emojiData];
 }
 //转成instagram的igo格式文件
-    if (!imageData || !file) {
-        return nil;
-    }
-    NSString *pathImage = [NSTemporaryDirectory() stringByAppendingPathComponent:"zmojiinstagram.igo"];
-    NSURL *urlImage = [imageData writeToFile:pathImage atomically:YES] ? [NSURL fileURLWithPath:pathImage] : nil;
-    if (urlImage == nil) {
-        self.block(ShareResultStateFailed);
-        return NO;
-    }
+if (!imageData || !file) {
+    return nil;
+}
+NSString *pathImage = [NSTemporaryDirectory() tringByAppendingPathComponent:"zmojiinstagram.igo"];
+NSURL *urlImage = [imageData writeToFile:pathImage atomically:YES] ? [NSURL fileURLWithPath:pathImage] : nil;
+if (urlImage == nil) {
+    self.block(ShareResultStateFailed);
+    return NO;
+}
 
 //使用UIDocumentInteractionController分享图片
-    NSDictionary *annotation = @{@"InstagramCaption": @""};
-    BOOL result = [self shareViaInteractionControllerWithURL:urlImage andUTI:@"com.instagram.exclusivegram" andAnnotation:annotation];
-        return result;
+NSDictionary *annotation = @{@"InstagramCaption": @""};
+BOOL result = [self shareViaInteractionControllerWithURL:urlImage andUTI:@"com.instagram.exclusivegram" andAnnotation:annotation];
+return result;
 
+
+//以下是辅助函数
 - (BOOL)shareViaInteractionControllerWithURL:(NSURL *)url andUTI:(NSString *)uti andAnnotation:(id)annotation {
     UIDocumentInteractionController *controller;
     if (url) {
@@ -190,6 +251,62 @@ if ([[self imageMIME] isEqualToString:@"image/gif"]) {
         self.block(ShareResultStateCancelled);
     }
     _interactionOptionSelected = NO;
+}
+</code></pre>
+
+<h2 id="">视频分享</h2>
+
+<p>这里需要使用openUrl这个API，具体参数<a href="https://useyourloaf.com/blog/openurl-deprecated-in-ios10/">https://useyourloaf.com/blog/openurl-deprecated-in-ios10/</a>。</p>
+
+<pre><code>if ([[NSFileManager defaultManager] fileExistsAtPath:_emojiPath]) {
+            //先将文件写入系统相册中，结束后使用PHAsset的localIdentifier转化成asset url
+            [FileUtils saveVideoToCameraRollWithFileUrl:[NSURL URLWithString:_emojiPath] completion:^(CameraRollSaveStatus status, NSString *localID) {
+                if (status == CameraRollSaveStatus_SaveSuccess) {
+                    NSString *instagramURL = [NSString stringWithFormat:@"instagram://library?AssetPath=%@&amp;InstagramCaption=%@",[self encodeToPercentEscapeString:(NSString *)[localID componentsSeparatedByString:@"/"].firstObject],[self encodeToPercentEscapeString:@""]];
+                    [self openScheme:instagramURL];
+                    self.block(ShareResultStateSuccessed);
+                }
+                else {
+                    self.block(ShareResultStateFailed);
+                }
+            }];
+            return NO;
+        }
+        else {
+            self.block(ShareResultStateFailed);
+            return NO;
+        }
+
+
+//以下是辅助函数
+- (void)openScheme:(NSString *)scheme {
+    UIApplication *application = [UIApplication sharedApplication];
+    NSURL *URL = [NSURL URLWithString:scheme];
+
+    if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+        [application openURL:URL options:@{}
+           completionHandler:^(BOOL success) {
+               NSLog(@"Open %@: %d",scheme,success);
+           }];
+    } else {
+        BOOL success = [application openURL:URL];
+        NSLog(@"Open %@: %d",scheme,success);
+    }
+}
+
+-(NSString *)encodeToPercentEscapeString:(NSString *)string {
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL,
+                                                                                 (CFStringRef) string,
+                                                                                 NULL,
+                                                                                 (CFStringRef) @"!*'();:@&amp;=+$,/?%#[]",
+                                                                                 kCFStringEncodingUTF8));
+}
+
+-(NSString *)   decodeFromPercentEscapeString:(NSString *)string {
+    return (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
+                                                                                                 (CFStringRef) string,
+                                                                                                 CFSTR(""),
+                                                                                                 kCFStringEncodingUTF8));
 }
 </code></pre>
 <!-- content end -->
