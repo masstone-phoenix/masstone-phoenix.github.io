@@ -62,7 +62,7 @@ if ([[self imageMIME] isEqualToString:@"image/gif"]) {
 }
 //转成instagram的igo格式文件
 if (!imageData || !file) {
-    return nil;
+    return NO;
 }
 NSString *pathImage = [NSTemporaryDirectory() tringByAppendingPathComponent:"zmojiinstagram.igo"];
 NSURL *urlImage = [imageData writeToFile:pathImage atomically:YES] ? [NSURL fileURLWithPath:pathImage] : nil;
@@ -110,7 +110,7 @@ return result;
 ```
 
 ##视频分享
-这里需要使用openUrl这个API，具体参数<https://useyourloaf.com/blog/openurl-deprecated-in-ios10/>。
+这里需要使用openURL这个API，具体参数<https://useyourloaf.com/blog/openurl-deprecated-in-ios10/>。
 
 ```
 if ([[NSFileManager defaultManager] fileExistsAtPath:_emojiPath]) {
@@ -157,7 +157,7 @@ if ([[NSFileManager defaultManager] fileExistsAtPath:_emojiPath]) {
                                                                                  kCFStringEncodingUTF8));
 }
 
--(NSString *)   decodeFromPercentEscapeString:(NSString *)string {
+-(NSString *)decodeFromPercentEscapeString:(NSString *)string {
     return (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
                                                                                                  (CFStringRef) string,
                                                                                                  CFSTR(""),
@@ -207,7 +207,7 @@ if ([[self imageMIME] isEqualToString:@"image/gif"]) {
 }
 //转成instagram的igo格式文件
 if (!imageData || !file) {
-    return nil;
+    return NO;
 }
 NSString *pathImage = [NSTemporaryDirectory() tringByAppendingPathComponent:"zmojiinstagram.igo"];
 NSURL *urlImage = [imageData writeToFile:pathImage atomically:YES] ? [NSURL fileURLWithPath:pathImage] : nil;
@@ -256,7 +256,7 @@ return result;
 
 <h2 id="">视频分享</h2>
 
-<p>这里需要使用openUrl这个API，具体参数<a href="https://useyourloaf.com/blog/openurl-deprecated-in-ios10/">https://useyourloaf.com/blog/openurl-deprecated-in-ios10/</a>。</p>
+<p>这里需要使用openURL这个API，具体参数<a href="https://useyourloaf.com/blog/openurl-deprecated-in-ios10/">https://useyourloaf.com/blog/openurl-deprecated-in-ios10/</a>。</p>
 
 <pre><code>if ([[NSFileManager defaultManager] fileExistsAtPath:_emojiPath]) {
             //先将文件写入系统相册中，结束后使用PHAsset的localIdentifier转化成asset url
@@ -302,7 +302,7 @@ return result;
                                                                                  kCFStringEncodingUTF8));
 }
 
--(NSString *)   decodeFromPercentEscapeString:(NSString *)string {
+-(NSString *)decodeFromPercentEscapeString:(NSString *)string {
     return (NSString *)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
                                                                                                  (CFStringRef) string,
                                                                                                  CFSTR(""),
