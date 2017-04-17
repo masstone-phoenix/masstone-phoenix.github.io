@@ -137,6 +137,8 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
     } completionHandler:completionHandler];
 ```
 
+
+
 最后，稍微提下ALAssetsLibrary之前的用法，是enumerate，找到你感兴趣的东西；现在是fetch
 
 ```
@@ -200,6 +202,34 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
             
         });
     }
+}
+```
+
+ALAssetsLibrary保存图片的例子：
+```
+- (void)saveImageToPhotoLibrary
+{
+    if (self.isSaving) {
+        return;
+    }
+    self.isSaving = YES;
+    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    if ([UIImage imageCanAnimateWithData:data]) {
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        NSData *data = [NSData dataWithContentsOfFile:imagePath];
+        [library writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+            if (error) {
+                [self showSaveSuccessAlert:NO];
+            } else {
+                [self showSaveSuccessAlert:YES];
+            }
+        }];
+    }
+    else {
+        UIImage *image = [[UIImage alloc] initWithContentsOfFile:imagePath];
+        UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+    }
+    [[HSAnalytics sharedInstance] logEvent:@"ChatView_PhotoView_SaveButton_Clicked"];
 }
 ```
 <!-- markdown end -->
@@ -382,6 +412,34 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
 
         });
     }
+}
+</code></pre>
+
+<p>ALAssetsLibrary保存图片的例子：</p>
+
+<pre><code>- (void)saveImageToPhotoLibrary
+{
+    if (self.isSaving) {
+        return;
+    }
+    self.isSaving = YES;
+    NSData *data = [NSData dataWithContentsOfFile:imagePath];
+    if ([UIImage imageCanAnimateWithData:data]) {
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        NSData *data = [NSData dataWithContentsOfFile:imagePath];
+        [library writeImageDataToSavedPhotosAlbum:data metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+            if (error) {
+                [self showSaveSuccessAlert:NO];
+            } else {
+                [self showSaveSuccessAlert:YES];
+            }
+        }];
+    }
+    else {
+        UIImage *image = [[UIImage alloc] initWithContentsOfFile:imagePath];
+        UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+    }
+    [[HSAnalytics sharedInstance] logEvent:@"ChatView_PhotoView_SaveButton_Clicked"];
 }
 </code></pre>
 <!-- content end -->
