@@ -76,20 +76,6 @@ PHAuthorizationStatus oldStatus = [PHPhotoLibrary authorizationStatus];
 ```
 
 #新建删除文件
-```
-PHAssetChangeRequest *createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
-PHObjectPlaceholder *assetPlaceholder = createAssetRequest.placeholderForCreatedAsset;
-PHAssetCollectionChangeRequest *albumChangeRequest =
-    [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
-[albumChangeRequest addAssets:@[ assetPlaceholder ]];
-
-PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionFetchResults[indexPath.section][indexPath.row]
-                                                                   options:nil];
-        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-            //detele all
-            [PHAssetChangeRequest deleteAssets: albumPhotos];
-        } completionHandler:completionHandler];
-```
 
 创建一个相册的例子：
 ```
@@ -139,6 +125,16 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
         }
     }];
 }
+```
+
+删除文件的例子：
+```
+PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionFetchResults[indexPath.section][indexPath.row]
+                                                                   options:nil];
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            //detele all
+            [PHAssetChangeRequest deleteAssets: albumPhotos];
+        } completionHandler:completionHandler];
 ```
 <!-- markdown end -->
 </div>
@@ -198,20 +194,6 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
 
 <h1 id="">新建删除文件</h1>
 
-<pre><code>PHAssetChangeRequest *createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
-PHObjectPlaceholder *assetPlaceholder = createAssetRequest.placeholderForCreatedAsset;
-PHAssetCollectionChangeRequest *albumChangeRequest =
-    [PHAssetCollectionChangeRequest changeRequestForAssetCollection:album];
-[albumChangeRequest addAssets:@[ assetPlaceholder ]];
-
-PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionFetchResults[indexPath.section][indexPath.row]
-                                                                   options:nil];
-        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-            //detele all
-            [PHAssetChangeRequest deleteAssets: albumPhotos];
-        } completionHandler:completionHandler];
-</code></pre>
-
 <p>创建一个相册的例子：</p>
 
 <pre><code>+ (PHAssetCollection *)assetCollectionWithTitle:(NSString *)title {
@@ -260,6 +242,16 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
         }
     }];
 }
+</code></pre>
+
+<p>删除文件的例子：</p>
+
+<pre><code>PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionFetchResults[indexPath.section][indexPath.row]
+                                                                   options:nil];
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+            //detele all
+            [PHAssetChangeRequest deleteAssets: albumPhotos];
+        } completionHandler:completionHandler];
 </code></pre>
 <!-- content end -->
 </div>
