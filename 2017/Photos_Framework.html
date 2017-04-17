@@ -136,6 +136,72 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
          PHAssetChangeRequest deleteAssets: albumPhotos];
     } completionHandler:completionHandler];
 ```
+
+最后，稍微提下ALAssetsLibrary之前的用法，是enumerate，找到你感兴趣的东西；现在是fetch
+
+```
+- (void)startQuery {
+    ALAssetsLibrary *assetLibrary = [[ALAssetsLibrary alloc] init];
+    self.library = assetLibrary;
+    // Load Albums into assetGroups
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @autoreleasepool {
+            // Group enumerator Block
+            void (^assetGroupEnumerator)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
+            {
+                if (group == nil) {
+                    return;
+                }
+                
+                // 只要camera roll
+                NSUInteger nType = [[group valueForProperty:ALAssetsGroupPropertyType] intValue];
+                
+                if (nType == ALAssetsGroupSavedPhotos) {
+                    //[self.assetGroups insertObject:group atIndex:0];
+                    [group setAssetsFilter:self.assetFilter];
+                    [self preparePhotos:group];
+                }
+            };
+            
+            // Group Enumerator Failure Block
+            void (^assetGroupEnumberatorFailure)(NSError *) = ^(NSError *error) {
+                
+                self.photoAccessDisableVC.view.hidden = NO;
+                
+                [self.navigationItem setTitle:nil];
+                NSLog(@"A problem occured %@", [error description]);
+            };
+            
+            // Enumerate Albums
+            [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAll
+                                        usingBlock:assetGroupEnumerator
+                                      failureBlock:assetGroupEnumberatorFailure];
+        }
+    });
+}
+
+- (void)preparePhotos:(ALAssetsGroup *)assetGroup {
+    @autoreleasepool {
+        [self.photoItemArray removeAllObjects];
+        [assetGroup enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+            
+            if (result == nil) {
+                return;
+            }
+            
+            Asset *asset = [[Asset alloc] initWithAsset:result];
+            [self.photoItemArray addObject:asset];
+            
+        }];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.photoAccessDisableVC.view.hidden = YES;
+            [self reloadCollectioniView];
+            
+        });
+    }
+}
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -252,6 +318,71 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
         //detele all
          PHAssetChangeRequest deleteAssets: albumPhotos];
     } completionHandler:completionHandler];
+</code></pre>
+
+<p>最后，稍微提下ALAssetsLibrary之前的用法，是enumerate，找到你感兴趣的东西；现在是fetch</p>
+
+<pre><code>- (void)startQuery {
+    ALAssetsLibrary *assetLibrary = [[ALAssetsLibrary alloc] init];
+    self.library = assetLibrary;
+    // Load Albums into assetGroups
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @autoreleasepool {
+            // Group enumerator Block
+            void (^assetGroupEnumerator)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup *group, BOOL *stop)
+            {
+                if (group == nil) {
+                    return;
+                }
+
+                // 只要camera roll
+                NSUInteger nType = [[group valueForProperty:ALAssetsGroupPropertyType] intValue];
+
+                if (nType == ALAssetsGroupSavedPhotos) {
+                    //[self.assetGroups insertObject:group atIndex:0];
+                    [group setAssetsFilter:self.assetFilter];
+                    [self preparePhotos:group];
+                }
+            };
+
+            // Group Enumerator Failure Block
+            void (^assetGroupEnumberatorFailure)(NSError *) = ^(NSError *error) {
+
+                self.photoAccessDisableVC.view.hidden = NO;
+
+                [self.navigationItem setTitle:nil];
+                NSLog(@"A problem occured %@", [error description]);
+            };
+
+            // Enumerate Albums
+            [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupAll
+                                        usingBlock:assetGroupEnumerator
+                                      failureBlock:assetGroupEnumberatorFailure];
+        }
+    });
+}
+
+- (void)preparePhotos:(ALAssetsGroup *)assetGroup {
+    @autoreleasepool {
+        [self.photoItemArray removeAllObjects];
+        [assetGroup enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+
+            if (result == nil) {
+                return;
+            }
+
+            Asset *asset = [[Asset alloc] initWithAsset:result];
+            [self.photoItemArray addObject:asset];
+
+        }];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.photoAccessDisableVC.view.hidden = YES;
+            [self reloadCollectioniView];
+
+        });
+    }
+}
 </code></pre>
 <!-- content end -->
 </div>
