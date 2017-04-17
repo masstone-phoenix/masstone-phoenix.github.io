@@ -90,6 +90,56 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
             [PHAssetChangeRequest deleteAssets: albumPhotos];
         } completionHandler:completionHandler];
 ```
+
+创建一个相册的例子：
+```
++ (PHAssetCollection *)assetCollectionWithTitle:(NSString *)title {
+    PHFetchResult<PHAssetCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+    for (PHAssetCollection *ac in assetCollections) {
+        if ([ac.localizedTitle isEqualToString:title]) {
+            return ac;
+        }
+    }
+    //来到这里表明没有当前相册
+    //创建相册
+    __block NSString *assetCollectionID = nil;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+        assetCollectionID = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title].placeholderForCreatedAssetCollection.localIdentifier;
+    } error:nil];
+    // 取得相册
+    PHAssetCollection *assetCollection = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[assetCollectionID] options:nil].firstObject;
+    return assetCollection;
+}
+
++ (void)saveEmoji:(NSURL *)emojiUrl isVideo:(BOOL)isVideo completion:(void (^)(CameraRollSaveStatus status)) completion{
+    PHAssetCollection *assetCollection = [self assetCollectionWithTitle:@"Moji Library"];
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        
+        //创建更改图片请求
+        PHAssetChangeRequest *createAssetRequest;
+        if (isVideo) {
+            createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:emojiUrl];
+        } else {
+            createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:emojiUrl];
+        }
+        
+        //创建更改相册请求
+        PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+        
+        // Get a placeholder for the new asset and add it to the album editing request.
+        PHObjectPlaceholder *assetPlaceholder = [createAssetRequest placeholderForCreatedAsset];
+        
+        [albumChangeRequest addAssets:@[ assetPlaceholder ]];
+        
+    } completionHandler:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            completion(CameraRollSaveStatus_SaveSuccess);
+        } else {
+            completion(CameraRollSaveStatus_SaveFailed);
+        }
+    }];
+}
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -160,6 +210,56 @@ PHFetchResult *albumPhotos = [PHAsset fetchAssetsInAssetCollection:self.sectionF
             //detele all
             [PHAssetChangeRequest deleteAssets: albumPhotos];
         } completionHandler:completionHandler];
+</code></pre>
+
+<p>创建一个相册的例子：</p>
+
+<pre><code>+ (PHAssetCollection *)assetCollectionWithTitle:(NSString *)title {
+    PHFetchResult&lt;PHAssetCollection *&gt; *assetCollections = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+    for (PHAssetCollection *ac in assetCollections) {
+        if ([ac.localizedTitle isEqualToString:title]) {
+            return ac;
+        }
+    }
+    //来到这里表明没有当前相册
+    //创建相册
+    __block NSString *assetCollectionID = nil;
+    [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+        assetCollectionID = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:title].placeholderForCreatedAssetCollection.localIdentifier;
+    } error:nil];
+    // 取得相册
+    PHAssetCollection *assetCollection = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[assetCollectionID] options:nil].firstObject;
+    return assetCollection;
+}
+
++ (void)saveEmoji:(NSURL *)emojiUrl isVideo:(BOOL)isVideo completion:(void (^)(CameraRollSaveStatus status)) completion{
+    PHAssetCollection *assetCollection = [self assetCollectionWithTitle:@"Moji Library"];
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+
+        //创建更改图片请求
+        PHAssetChangeRequest *createAssetRequest;
+        if (isVideo) {
+            createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:emojiUrl];
+        } else {
+            createAssetRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:emojiUrl];
+        }
+
+        //创建更改相册请求
+        PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:assetCollection];
+
+        // Get a placeholder for the new asset and add it to the album editing request.
+        PHObjectPlaceholder *assetPlaceholder = [createAssetRequest placeholderForCreatedAsset];
+
+        [albumChangeRequest addAssets:@[ assetPlaceholder ]];
+
+    } completionHandler:^(BOOL success, NSError * _Nullable error) {
+        if (success) {
+            completion(CameraRollSaveStatus_SaveSuccess);
+        } else {
+            completion(CameraRollSaveStatus_SaveFailed);
+        }
+    }];
+}
 </code></pre>
 <!-- content end -->
 </div>
