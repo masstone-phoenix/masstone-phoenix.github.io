@@ -112,6 +112,8 @@ return result;
 ##视频分享
 这里需要使用openURL这个API，具体参数<https://useyourloaf.com/blog/openurl-deprecated-in-ios10/>。
 
+思路是这样的：由于只允许分享相册中的视频，我们需要把自己的视频存入相册（需要权限），然后拿到这个视频的asset url，使用URL Scheme来分享视频，url为：```instagram://library?AssetPath=%@&InstagramCaption=%@```，%@为占位符。与Facebook SDK比这个就不知道用户是分享了还是取消了。
+
 ```
 if ([[NSFileManager defaultManager] fileExistsAtPath:_emojiPath]) {
             //先将文件写入系统相册中，结束后使用PHAsset的localIdentifier转化成asset url
@@ -257,6 +259,8 @@ return result;
 <h2 id="">视频分享</h2>
 
 <p>这里需要使用openURL这个API，具体参数<a href="https://useyourloaf.com/blog/openurl-deprecated-in-ios10/">https://useyourloaf.com/blog/openurl-deprecated-in-ios10/</a>。</p>
+
+<p>思路是这样的：由于只允许分享相册中的视频，我们需要把自己的视频存入相册（需要权限），然后拿到这个视频的asset url，使用URL Scheme来分享视频，url为：<code>instagram://library?AssetPath=%@&amp;InstagramCaption=%@</code>，%@为占位符。与Facebook SDK比这个就不知道用户是分享了还是取消了。</p>
 
 <pre><code>if ([[NSFileManager defaultManager] fileExistsAtPath:_emojiPath]) {
             //先将文件写入系统相册中，结束后使用PHAsset的localIdentifier转化成asset url
