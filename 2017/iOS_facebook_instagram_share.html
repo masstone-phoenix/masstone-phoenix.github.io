@@ -73,6 +73,30 @@ content.photos = @[photo];
 }
 ```
 
+##视频分享
+官方参考<https://developers.facebook.com/docs/sharing/ios>。
+
+主要是视频的URL必须是asset url，否则会报错。具体URL见下面代码。代理方法处理同上面的图片。
+
+```
+[FileUtils saveVideoToCameraRollWithFileUrl:[NSURL URLWithString:_emojiPath] completion:^(CameraRollSaveStatus status, NSString *localID) {
+    if (status == CameraRollSaveStatus_SaveSuccess) {
+        
+        NSString *urlString = [NSString stringWithFormat:@"assets-library://asset/asset.MP4?id=%@&ext=MP4", [localID componentsSeparatedByString:@"/"].firstObject ];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            FBSDKShareVideo *video = [FBSDKShareVideo videoWithVideoURL:[NSURL URLWithString:urlString]];
+            FBSDKShareVideoContent *content = [[FBSDKShareVideoContent alloc] init];
+            content.video = video;
+            [FBSDKShareDialog showFromViewController:self.presentController withContent:content delegate:self];
+        });
+    }
+    else {
+        self.block(ShareResultStateFailed);
+    }
+}]
+```
+
 #Instagram分享
 官方参考文档<https://www.instagram.com/developer/mobile-sharing/iphone-hooks/>，图片说明到是还可以（也许我是对着code看所以清晰），视频分享就不知所云了。
 
@@ -238,6 +262,30 @@ content.photos = @[photo];
 - (void)sharer:(id&lt;FBSDKSharing&gt;)sharer didFailWithError:(NSError *)error{
     self.block(ShareResultStateFailed);
 }
+</code></pre>
+
+<h2 id="">视频分享</h2>
+
+<p>官方参考<a href="https://developers.facebook.com/docs/sharing/ios">https://developers.facebook.com/docs/sharing/ios</a>。</p>
+
+<p>主要是视频的URL必须是asset url，否则会报错。具体URL见下面代码。代理方法处理同上面的图片。</p>
+
+<pre><code>[FileUtils saveVideoToCameraRollWithFileUrl:[NSURL URLWithString:_emojiPath] completion:^(CameraRollSaveStatus status, NSString *localID) {
+    if (status == CameraRollSaveStatus_SaveSuccess) {
+
+        NSString *urlString = [NSString stringWithFormat:@"assets-library://asset/asset.MP4?id=%@&amp;ext=MP4", [localID componentsSeparatedByString:@"/"].firstObject ];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            FBSDKShareVideo *video = [FBSDKShareVideo videoWithVideoURL:[NSURL URLWithString:urlString]];
+            FBSDKShareVideoContent *content = [[FBSDKShareVideoContent alloc] init];
+            content.video = video;
+            [FBSDKShareDialog showFromViewController:self.presentController withContent:content delegate:self];
+        });
+    }
+    else {
+        self.block(ShareResultStateFailed);
+    }
+}]
 </code></pre>
 
 <h1 id="instagram">Instagram分享</h1>
