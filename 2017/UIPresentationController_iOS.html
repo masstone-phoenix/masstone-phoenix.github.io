@@ -148,6 +148,8 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
 }
 ```
 
+顺带一提，如果要实现一个交互式的animator，最简单的办法是使用一个```UIPercentDrivenInteractiveTransition```对象。
+
 #Presenting a View Controller Using Custom Animations
 
 To present a view controller using custom animations, do the following in an action method of your existing view controllers:
@@ -155,6 +157,8 @@ To present a view controller using custom animations, do the following in an act
 1. Create the view controller that you want to present.
 2. Create your custom transitioning delegate object and assign it to the view controller’s ```transitioningDelegate``` property. The methods of your transitioning delegate should create and return your custom animator objects when asked.
 3. Call the ```presentViewController:animated:completion: ```method to present the view controller.
+
+
 
 <!-- markdown end -->
 </div>
@@ -282,6 +286,8 @@ To present a view controller using custom animations, do the following in an act
     NSLog("transition end");
 }
 </code></pre>
+
+<p>顺带一提，如果要实现一个交互式的animator，最简单的办法是使用一个<code>UIPercentDrivenInteractiveTransition</code>对象。</p>
 
 <h1 id="presentingaviewcontrollerusingcustomanimations">Presenting a View Controller Using Custom Animations</h1>
 
