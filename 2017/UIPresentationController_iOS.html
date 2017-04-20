@@ -185,6 +185,101 @@ Presentation Controller在动画中的调用顺序如下图，dismiss时只是be
 - presented VC的最终大小？
 - 屏幕转动时的动画？size 改变时的适配？
 - 当动画做完时，presenting VC的view是否应该移除？
+
+我们可以通过override ```frameOfPresentedViewInContainerView```来控制presented VC的最终大小。
+
+```
+class SlideInPresentationController: UIPresentationController {
+  // MARK: - Properties
+  fileprivate var dimmingView: UIView!
+  private var direction: PresentationDirection
+  
+  init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?, direction: PresentationDirection) {
+    self.direction = direction
+    
+    super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+    setupDimmingView()
+  }
+  
+  override func presentationTransitionWillBegin() {
+    containerView?.insertSubview(dimmingView, at: 0)
+    
+    NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "V:|[dimmingView]|", options: [], metrics: nil, views: ["dimmingView": dimmingView]))
+    NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "H:|[dimmingView]|", options: [], metrics: nil, views: ["dimmingView": dimmingView]))
+    
+    guard let coordinator = presentedViewController.transitionCoordinator else {
+      dimmingView.alpha = 1.0
+      return
+    }
+    
+    coordinator.animate(alongsideTransition: { _ in
+      self.dimmingView.alpha = 1.0
+    }, completion: nil)
+  }
+  
+  override func dismissalTransitionWillBegin() {
+    guard let coordinator = presentedViewController.transitionCoordinator else {
+      dimmingView.alpha = 0.0
+      return
+    }
+    
+    coordinator.animate(alongsideTransition: { _ in
+      self.dimmingView.alpha = 0
+    }, completion: nil)
+  }
+  
+  override func containerViewDidLayoutSubviews() {
+    presentedView?.frame = frameOfPresentedViewInContainerView
+  }
+  
+  override var frameOfPresentedViewInContainerView: CGRect {
+    
+    //1
+    var frame: CGRect = .zero
+    frame.size = size(forChildContentContainer: presentedViewController,
+                      withParentContainerSize: containerView!.bounds.size)
+    
+    //2
+    switch direction {
+    case .right:
+      frame.origin.x = containerView!.frame.width*(1.0/3.0)
+    case .bottom:
+      frame.origin.y = containerView!.frame.height*(1.0/3.0)
+    default:
+      frame.origin = .zero
+    }
+    return frame
+  }
+  
+  override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -> CGSize {
+    switch direction {
+    case .left, .right:
+      return CGSize(width: parentSize.width*(2.0/3.0), height: parentSize.height)
+    default:
+      return CGSize(width: parentSize.width, height: parentSize.height*(2.0/3.0))
+    }
+  }
+}
+
+
+// MARK: - Private
+private extension SlideInPresentationController {
+  func setupDimmingView() {
+    dimmingView = UIView()
+    dimmingView.translatesAutoresizingMaskIntoConstraints = false
+    dimmingView.backgroundColor = UIColor(white: 0.0, alpha: 0.5)
+    dimmingView.alpha = 0.0
+    
+    let recognizer = UITapGestureRecognizer(target: self, action:#selector(handleTap(recognizer:)))
+    dimmingView.addGestureRecognizer(recognizer)
+  }
+  
+  dynamic func handleTap(recognizer: UITapGestureRecognizer) {
+    presentingViewController.dismiss(animated: true)
+  }
+}
+```
+参考：<https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started>
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -353,6 +448,101 @@ Presentation Controller在动画中的调用顺序如下图，dismiss时只是be
 - presented VC的最终大小？
 - 屏幕转动时的动画？size 改变时的适配？
 - 当动画做完时，presenting VC的view是否应该移除？</p>
+
+<p>我们可以通过override <code>frameOfPresentedViewInContainerView</code>来控制presented VC的最终大小。</p>
+
+<pre><code>class SlideInPresentationController: UIPresentationController {
+  // MARK: - Properties
+  fileprivate var dimmingView: UIView!
+  private var direction: PresentationDirection
+
+  init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?, direction: PresentationDirection) {
+    self.direction = direction
+
+    super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
+    setupDimmingView()
+  }
+
+  override func presentationTransitionWillBegin() {
+    containerView?.insertSubview(dimmingView, at: 0)
+
+    NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "V:|[dimmingView]|", options: [], metrics: nil, views: ["dimmingView": dimmingView]))
+    NSLayoutConstraint.activate(NSLayoutConstraint.constraints(withVisualFormat: "H:|[dimmingView]|", options: [], metrics: nil, views: ["dimmingView": dimmingView]))
+
+    guard let coordinator = presentedViewController.transitionCoordinator else {
+      dimmingView.alpha = 1.0
+      return
+    }
+
+    coordinator.animate(alongsideTransition: { _ in
+      self.dimmingView.alpha = 1.0
+    }, completion: nil)
+  }
+
+  override func dismissalTransitionWillBegin() {
+    guard let coordinator = presentedViewController.transitionCoordinator else {
+      dimmingView.alpha = 0.0
+      return
+    }
+
+    coordinator.animate(alongsideTransition: { _ in
+      self.dimmingView.alpha = 0
+    }, completion: nil)
+  }
+
+  override func containerViewDidLayoutSubviews() {
+    presentedView?.frame = frameOfPresentedViewInContainerView
+  }
+
+  override var frameOfPresentedViewInContainerView: CGRect {
+
+    //1
+    var frame: CGRect = .zero
+    frame.size = size(forChildContentContainer: presentedViewController,
+                      withParentContainerSize: containerView!.bounds.size)
+
+    //2
+    switch direction {
+    case .right:
+      frame.origin.x = containerView!.frame.width*(1.0/3.0)
+    case .bottom:
+      frame.origin.y = containerView!.frame.height*(1.0/3.0)
+    default:
+      frame.origin = .zero
+    }
+    return frame
+  }
+
+  override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -&gt; CGSize {
+    switch direction {
+    case .left, .right:
+      return CGSize(width: parentSize.width*(2.0/3.0), height: parentSize.height)
+    default:
+      return CGSize(width: parentSize.width, height: parentSize.height*(2.0/3.0))
+    }
+  }
+}
+
+
+// MARK: - Private
+private extension SlideInPresentationController {
+  func setupDimmingView() {
+    dimmingView = UIView()
+    dimmingView.translatesAutoresizingMaskIntoConstraints = false
+    dimmingView.backgroundColor = UIColor(white: 0.0, alpha: 0.5)
+    dimmingView.alpha = 0.0
+
+    let recognizer = UITapGestureRecognizer(target: self, action:#selector(handleTap(recognizer:)))
+    dimmingView.addGestureRecognizer(recognizer)
+  }
+
+  dynamic func handleTap(recognizer: UITapGestureRecognizer) {
+    presentingViewController.dismiss(animated: true)
+  }
+}
+</code></pre>
+
+<p>参考：<a href="https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started">https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started</a></p>
 <!-- content end -->
 </div>
 <br>
