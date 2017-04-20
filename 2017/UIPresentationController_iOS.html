@@ -75,6 +75,10 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
 这里提供一个例子：
 
 ```
+-(NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
+    return self.transitionDuration;
+}
+
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
     // Get the set of relevant objects.
     UIView *containerView = [transitionContext containerView];
@@ -138,6 +142,10 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
                      }];
  
 }
+
+- (void)animationEnded:(BOOL)transitionCompleted {
+    NSLog("transition end");
+}
 ```
 
 
@@ -195,7 +203,11 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
 
 <p>这里提供一个例子：</p>
 
-<pre><code>- (void)animateTransition:(id&lt;UIViewControllerContextTransitioning&gt;)transitionContext {
+<pre><code>-(NSTimeInterval)transitionDuration:(id&lt;UIViewControllerContextTransitioning&gt;)transitionContext {
+    return self.transitionDuration;
+}
+
+- (void)animateTransition:(id&lt;UIViewControllerContextTransitioning&gt;)transitionContext {
     // Get the set of relevant objects.
     UIView *containerView = [transitionContext containerView];
     UIViewController *fromVC = [transitionContext
@@ -257,6 +269,10 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
                          [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
                      }];
 
+}
+
+- (void)animationEnded:(BOOL)transitionCompleted {
+    NSLog("transition end");
 }
 </code></pre>
 <!-- content end -->
