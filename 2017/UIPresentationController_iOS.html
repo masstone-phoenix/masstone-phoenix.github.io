@@ -159,6 +159,18 @@ To present a view controller using custom animations, do the following in an act
 3. Call the ```presentViewController:animated:completion: ```method to present the view controller.
 
 
+#做transition动画的同时做其它动画
+通过相应VC的```transitionCoordinator```属性得到这个Transition Coordinator，然后调用它的``` animateAlongsideTransition:completion:``` 或 ```animateAlongsideTransitionInView:animation:completion: ```来在transition的同时做其它动画的目的。
+
+
+#UIPresentationController
+使用UIPresentationController可以达到下述目的：
+
+- Set the size of the presented view controller.
+- Add custom views to change the visual appearance of the presented content.
+- Supply transition animations for any of its custom views.
+- Adapt the visual appearance of the presentation when changes occur in the app’s environment.
+
 
 <!-- markdown end -->
 </div>
@@ -298,6 +310,21 @@ To present a view controller using custom animations, do the following in an act
 <li>Create your custom transitioning delegate object and assign it to the view controller’s <code>transitioningDelegate</code> property. The methods of your transitioning delegate should create and return your custom animator objects when asked.</li>
 <li>Call the <code>presentViewController:animated:completion:</code>method to present the view controller.</li>
 </ol>
+
+<h1 id="transition">做transition动画的同时做其它动画</h1>
+
+<p>通过相应VC的<code>transitionCoordinator</code>属性得到这个Transition Coordinator，然后调用它的<code>animateAlongsideTransition:completion:</code> 或 <code>animateAlongsideTransitionInView:animation:completion:</code>来在transition的同时做其它动画的目的。</p>
+
+<h1 id="uipresentationcontroller">UIPresentationController</h1>
+
+<p>使用UIPresentationController可以达到下述目的：</p>
+
+<ul>
+<li>Set the size of the presented view controller.</li>
+<li>Add custom views to change the visual appearance of the presented content.</li>
+<li>Supply transition animations for any of its custom views.</li>
+<li>Adapt the visual appearance of the presentation when changes occur in the app’s environment.</li>
+</ul>
 <!-- content end -->
 </div>
 <br>
