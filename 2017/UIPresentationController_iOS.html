@@ -134,7 +134,7 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
                          }
  
                          // Notify UIKit that the transition has finished
-                         [transitionContext completeTransition:success];
+                         [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
                      }];
  
 }
@@ -254,7 +254,7 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
                          }
 
                          // Notify UIKit that the transition has finished
-                         [transitionContext completeTransition:success];
+                         [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
                      }];
 
 }
