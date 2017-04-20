@@ -128,8 +128,8 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
                      completion:^(BOOL finished){
                          BOOL success = ![transitionContext transitionWasCancelled];
  
-                         // After a failed presentation or successful dismissal, remove the view.
-                         if ((self.presenting && !success) || (!self.presenting && success)) {
+                         // After a failed presentation
+                         if ((self.presenting && !success)) {
                              [toView removeFromSuperview];
                          }
  
@@ -248,8 +248,8 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
                      completion:^(BOOL finished){
                          BOOL success = ![transitionContext transitionWasCancelled];
 
-                         // After a failed presentation or successful dismissal, remove the view.
-                         if ((self.presenting &amp;&amp; !success) || (!self.presenting &amp;&amp; success)) {
+                         // After a failed presentation
+                         if ((self.presenting &amp;&amp; !success)) {
                              [toView removeFromSuperview];
                          }
 
