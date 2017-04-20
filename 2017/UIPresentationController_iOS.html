@@ -32,11 +32,15 @@
 ##UIViewControllerTransitioningDelegate
 ![](https://masstone-phoenix.github.io/image/custom_transition/custom_presentation_and_animator_objects.png)
 
-如图所示，其中绿色的表示from VC，蓝色的表示to VC，通过to VC的方法```setTransitioningDelegate: ```来设置其过渡动画的代理，这个代理需要遵守UIViewControllerTransitioningDelegate协议，这个协议提供了做动画需要的animator（这个可以是交互式动画，也可以是非交互式动画）和presentation controller。
+如图所示，其中绿色的表示from VC，蓝色的表示to VC，通过to VC的方法```setTransitioningDelegate: ```来设置其过渡动画的代理，这个代理需要符合UIViewControllerTransitioningDelegate协议，这个协议提供了做动画需要的animator（这个可以是交互式动画，也可以是非交互式动画）和presentation controller。
 
 animator：非交互动画的animator需要遵守UIViewControllerAnimatedTransitioning协议；交互动画同时还要遵守UIViewControllerInteractiveTransitioning。你可以对present和dismiss分别提供相应的animator。
 
 presentation controller：modalPresentationStyle为UIModalPresentationCustom时，UIKit就会查找自定义的UIPresentationController，此时我们就可以提供一个自定义的来控制其形为；当modalPresentationStyle不为UIModalPresentationCustom时，系统会提供内部已经定义好的UIPresentationController。
+
+Transitioning Contexts:定义了动画需要的一些元数据，比如动画涉及的VC等。 这些对象需要遵守 UIViewControllerContextTransitioning这个协议，一般来说，这个是由系统创建提供的。
+
+Transition Coordinators providing methods to run other animations in parallel with the transition animations. They conform to the UIViewControllerTransitionCoordinator protocol.
 
 
 
@@ -52,11 +56,15 @@ presentation controller：modalPresentationStyle为UIModalPresentationCustom时�
 
 <p><img src="https://masstone-phoenix.github.io/image/custom_transition/custom_presentation_and_animator_objects.png" alt="" title=""></p>
 
-<p>如图所示，其中绿色的表示from VC，蓝色的表示to VC，通过to VC的方法<code>setTransitioningDelegate:</code>来设置其过渡动画的代理，这个代理需要遵守UIViewControllerTransitioningDelegate协议，这个协议提供了做动画需要的animator（这个可以是交互式动画，也可以是非交互式动画）和presentation controller。</p>
+<p>如图所示，其中绿色的表示from VC，蓝色的表示to VC，通过to VC的方法<code>setTransitioningDelegate:</code>来设置其过渡动画的代理，这个代理需要符合UIViewControllerTransitioningDelegate协议，这个协议提供了做动画需要的animator（这个可以是交互式动画，也可以是非交互式动画）和presentation controller。</p>
 
 <p>animator：非交互动画的animator需要遵守UIViewControllerAnimatedTransitioning协议；交互动画同时还要遵守UIViewControllerInteractiveTransitioning。你可以对present和dismiss分别提供相应的animator。</p>
 
 <p>presentation controller：modalPresentationStyle为UIModalPresentationCustom时，UIKit就会查找自定义的UIPresentationController，此时我们就可以提供一个自定义的来控制其形为；当modalPresentationStyle不为UIModalPresentationCustom时，系统会提供内部已经定义好的UIPresentationController。</p>
+
+<p>Transitioning Contexts:定义了动画需要的一些元数据，比如动画涉及的VC等。 这些对象需要遵守 UIViewControllerContextTransitioning这个协议，一般来说，这个是由系统创建提供的。</p>
+
+<p>Transition Coordinators providing methods to run other animations in parallel with the transition animations. They conform to the UIViewControllerTransitionCoordinator protocol.</p>
 <!-- content end -->
 </div>
 <br>
