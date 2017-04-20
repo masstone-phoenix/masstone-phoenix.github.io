@@ -38,9 +38,10 @@ animator：非交互动画的animator需要遵守UIViewControllerAnimatedTransit
 
 presentation controller：modalPresentationStyle为UIModalPresentationCustom时，UIKit就会查找自定义的UIPresentationController，此时我们就可以提供一个自定义的来控制其形为；当modalPresentationStyle不为UIModalPresentationCustom时，系统会提供内部已经定义好的UIPresentationController。
 
-Transitioning Contexts:定义了动画需要的一些元数据，比如动画涉及的VC等。 这些对象需要遵守 UIViewControllerContextTransitioning这个协议，一般来说，这个是由系统创建提供的。
+Transitioning Contexts:定义了动画需要的一些元数据，比如动画涉及的VC等。 这些对象需要遵守 UIViewControllerContextTransitioning这个协议，一般来说，这个是由系统创建提供的。以参数形式提供给animator使用。
 
 ![](https://masstone-phoenix.github.io/image/custom_transition/transitioning_context.png)
+
 
 
 Transition Coordinators：提供了在做Transition动画的同时，做其它动画的功能，遵循 UIViewControllerTransitionCoordinator 协议。
@@ -58,6 +59,86 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
 
 
 
+#实现自定义Animator
+##得到动画参数
+使用```viewControllerForKey:``` 得到from VC、to VC。
+
+![](https://masstone-phoenix.github.io/image/custom_transition/from_and_to_VC.png)
+
+使用```containerView```得到动画的“容器”。
+
+使用```viewForKey: ```得到要添加或删除的view。
+
+使用```finalFrameForViewController:```得到VC的最终位置。
+
+##做动画
+这里提供一个例子：
+
+```
+- (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
+    // Get the set of relevant objects.
+    UIView *containerView = [transitionContext containerView];
+    UIViewController *fromVC = [transitionContext
+            viewControllerForKey:UITransitionContextFromViewControllerKey];
+    UIViewController *toVC   = [transitionContext
+            viewControllerForKey:UITransitionContextToViewControllerKey];
+ 
+    UIView *toView = [transitionContext viewForKey:UITransitionContextToViewKey];
+    UIView *fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
+ 
+    // Set up some variables for the animation.
+    CGRect containerFrame = containerView.frame;
+    CGRect toViewStartFrame = [transitionContext initialFrameForViewController:toVC];
+    CGRect toViewFinalFrame = [transitionContext finalFrameForViewController:toVC];
+    CGRect fromViewFinalFrame = [transitionContext finalFrameForViewController:fromVC];
+ 
+    // Set up the animation parameters.
+    if (self.presenting) {
+        // Modify the frame of the presented view so that it starts
+        // offscreen at the lower-right corner of the container.
+        toViewStartFrame.origin.x = containerFrame.size.width;
+        toViewStartFrame.origin.y = containerFrame.size.height;
+    }
+    else {
+        // Modify the frame of the dismissed view so it ends in
+        // the lower-right corner of the container view.
+        fromViewFinalFrame = CGRectMake(containerFrame.size.width,
+                                      containerFrame.size.height,
+                                      toView.frame.size.width,
+                                      toView.frame.size.height);
+    }
+ 
+    // Always add the "to" view to the container.
+    // And it doesn't hurt to set its start frame.
+    [containerView addSubview:toView];
+    toView.frame = toViewStartFrame;
+ 
+    // Animate using the animator's own duration value.
+    [UIView animateWithDuration:[self transitionDuration:transitionContext]
+                     animations:^{
+                         if (self.presenting) {
+                             // Move the presented view into position.
+                             [toView setFrame:toViewFinalFrame];
+                         }
+                         else {
+                             // Move the dismissed view offscreen.
+                             [fromView setFrame:fromViewFinalFrame];
+                         }
+                     }
+                     completion:^(BOOL finished){
+                         BOOL success = ![transitionContext transitionWasCancelled];
+ 
+                         // After a failed presentation or successful dismissal, remove the view.
+                         if ((self.presenting && !success) || (!self.presenting && success)) {
+                             [toView removeFromSuperview];
+                         }
+ 
+                         // Notify UIKit that the transition has finished
+                         [transitionContext completeTransition:success];
+                     }];
+ 
+}
+```
 
 
 <!-- markdown end -->
@@ -78,7 +159,7 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
 
 <p>presentation controller：modalPresentationStyle为UIModalPresentationCustom时，UIKit就会查找自定义的UIPresentationController，此时我们就可以提供一个自定义的来控制其形为；当modalPresentationStyle不为UIModalPresentationCustom时，系统会提供内部已经定义好的UIPresentationController。</p>
 
-<p>Transitioning Contexts:定义了动画需要的一些元数据，比如动画涉及的VC等。 这些对象需要遵守 UIViewControllerContextTransitioning这个协议，一般来说，这个是由系统创建提供的。</p>
+<p>Transitioning Contexts:定义了动画需要的一些元数据，比如动画涉及的VC等。 这些对象需要遵守 UIViewControllerContextTransitioning这个协议，一般来说，这个是由系统创建提供的。以参数形式提供给animator使用。</p>
 
 <p><img src="https://masstone-phoenix.github.io/image/custom_transition/transitioning_context.png" alt="" title=""></p>
 
@@ -95,6 +176,89 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
 <p>UIKit调用 animationControllerForDismissedController: 得到animator,然后如图：</p>
 
 <p><img src="https://masstone-phoenix.github.io/image/custom_transition/dismiss_flow.png" alt="" title=""></p>
+
+<h1 id="animator">实现自定义Animator</h1>
+
+<h2 id="">得到动画参数</h2>
+
+<p>使用<code>viewControllerForKey:</code> 得到from VC、to VC。</p>
+
+<p><img src="https://masstone-phoenix.github.io/image/custom_transition/from_and_to_VC.png" alt="" title=""></p>
+
+<p>使用<code>containerView</code>得到动画的“容器”。</p>
+
+<p>使用<code>viewForKey:</code>得到要添加或删除的view。</p>
+
+<p>使用<code>finalFrameForViewController:</code>得到VC的最终位置。</p>
+
+<h2 id="">做动画</h2>
+
+<p>这里提供一个例子：</p>
+
+<pre><code>- (void)animateTransition:(id&lt;UIViewControllerContextTransitioning&gt;)transitionContext {
+    // Get the set of relevant objects.
+    UIView *containerView = [transitionContext containerView];
+    UIViewController *fromVC = [transitionContext
+            viewControllerForKey:UITransitionContextFromViewControllerKey];
+    UIViewController *toVC   = [transitionContext
+            viewControllerForKey:UITransitionContextToViewControllerKey];
+
+    UIView *toView = [transitionContext viewForKey:UITransitionContextToViewKey];
+    UIView *fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
+
+    // Set up some variables for the animation.
+    CGRect containerFrame = containerView.frame;
+    CGRect toViewStartFrame = [transitionContext initialFrameForViewController:toVC];
+    CGRect toViewFinalFrame = [transitionContext finalFrameForViewController:toVC];
+    CGRect fromViewFinalFrame = [transitionContext finalFrameForViewController:fromVC];
+
+    // Set up the animation parameters.
+    if (self.presenting) {
+        // Modify the frame of the presented view so that it starts
+        // offscreen at the lower-right corner of the container.
+        toViewStartFrame.origin.x = containerFrame.size.width;
+        toViewStartFrame.origin.y = containerFrame.size.height;
+    }
+    else {
+        // Modify the frame of the dismissed view so it ends in
+        // the lower-right corner of the container view.
+        fromViewFinalFrame = CGRectMake(containerFrame.size.width,
+                                      containerFrame.size.height,
+                                      toView.frame.size.width,
+                                      toView.frame.size.height);
+    }
+
+    // Always add the "to" view to the container.
+    // And it doesn't hurt to set its start frame.
+    [containerView addSubview:toView];
+    toView.frame = toViewStartFrame;
+
+    // Animate using the animator's own duration value.
+    [UIView animateWithDuration:[self transitionDuration:transitionContext]
+                     animations:^{
+                         if (self.presenting) {
+                             // Move the presented view into position.
+                             [toView setFrame:toViewFinalFrame];
+                         }
+                         else {
+                             // Move the dismissed view offscreen.
+                             [fromView setFrame:fromViewFinalFrame];
+                         }
+                     }
+                     completion:^(BOOL finished){
+                         BOOL success = ![transitionContext transitionWasCancelled];
+
+                         // After a failed presentation or successful dismissal, remove the view.
+                         if ((self.presenting &amp;&amp; !success) || (!self.presenting &amp;&amp; success)) {
+                             [toView removeFromSuperview];
+                         }
+
+                         // Notify UIKit that the transition has finished
+                         [transitionContext completeTransition:success];
+                     }];
+
+}
+</code></pre>
 <!-- content end -->
 </div>
 <br>
