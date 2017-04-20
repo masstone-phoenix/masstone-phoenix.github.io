@@ -172,6 +172,11 @@ To present a view controller using custom animations, do the following in an act
 - Adapt the visual appearance of the presentation when changes occur in the app’s environment.
 
 
+##工作顺序
+Presentation Controller在动画中的调用顺序如下图，dismiss时只是begin和end调用的函数分别换为dismissalTransitionWillBegin和dismissalTransitionDidEnd:。
+
+
+![](https://masstone-phoenix.github.io/image/custom_transition/presentationTransition_seq.png)
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -325,6 +330,12 @@ To present a view controller using custom animations, do the following in an act
 <li>Supply transition animations for any of its custom views.</li>
 <li>Adapt the visual appearance of the presentation when changes occur in the app’s environment.</li>
 </ul>
+
+<h2 id="">工作顺序</h2>
+
+<p>Presentation Controller在动画中的调用顺序如下图，dismiss时只是begin和end调用的函数分别换为dismissalTransitionWillBegin和dismissalTransitionDidEnd:。</p>
+
+<p><img src="https://masstone-phoenix.github.io/image/custom_transition/presentationTransition_seq.png" alt="" title=""></p>
 <!-- content end -->
 </div>
 <br>
