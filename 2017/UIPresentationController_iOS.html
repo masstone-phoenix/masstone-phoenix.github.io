@@ -40,7 +40,23 @@ presentation controller：modalPresentationStyle为UIModalPresentationCustom时�
 
 Transitioning Contexts:定义了动画需要的一些元数据，比如动画涉及的VC等。 这些对象需要遵守 UIViewControllerContextTransitioning这个协议，一般来说，这个是由系统创建提供的。
 
-Transition Coordinators providing methods to run other animations in parallel with the transition animations. They conform to the UIViewControllerTransitionCoordinator protocol.
+![](https://masstone-phoenix.github.io/image/custom_transition/transitioning_context.png)
+
+
+Transition Coordinators：提供了在做Transition动画的同时，做其它动画的功能，遵循 UIViewControllerTransitionCoordinator 协议。
+
+##present的调用顺序
+UIKit调用animationControllerForPresentedController:presentingController:sourceController:得到animator,然后如图：
+
+![](https://masstone-phoenix.github.io/image/custom_transition/present_flow.png)
+
+
+##dismiss的调用顺序
+UIKit调用 animationControllerForDismissedController: 得到animator,然后如图：
+
+![](https://masstone-phoenix.github.io/image/custom_transition/dismiss_flow.png)
+
+
 
 
 
@@ -64,7 +80,21 @@ Transition Coordinators providing methods to run other animations in parallel wi
 
 <p>Transitioning Contexts:定义了动画需要的一些元数据，比如动画涉及的VC等。 这些对象需要遵守 UIViewControllerContextTransitioning这个协议，一般来说，这个是由系统创建提供的。</p>
 
-<p>Transition Coordinators providing methods to run other animations in parallel with the transition animations. They conform to the UIViewControllerTransitionCoordinator protocol.</p>
+<p><img src="https://masstone-phoenix.github.io/image/custom_transition/transitioning_context.png" alt="" title=""></p>
+
+<p>Transition Coordinators：提供了在做Transition动画的同时，做其它动画的功能，遵循 UIViewControllerTransitionCoordinator 协议。</p>
+
+<h2 id="present">present的调用顺序</h2>
+
+<p>UIKit调用animationControllerForPresentedController:presentingController:sourceController:得到animator,然后如图：</p>
+
+<p><img src="https://masstone-phoenix.github.io/image/custom_transition/present_flow.png" alt="" title=""></p>
+
+<h2 id="dismiss">dismiss的调用顺序</h2>
+
+<p>UIKit调用 animationControllerForDismissedController: 得到animator,然后如图：</p>
+
+<p><img src="https://masstone-phoenix.github.io/image/custom_transition/dismiss_flow.png" alt="" title=""></p>
 <!-- content end -->
 </div>
 <br>
