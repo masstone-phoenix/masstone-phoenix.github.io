@@ -177,6 +177,14 @@ Presentation Controller在动画中的调用顺序如下图，dismiss时只是be
 
 
 ![](https://masstone-phoenix.github.io/image/custom_transition/presentationTransition_seq.png)
+
+##定义自己的UIPresentationController
+首先，我们应该考虑如下问题：
+- 想加入何种view?
+- 通过什么动画将view加到屏幕上？
+- presented VC的最终大小？
+- 屏幕转动时的动画？size 改变时的适配？
+- 当动画做完时，presenting VC的view是否应该移除？
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -336,6 +344,15 @@ Presentation Controller在动画中的调用顺序如下图，dismiss时只是be
 <p>Presentation Controller在动画中的调用顺序如下图，dismiss时只是begin和end调用的函数分别换为dismissalTransitionWillBegin和dismissalTransitionDidEnd:。</p>
 
 <p><img src="https://masstone-phoenix.github.io/image/custom_transition/presentationTransition_seq.png" alt="" title=""></p>
+
+<h2 id="uipresentationcontroller">定义自己的UIPresentationController</h2>
+
+<p>首先，我们应该考虑如下问题：
+- 想加入何种view?
+- 通过什么动画将view加到屏幕上？
+- presented VC的最终大小？
+- 屏幕转动时的动画？size 改变时的适配？
+- 当动画做完时，presenting VC的view是否应该移除？</p>
 <!-- content end -->
 </div>
 <br>
