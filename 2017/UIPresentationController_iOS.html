@@ -180,6 +180,7 @@ Presentation Controller在动画中的调用顺序如下图，dismiss时只是be
 
 ##定义自己的UIPresentationController
 首先，我们应该考虑如下问题：
+
 - 想加入何种view?
 - 通过什么动画将view加到屏幕上？
 - presented VC的最终大小？
@@ -443,12 +444,15 @@ private extension SlideInPresentationController {
 
 <h2 id="uipresentationcontroller">定义自己的UIPresentationController</h2>
 
-<p>首先，我们应该考虑如下问题：
-- 想加入何种view?
-- 通过什么动画将view加到屏幕上？
-- presented VC的最终大小？
-- 屏幕转动时的动画？size 改变时的适配？
-- 当动画做完时，presenting VC的view是否应该移除？</p>
+<p>首先，我们应该考虑如下问题：</p>
+
+<ul>
+<li>想加入何种view?</li>
+<li>通过什么动画将view加到屏幕上？</li>
+<li>presented VC的最终大小？</li>
+<li>屏幕转动时的动画？size 改变时的适配？</li>
+<li>当动画做完时，presenting VC的view是否应该移除？</li>
+</ul>
 
 <p>我们可以通过override <code>frameOfPresentedViewInContainerView</code>来控制presented VC的最终大小。</p>
 
