@@ -152,11 +152,11 @@ UIKit调用 animationControllerForDismissedController: 得到animator,然后如�
 
 #Presenting a View Controller Using Custom Animations
 
-To present a view controller using custom animations, do the following in an action method of your existing view controllers:
+我们需要以下步骤：
 
-1. Create the view controller that you want to present.
-2. Create your custom transitioning delegate object and assign it to the view controller’s ```transitioningDelegate``` property. The methods of your transitioning delegate should create and return your custom animator objects when asked.
-3. Call the ```presentViewController:animated:completion: ```method to present the view controller.
+1. 创建要呈现的VC
+2. 创建自定义transitioning delegate对象，将它赋值给上述VC的 ```transitioningDelegate``` property
+3. 调用 ```presentViewController:animated:completion: ```呈现上述VC
 
 
 #做transition动画的同时做其它动画
@@ -166,10 +166,10 @@ To present a view controller using custom animations, do the following in an act
 #UIPresentationController
 使用UIPresentationController可以达到下述目的：
 
-- Set the size of the presented view controller.
-- Add custom views to change the visual appearance of the presented content.
-- Supply transition animations for any of its custom views.
-- Adapt the visual appearance of the presentation when changes occur in the app’s environment.
+- 设置presented view controller的大小
+- 在动画时加入自定义的view
+- 可以对加入的自定义的view做动画
+- 适配
 
 
 ##工作顺序
@@ -278,8 +278,9 @@ private extension SlideInPresentationController {
     presentingViewController.dismiss(animated: true)
   }
 }
+//参考：<https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started>
 ```
-参考：<https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started>
+[Demo](https://pan.baidu.com/s/1c8bXz4)
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -411,12 +412,12 @@ private extension SlideInPresentationController {
 
 <h1 id="presentingaviewcontrollerusingcustomanimations">Presenting a View Controller Using Custom Animations</h1>
 
-<p>To present a view controller using custom animations, do the following in an action method of your existing view controllers:</p>
+<p>我们需要以下步骤：</p>
 
 <ol>
-<li>Create the view controller that you want to present.</li>
-<li>Create your custom transitioning delegate object and assign it to the view controller’s <code>transitioningDelegate</code> property. The methods of your transitioning delegate should create and return your custom animator objects when asked.</li>
-<li>Call the <code>presentViewController:animated:completion:</code>method to present the view controller.</li>
+<li>创建要呈现的VC</li>
+<li>创建自定义transitioning delegate对象，将它赋值给上述VC的 <code>transitioningDelegate</code> property</li>
+<li>调用 <code>presentViewController:animated:completion:</code>呈现上述VC</li>
 </ol>
 
 <h1 id="transition">做transition动画的同时做其它动画</h1>
@@ -428,10 +429,10 @@ private extension SlideInPresentationController {
 <p>使用UIPresentationController可以达到下述目的：</p>
 
 <ul>
-<li>Set the size of the presented view controller.</li>
-<li>Add custom views to change the visual appearance of the presented content.</li>
-<li>Supply transition animations for any of its custom views.</li>
-<li>Adapt the visual appearance of the presentation when changes occur in the app’s environment.</li>
+<li>设置presented view controller的大小</li>
+<li>在动画时加入自定义的view</li>
+<li>可以对加入的自定义的view做动画</li>
+<li>适配</li>
 </ul>
 
 <h2 id="">工作顺序</h2>
@@ -540,9 +541,10 @@ private extension SlideInPresentationController {
     presentingViewController.dismiss(animated: true)
   }
 }
+//参考：&lt;https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started&gt;
 </code></pre>
 
-<p>参考：<a href="https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started">https://www.raywenderlich.com/139277/uipresentationcontroller-tutorial-getting-started</a></p>
+<p><a href="https://pan.baidu.com/s/1c8bXz4">Demo</a></p>
 <!-- content end -->
 </div>
 <br>
