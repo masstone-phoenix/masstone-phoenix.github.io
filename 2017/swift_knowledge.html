@@ -27,22 +27,33 @@
 <!-- markdown -->
 这周主要看了下官方的swift 3.0,这里总结一下需要注意的点，一些简单的就略去不表了，所以适合有swift基础的看（当然，如果没有也可以看，只是会费时点~~）。
 
+
+#语法
 1. Class, closure are reference type，其它的是value type。
 2. struct：编译器自动提供一个memberwise initializer，如果提供了一个custom initializer，那编译器就不会再提供memberwise initializer；如果我们需要这个memberwise initializer，可以将custom initializer定义在extension中。
-3. 改变一个struct变量等同于赋一个新值给这个变量。
+3. 改变一个struct变量等同于赋一个新值给这个变量。一般情况下，struct是存储在stack上。
 4. ArraySlice is a view  on arrays,It's backed by the original array.
+
+#Copy-on-write
+Copy-on-write（以下简称COW）主要是对value type中含有
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
 <p>这周主要看了下官方的swift 3.0,这里总结一下需要注意的点，一些简单的就略去不表了，所以适合有swift基础的看（当然，如果没有也可以看，只是会费时点~~）。</p>
 
+<h1 id="">语法</h1>
+
 <ol>
 <li>Class, closure are reference type，其它的是value type。</li>
 <li>struct：编译器自动提供一个memberwise initializer，如果提供了一个custom initializer，那编译器就不会再提供memberwise initializer；如果我们需要这个memberwise initializer，可以将custom initializer定义在extension中。</li>
-<li>改变一个struct变量等同于赋一个新值给这个变量。</li>
+<li>改变一个struct变量等同于赋一个新值给这个变量。一般情况下，struct是存储在stack上。</li>
 <li>ArraySlice&nbsp;is a&nbsp;view  on arrays,It's backed by the original array.</li>
 </ol>
+
+<h1 id="copyonwrite">Copy-on-write</h1>
+
+<p>Copy-on-write（以下简称COW）主要是对value type中含有</p>
 <!-- content end -->
 </div>
 <br>
