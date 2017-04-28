@@ -33,9 +33,24 @@
 2. struct：编译器自动提供一个memberwise initializer，如果提供了一个custom initializer，那编译器就不会再提供memberwise initializer；如果我们需要这个memberwise initializer，可以将custom initializer定义在extension中。
 3. 改变一个struct变量等同于赋一个新值给这个变量。一般情况下，struct是存储在stack上，这是一个优化，当有struct中的变量被closure捕获时，struct会存在heap上；另一种情况，如果一个struct太大的话，也会存在heap上。
 4. ArraySlice is a view  on arrays,It's backed by the original array.
+5. ARC 管理class变量的内存。
+6. unowned的内存当所有strong reference都没有时，会变成zombie memory，此时如果访问这个变量就会crash。
+
 
 #Copy-on-write
-Copy-on-write（以下简称COW）主要是对value type中含有
+Copy-on-write（以下简称COW）主要是对value type中含有reference type的一种优化。一般以struct为例，这种优化是struct实现者需要实现的。因为struct是value type，它wrapper的reference type也要表现的是一个value type，此时，为了内存使用的高效，就需要引入COW了。COW就是当wrapper的reference type只有一个strong refernce时，我们就在原地改变内存，不再复制；只有当strong reference不唯一时，我们才深复制这个变量，于是它表现的就和value type一样的。具体实现方法如下：
+
+```
+mutating func update(withValue value: T) {
+    if !isKnownUniquelyReferenced(&myStorage) { 
+        myStorage = self.copiedStorage() 
+    } 
+	
+    myStorage.update(withValue: value)
+}
+```
+
+需要注意，```isKnownUniquelyReferenced```只对swift class有效，对于Objective-C的class永远返回false。所以如果需要使用Objective-C的class，需要提供一个wrapper。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -49,11 +64,24 @@ Copy-on-write（以下简称COW）主要是对value type中含有
 <li>struct：编译器自动提供一个memberwise initializer，如果提供了一个custom initializer，那编译器就不会再提供memberwise initializer；如果我们需要这个memberwise initializer，可以将custom initializer定义在extension中。</li>
 <li>改变一个struct变量等同于赋一个新值给这个变量。一般情况下，struct是存储在stack上，这是一个优化，当有struct中的变量被closure捕获时，struct会存在heap上；另一种情况，如果一个struct太大的话，也会存在heap上。</li>
 <li>ArraySlice&nbsp;is a&nbsp;view  on arrays,It's backed by the original array.</li>
+<li>ARC 管理class变量的内存。</li>
+<li>unowned的内存当所有strong reference都没有时，会变成zombie memory，此时如果访问这个变量就会crash。</li>
 </ol>
 
 <h1 id="copyonwrite">Copy-on-write</h1>
 
-<p>Copy-on-write（以下简称COW）主要是对value type中含有</p>
+<p>Copy-on-write（以下简称COW）主要是对value type中含有reference type的一种优化。一般以struct为例，这种优化是struct实现者需要实现的。因为struct是value type，它wrapper的reference type也要表现的是一个value type，此时，为了内存使用的高效，就需要引入COW了。COW就是当wrapper的reference type只有一个strong refernce时，我们就在原地改变内存，不再复制；只有当strong reference不唯一时，我们才深复制这个变量，于是它表现的就和value type一样的。具体实现方法如下：</p>
+
+<pre><code>mutating func update(withValue value: T) {
+    if !isKnownUniquelyReferenced(&amp;myStorage) { 
+        myStorage = self.copiedStorage() 
+    } 
+
+    myStorage.update(withValue: value)
+}
+</code></pre>
+
+<p>需要注意，<code>isKnownUniquelyReferenced</code>只对swift class有效，对于Objective-C的class永远返回false。所以如果需要使用Objective-C的class，需要提供一个wrapper。</p>
 <!-- content end -->
 </div>
 <br>
