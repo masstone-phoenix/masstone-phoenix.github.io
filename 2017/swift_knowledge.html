@@ -29,12 +29,17 @@
 
 
 #语法
+
 1. Class, closure are reference type，其它的是value type。
 2. struct：编译器自动提供一个memberwise initializer，如果提供了一个custom initializer，那编译器就不会再提供memberwise initializer；如果我们需要这个memberwise initializer，可以将custom initializer定义在extension中。
 3. 改变一个struct变量等同于赋一个新值给这个变量。一般情况下，struct是存储在stack上，这是一个优化，当有struct中的变量被closure捕获时，struct会存在heap上；另一种情况，如果一个struct太大的话，也会存在heap上。
 4. ArraySlice is a view  on arrays,It's backed by the original array.
 5. ARC 管理class变量的内存。
 6. unowned的内存当所有strong reference都没有时，会变成zombie memory，此时如果访问这个变量就会crash。
+7. 当定义类方法、类变量时，如果subclass可以override，使用class关键字。
+8. 类的初始化分为两个phase：一、从最底层的subclass开始，初始化实例变量，依次向上，直到base class，这个步骤完成后，我们才能使用self、改变其property、调用其实例方法等；二、从base class开始，依次向下，完成自定义的初始化。
+9. 当使用closuer初始化一个property时，phase 1还没有结束，所以不能调用self、实例方法等。
+10. deinit只在class中可用，并且会自动调用父类的实现。
 
 
 #Copy-on-write
@@ -66,6 +71,10 @@ mutating func update(withValue value: T) {
 <li>ArraySlice&nbsp;is a&nbsp;view  on arrays,It's backed by the original array.</li>
 <li>ARC 管理class变量的内存。</li>
 <li>unowned的内存当所有strong reference都没有时，会变成zombie memory，此时如果访问这个变量就会crash。</li>
+<li>当定义类方法、类变量时，如果subclass可以override，使用class关键字。</li>
+<li>类的初始化分为两个phase：一、从最底层的subclass开始，初始化实例变量，依次向上，直到base class，这个步骤完成后，我们才能使用self、改变其property、调用其实例方法等；二、从base class开始，依次向下，完成自定义的初始化。</li>
+<li>当使用closuer初始化一个property时，phase 1还没有结束，所以不能调用self、实例方法等。</li>
+<li>deinit只在class中可用，并且会自动调用父类的实现。</li>
 </ol>
 
 <h1 id="copyonwrite">Copy-on-write</h1>
