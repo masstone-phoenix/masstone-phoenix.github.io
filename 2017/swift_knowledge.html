@@ -28,7 +28,9 @@
 这周主要看了下官方的swift 3.0,这里总结一下需要注意的点，一些简单的就略去不表了，所以适合有swift基础的看（当然，如果没有也可以看，只是会费时点~~）。
 
 1. Class, closure are reference type，其它的是value type。
-2. 
+2. struct：编译器自动提供一个memberwise initializer，如果提供了一个custom initializer，那编译器就不会再提供memberwise initializer；如果我们需要这个memberwise initializer，可以将custom initializer定义在extension中。
+3. 改变一个struct变量等同于赋一个新值给这个变量。
+4. ArraySlice is a view  on arrays,It's backed by the original array.
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -37,7 +39,9 @@
 
 <ol>
 <li>Class, closure are reference type，其它的是value type。</li>
-2. 
+<li>struct：编译器自动提供一个memberwise initializer，如果提供了一个custom initializer，那编译器就不会再提供memberwise initializer；如果我们需要这个memberwise initializer，可以将custom initializer定义在extension中。</li>
+<li>改变一个struct变量等同于赋一个新值给这个变量。</li>
+<li>ArraySlice&nbsp;is a&nbsp;view  on arrays,It's backed by the original array.</li>
 </ol>
 <!-- content end -->
 </div>
