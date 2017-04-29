@@ -29,7 +29,7 @@
 
 
 #语法
-
+1. nil在swift中并不是一个指针，它表示这个值不存在。只有optional才能赋值成nil。
 1. Class, closure are reference type，其它的是value type。
 2. struct：编译器自动提供一个memberwise initializer，如果提供了一个custom initializer，那编译器就不会再提供memberwise initializer；如果我们需要这个memberwise initializer，可以将custom initializer定义在extension中。
 3. 改变一个struct变量等同于赋一个新值给这个变量。一般情况下，struct是存储在stack上，这是一个优化，当有struct中的变量被closure捕获时，struct会存在heap上；另一种情况，如果一个struct太大的话，也会存在heap上。
@@ -37,10 +37,14 @@
 5. ARC 管理class变量的内存。
 6. unowned的内存当所有strong reference都没有时，会变成zombie memory，此时如果访问这个变量就会crash。
 7. 当定义类方法、类变量时，如果subclass可以override，使用class关键字。
+8. 与Objective-C不同的是，swift中sublcass不会继承superclass的初始化方法。
 8. 类的初始化分为两个phase：一、从最底层的subclass开始，初始化实例变量，依次向上，直到base class，这个步骤完成后，我们才能使用self、改变其property、调用其实例方法等；二、从base class开始，依次向下，完成自定义的初始化。
 9. 当使用closuer初始化一个property时，phase 1还没有结束，所以不能调用self、实例方法等。
 10. deinit只在class中可用，并且会自动调用父类的实现。
-
+1. swift中的String使用Extended Grapheme Cluster做为基本单元，即可以它们的uinicode值不同，但表达的语义字母是同一个，在swift中就是这一个unicode 字母。
+2. swift中的extension类似Objective-C中的category，与category不同的是，extension没有名字。
+3. Extension能添加convenience initializer，但是不能添加designated initializer。
+4. Protocol中property使用关键字var，如果是类方法使用关键字static。
 
 #Copy-on-write
 Copy-on-write（以下简称COW）主要是对value type中含有reference type的一种优化。一般以struct为例，这种优化是struct实现者需要实现的。因为struct是value type，它wrapper的reference type也要表现的是一个value type，此时，为了内存使用的高效，就需要引入COW了。COW就是当wrapper的reference type只有一个strong refernce时，我们就在原地改变内存，不再复制；只有当strong reference不唯一时，我们才深复制这个变量，于是它表现的就和value type一样的。具体实现方法如下：
@@ -65,6 +69,7 @@ mutating func update(withValue value: T) {
 <h1 id="">语法</h1>
 
 <ol>
+<li>nil在swift中并不是一个指针，它表示这个值不存在。只有optional才能赋值成nil。</li>
 <li>Class, closure are reference type，其它的是value type。</li>
 <li>struct：编译器自动提供一个memberwise initializer，如果提供了一个custom initializer，那编译器就不会再提供memberwise initializer；如果我们需要这个memberwise initializer，可以将custom initializer定义在extension中。</li>
 <li>改变一个struct变量等同于赋一个新值给这个变量。一般情况下，struct是存储在stack上，这是一个优化，当有struct中的变量被closure捕获时，struct会存在heap上；另一种情况，如果一个struct太大的话，也会存在heap上。</li>
@@ -72,9 +77,14 @@ mutating func update(withValue value: T) {
 <li>ARC 管理class变量的内存。</li>
 <li>unowned的内存当所有strong reference都没有时，会变成zombie memory，此时如果访问这个变量就会crash。</li>
 <li>当定义类方法、类变量时，如果subclass可以override，使用class关键字。</li>
+<li>与Objective-C不同的是，swift中sublcass不会继承superclass的初始化方法。</li>
 <li>类的初始化分为两个phase：一、从最底层的subclass开始，初始化实例变量，依次向上，直到base class，这个步骤完成后，我们才能使用self、改变其property、调用其实例方法等；二、从base class开始，依次向下，完成自定义的初始化。</li>
 <li>当使用closuer初始化一个property时，phase 1还没有结束，所以不能调用self、实例方法等。</li>
 <li>deinit只在class中可用，并且会自动调用父类的实现。</li>
+<li>swift中的String使用Extended Grapheme Cluster做为基本单元，即可以它们的uinicode值不同，但表达的语义字母是同一个，在swift中就是这一个unicode 字母。</li>
+<li>swift中的extension类似Objective-C中的category，与category不同的是，extension没有名字。</li>
+<li>Extension能添加convenience initializer，但是不能添加designated initializer。</li>
+<li>Protocol中property使用关键字var，如果是类方法使用关键字static。</li>
 </ol>
 
 <h1 id="copyonwrite">Copy-on-write</h1>
