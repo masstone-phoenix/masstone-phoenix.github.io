@@ -60,6 +60,12 @@ mutating func update(withValue value: T) {
 ```
 
 需要注意，```isKnownUniquelyReferenced```只对swift class有效，对于Objective-C的class永远返回false。所以如果需要使用Objective-C的class，需要提供一个wrapper。
+
+#模式匹配（patterns）
+ "A pattern represents the structure of a single value or a composite vaule."。有两类：
+一类是用来取得simple variable, constant, optional binding中的数值的，包括wild patterns, identifier patterns, 还有包含它们的value binding, tuple；一类是用来模式匹配（pattern matching）的，包括enumeration case patterns, optional patterns, expression patterns（仅在switch语句中出现）和type-casting patterns。
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -101,6 +107,11 @@ mutating func update(withValue value: T) {
 </code></pre>
 
 <p>需要注意，<code>isKnownUniquelyReferenced</code>只对swift class有效，对于Objective-C的class永远返回false。所以如果需要使用Objective-C的class，需要提供一个wrapper。</p>
+
+<h1 id="patterns">模式匹配（patterns）</h1>
+
+<p>"A pattern represents the structure of a single value or a composite vaule."。有两类：
+一类是用来取得simple variable, constant, optional binding中的数值的，包括wild patterns, identifier patterns, 还有包含它们的value binding, tuple；一类是用来模式匹配（pattern matching）的，包括enumeration case patterns, optional patterns, expression patterns（仅在switch语句中出现）和type-casting patterns。</p>
 <!-- content end -->
 </div>
 <br>
