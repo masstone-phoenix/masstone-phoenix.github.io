@@ -65,6 +65,124 @@ mutating func update(withValue value: T) {
  "A pattern represents the structure of a single value or a composite vaule."。有两类：
 一类是用来取得simple variable, constant, optional binding中的数值的，包括wild patterns, identifier patterns, 还有包含它们的value binding, tuple；一类是用来模式匹配（pattern matching）的，包括enumeration case patterns, optional patterns, expression patterns（仅在switch语句中出现）和type-casting patterns。
 
+##Wild pattern
+匹配任意值。
+
+```
+“for _ in 1...3 {
+    // Do something three times.
+}”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+```
+##Identifier pattern
+它也可以匹配任意值，并将匹配的值绑定到常量或变量上。
+
+```
+let someValue = 42
+```
+
+##Value-Binding Pattern
+感觉和Identifier pattern作用一样。
+```
+“let point = (3, 2)
+switch point {
+// Bind x and y to the elements of point.
+case let (x, y):
+    print("The point is at (\(x), \(y)).")
+}
+// Prints "The point is at (3, 2).”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+```
+
+##Tuple Pattern
+当tuple pattern用在一个for-in语句或在常量或变量的声明中时,它只能含有wildcard patterns, identifier patterns, optional patterns, 或别的tuple patterns（这些pattern可以含有上述三种pattern）。
+
+```
+“let points = [(0, 0), (1, 0), (1, 1), (2, 0), (2, 1)]
+// This code isn't valid.
+for (x, 0) in points {
+    /* ... */
+}”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+```
+
+##Enumeration Case Pattern
+在switch,if, while, guard和 for-in 语句中的case标签使用。
+
+##Optional Pattern
+```
+“let arrayOfOptionalInts: [Int?] = [nil, 2, 3, nil, 5]
+// Match only non-nil values.
+for case let number? in arrayOfOptionalInts {
+    print("Found a \(number)")
+}
+// Found a 2
+// Found a 3
+// Found a 5”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+```
+
+##Type-Casting Patterns
+有两种：as, is。
+
+```
+“for thing in things {
+    switch thing {
+    case 0 as Int:
+        print("zero as an Int")
+    case 0 as Double:
+        print("zero as a Double")
+    case let someInt as Int:
+        print("an integer value of \(someInt)")
+    case let someDouble as Double where someDouble > 0:
+        print("a positive double value of \(someDouble)")
+    case is Double:
+        print("some other double value that I don't want to print")
+    case let someString as String:
+        print("a string value of \"\(someString)\"")
+    case let (x, y) as (Double, Double):
+        print("an (x, y) point at \(x), \(y)")
+    case let movie as Movie:
+        print("a movie called \(movie.name), dir. \(movie.director)")
+    case let stringConverter as (String) -> String:
+        print(stringConverter("Michael"))
+    default:
+        print("something else")
+    }
+}
+ 
+// zero as an Int
+// zero as a Double
+// an integer value of 42
+// a positive double value of 3.14159
+// a string value of "hello”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+```
+
+##Expression Pattern
+代表一个表达式的值，只在switch语句中的case标签中使用。
+
+```
+“let point = (1, 2)
+switch point {
+case (0, 0):
+    print("(0, 0) is at the origin.")
+case (-2...2, -2...2):
+    print("(\(point.0), \(point.1)) is near the origin.")
+default:
+    print("The point is at (\(point.0), \(point.1)).")
+}”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+
+```
+
+
 
 <!-- markdown end -->
 </div>
@@ -112,6 +230,125 @@ mutating func update(withValue value: T) {
 
 <p>"A pattern represents the structure of a single value or a composite vaule."。有两类：
 一类是用来取得simple variable, constant, optional binding中的数值的，包括wild patterns, identifier patterns, 还有包含它们的value binding, tuple；一类是用来模式匹配（pattern matching）的，包括enumeration case patterns, optional patterns, expression patterns（仅在switch语句中出现）和type-casting patterns。</p>
+
+<h2 id="wildpattern">Wild pattern</h2>
+
+<p>匹配任意值。</p>
+
+<pre><code>“for _ in 1...3 {
+    // Do something three times.
+}”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+</code></pre>
+
+<h2 id="identifierpattern">Identifier pattern</h2>
+
+<p>它也可以匹配任意值，并将匹配的值绑定到常量或变量上。</p>
+
+<pre><code>let someValue = 42
+</code></pre>
+
+<h2 id="valuebindingpattern">Value-Binding Pattern</h2>
+
+<p>感觉和Identifier pattern作用一样。</p>
+
+<pre><code>“let point = (3, 2)
+switch point {
+// Bind x and y to the elements of point.
+case let (x, y):
+    print("The point is at (\(x), \(y)).")
+}
+// Prints "The point is at (3, 2).”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+</code></pre>
+
+<h2 id="tuplepattern">Tuple Pattern</h2>
+
+<p>当tuple pattern用在一个for-in语句或在常量或变量的声明中时,它只能含有wildcard patterns, identifier patterns, optional patterns, 或别的tuple patterns（这些pattern可以含有上述三种pattern）。</p>
+
+<pre><code>“let points = [(0, 0), (1, 0), (1, 1), (2, 0), (2, 1)]
+// This code isn't valid.
+for (x, 0) in points {
+    /* ... */
+}”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+</code></pre>
+
+<h2 id="enumerationcasepattern">Enumeration Case Pattern</h2>
+
+<p>在switch,if, while, guard和 for-in 语句中的case标签使用。</p>
+
+<h2 id="optionalpattern">Optional Pattern</h2>
+
+<pre><code>“let arrayOfOptionalInts: [Int?] = [nil, 2, 3, nil, 5]
+// Match only non-nil values.
+for case let number? in arrayOfOptionalInts {
+    print("Found a \(number)")
+}
+// Found a 2
+// Found a 3
+// Found a 5”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+</code></pre>
+
+<h2 id="typecastingpatterns">Type-Casting Patterns</h2>
+
+<p>有两种：as, is。</p>
+
+<pre><code>“for thing in things {
+    switch thing {
+    case 0 as Int:
+        print("zero as an Int")
+    case 0 as Double:
+        print("zero as a Double")
+    case let someInt as Int:
+        print("an integer value of \(someInt)")
+    case let someDouble as Double where someDouble &gt; 0:
+        print("a positive double value of \(someDouble)")
+    case is Double:
+        print("some other double value that I don't want to print")
+    case let someString as String:
+        print("a string value of \"\(someString)\"")
+    case let (x, y) as (Double, Double):
+        print("an (x, y) point at \(x), \(y)")
+    case let movie as Movie:
+        print("a movie called \(movie.name), dir. \(movie.director)")
+    case let stringConverter as (String) -&gt; String:
+        print(stringConverter("Michael"))
+    default:
+        print("something else")
+    }
+}
+
+// zero as an Int
+// zero as a Double
+// an integer value of 42
+// a positive double value of 3.14159
+// a string value of "hello”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+</code></pre>
+
+<h2 id="expressionpattern">Expression Pattern</h2>
+
+<p>代表一个表达式的值，只在switch语句中的case标签中使用。</p>
+
+<pre><code>“let point = (1, 2)
+switch point {
+case (0, 0):
+    print("(0, 0) is at the origin.")
+case (-2...2, -2...2):
+    print("(\(point.0), \(point.1)) is near the origin.")
+default:
+    print("The point is at (\(point.0), \(point.1)).")
+}”
+
+摘录来自: Apple Inc. “The Swift Programming Language (Swift 3.1)”。 iBooks. https://itun.es/hk/jEUH0.l
+</code></pre>
 <!-- content end -->
 </div>
 <br>
