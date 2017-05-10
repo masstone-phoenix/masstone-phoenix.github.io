@@ -72,7 +72,9 @@ $(SRCROOT)/Carthage/Build/iOS/Result.framework
 运行时提示：
 dyld: Library not loaded: @rpath/Lottie.framework/Lottie
 
-解决：
+
+解决：Lottie是动态库，需要在工程的General里的Embedded Binaries添加这个动态库才能使用。
+
 ![](https://cloud.githubusercontent.com/assets/28064/4277150/e5ff00b4-3d0b-11e4-9b81-55c439b6f2c1.png)
 
 
@@ -132,8 +134,9 @@ $(SRCROOT)/Carthage/Build/iOS/Result.framework
 <p>运行时提示：
 dyld: Library not loaded: @rpath/Lottie.framework/Lottie</p>
 
-<p>解决：
-<img src="https://cloud.githubusercontent.com/assets/28064/4277150/e5ff00b4-3d0b-11e4-9b81-55c439b6f2c1.png" alt="" title=""></p>
+<p>解决：Lottie是动态库，需要在工程的General里的Embedded Binaries添加这个动态库才能使用。</p>
+
+<p><img src="https://cloud.githubusercontent.com/assets/28064/4277150/e5ff00b4-3d0b-11e4-9b81-55c439b6f2c1.png" alt="" title=""></p>
 <!-- content end -->
 </div>
 <br>
