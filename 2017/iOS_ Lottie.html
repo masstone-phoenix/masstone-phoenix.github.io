@@ -25,8 +25,8 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-Lottie是airbnb开源的一个将Adobe After Effects效果转化成iOSh上动画的一个工具。
-First things first, what is Lottie? Developed by Airbnb, Lottie is an iOS, macOS, Android, and React Native library that renders After Effects animations in any native app. Animations are exported as JSON files through an open-source After Effects extension called Bodymovin. Lottie loads the animation data in JSON format, and renders the animation in real time.
+Lottie是Airbnb开源的一个将Adobe After Effects效果转化成iOSh上动画的一个工具，可以用在 iOS, macOS, Android平台上。可以使用Bodymovin
+First things first, what is Lottie? Developed by Airbnb, Lottie is an iOS, macOS, Android, and React Native library that renders After Effects animations in any native app. Animations are exported as JSON files through an open-source After Effects extension called. Lottie loads the animation data in JSON format, and renders the animation in real time.
 
 #安装
 我们的项目没有使用CocoaPods，这里记录一下手动安装的步骤：
@@ -45,17 +45,38 @@ vim Cartfile
 carthage update
 ```
 
-第二步，在工程中加入库：在Linked Frameworks and Libraries中加入位于 Carthage/Build中的framework。
+第二步，在工程中加入库：在General标签下的Linked Frameworks and Libraries中加入位于 Carthage/Build中的framework。
 
 第三小，写程序。
+
+```
+#import <Lottie/Lottie.h>
+
+    LOTAnimationView *animation = [LOTAnimationView animationNamed:@"Lottie"];
+    [self.view addSubview:animation];
+    [animation playWithCompletion:^(BOOL animationFinished) {
+        // Do Something
+    }];
+```
+
+遇到的问题：
+运行时提示：
+dyld: Library not loaded: @rpath/Lottie.framework/Lottie
+
+解决：
+![](https://cloud.githubusercontent.com/assets/28064/4277150/e5ff00b4-3d0b-11e4-9b81-55c439b6f2c1.png)
+
+
+
+
 
 
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
-<p>Lottie是airbnb开源的一个将Adobe After Effects效果转化成iOSh上动画的一个工具。
-First things first, what is Lottie? Developed by Airbnb, Lottie is an iOS, macOS, Android, and React Native library that renders After Effects animations in any native app. Animations are exported as JSON files through an open-source After Effects extension called Bodymovin. Lottie loads the animation data in JSON format, and renders the animation in real time.</p>
+<p>Lottie是Airbnb开源的一个将Adobe After Effects效果转化成iOSh上动画的一个工具，可以用在 iOS, macOS, Android平台上。可以使用Bodymovin
+First things first, what is Lottie? Developed by Airbnb, Lottie is an iOS, macOS, Android, and React Native library that renders After Effects animations in any native app. Animations are exported as JSON files through an open-source After Effects extension called. Lottie loads the animation data in JSON format, and renders the animation in real time.</p>
 
 <h1 id="">安装</h1>
 
@@ -75,9 +96,25 @@ First things first, what is Lottie? Developed by Airbnb, Lottie is an iOS, macOS
 carthage update
 </code></pre>
 
-<p>第二步，在工程中加入库：在Linked Frameworks and Libraries中加入位于 Carthage/Build中的framework。</p>
+<p>第二步，在工程中加入库：在General标签下的Linked Frameworks and Libraries中加入位于 Carthage/Build中的framework。</p>
 
 <p>第三小，写程序。</p>
+
+<pre><code>#import &lt;Lottie/Lottie.h&gt;
+
+    LOTAnimationView *animation = [LOTAnimationView animationNamed:@"Lottie"];
+    [self.view addSubview:animation];
+    [animation playWithCompletion:^(BOOL animationFinished) {
+        // Do Something
+    }];
+</code></pre>
+
+<p>遇到的问题：
+运行时提示：
+dyld: Library not loaded: @rpath/Lottie.framework/Lottie</p>
+
+<p>解决：
+<img src="https://cloud.githubusercontent.com/assets/28064/4277150/e5ff00b4-3d0b-11e4-9b81-55c439b6f2c1.png" alt="" title=""></p>
 <!-- content end -->
 </div>
 <br>
