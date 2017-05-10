@@ -46,7 +46,17 @@ carthage update
 
 第二步，在工程中加入库：在General标签下的Linked Frameworks and Libraries中加入位于 Carthage/Build中的framework。
 
-第三小，写程序。
+第三步，在Target的的 “Build Phases” 中，点击 “+” ，选择 “New Run Script Phase”。创建一个Run Script 加入如下内容：
+```
+/usr/local/bin/carthage copy-frameworks
+```
+在下面的Input Files中加入Lottie的路径：
+```
+$(SRCROOT)/Carthage/Build/iOS/Lottie.framework
+$(SRCROOT)/Carthage/Build/iOS/Result.framework
+```
+
+第四步，写程序。
 
 ```
 #import <Lottie/Lottie.h>
@@ -95,7 +105,18 @@ carthage update
 
 <p>第二步，在工程中加入库：在General标签下的Linked Frameworks and Libraries中加入位于 Carthage/Build中的framework。</p>
 
-<p>第三小，写程序。</p>
+<p>第三步，在Target的的 “Build Phases” 中，点击 “+” ，选择 “New Run Script Phase”。创建一个Run Script 加入如下内容：</p>
+
+<pre><code>/usr/local/bin/carthage copy-frameworks
+</code></pre>
+
+<p>在下面的Input Files中加入Lottie的路径：</p>
+
+<pre><code>$(SRCROOT)/Carthage/Build/iOS/Lottie.framework
+$(SRCROOT)/Carthage/Build/iOS/Result.framework
+</code></pre>
+
+<p>第四步，写程序。</p>
 
 <pre><code>#import &lt;Lottie/Lottie.h&gt;
 
