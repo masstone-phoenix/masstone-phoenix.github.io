@@ -25,12 +25,11 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-Lottie是Airbnb开源的一个将Adobe After Effects效果转化成iOSh上动画的一个工具，可以用在 iOS, macOS, Android平台上。可以使用Bodymovin
-First things first, what is Lottie? Developed by Airbnb, Lottie is an iOS, macOS, Android, and React Native library that renders After Effects animations in any native app. Animations are exported as JSON files through an open-source After Effects extension called. Lottie loads the animation data in JSON format, and renders the animation in real time.
+Lottie是Airbnb开源的一个将Adobe After Effects效果转化成动画的一个工具，可以用在 iOS, macOS, Android平台上。制作动画的过程是这样的：使用AE的插件Bodymovin将动画导成JSON文件，Lottie将JSON中的动画数据实时绘制在设备上。
+
 
 #安装
 我们的项目没有使用CocoaPods，这里记录一下手动安装的步骤：
-主要参考<https://github.com/airbnb/lottie-react-native/issues/31>
 
 准备：
 安装carthage
@@ -59,7 +58,7 @@ carthage update
     }];
 ```
 
-遇到的问题：
+#遇到的问题
 运行时提示：
 dyld: Library not loaded: @rpath/Lottie.framework/Lottie
 
@@ -75,13 +74,11 @@ dyld: Library not loaded: @rpath/Lottie.framework/Lottie
 </div>
 <div class="entry" id="main">
 <!-- content -->
-<p>Lottie是Airbnb开源的一个将Adobe After Effects效果转化成iOSh上动画的一个工具，可以用在 iOS, macOS, Android平台上。可以使用Bodymovin
-First things first, what is Lottie? Developed by Airbnb, Lottie is an iOS, macOS, Android, and React Native library that renders After Effects animations in any native app. Animations are exported as JSON files through an open-source After Effects extension called. Lottie loads the animation data in JSON format, and renders the animation in real time.</p>
+<p>Lottie是Airbnb开源的一个将Adobe After Effects效果转化成动画的一个工具，可以用在 iOS, macOS, Android平台上。制作动画的过程是这样的：使用AE的插件Bodymovin将动画导成JSON文件，Lottie将JSON中的动画数据实时绘制在设备上。</p>
 
 <h1 id="">安装</h1>
 
-<p>我们的项目没有使用CocoaPods，这里记录一下手动安装的步骤：
-主要参考<a href="https://github.com/airbnb/lottie-react-native/issues/31">https://github.com/airbnb/lottie-react-native/issues/31</a></p>
+<p>我们的项目没有使用CocoaPods，这里记录一下手动安装的步骤：</p>
 
 <p>准备：
 安装carthage</p>
@@ -109,8 +106,9 @@ carthage update
     }];
 </code></pre>
 
-<p>遇到的问题：
-运行时提示：
+<h1 id="">遇到的问题</h1>
+
+<p>运行时提示：
 dyld: Library not loaded: @rpath/Lottie.framework/Lottie</p>
 
 <p>解决：
