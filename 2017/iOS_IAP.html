@@ -60,8 +60,56 @@ payment.quantity = 2;
 [[SKPaymentQueue defaultQueue] addPayment:payment];
 ```
 
-##交付商品
+#交付商品
+我们需要实现```SKPaymentTransactionObserver```协议来接收App Store对购买的处理，其中```paymentQueue:updatedTransactions: ```会接收到购买的各个状态，以便对各个状态进行处理。
 
+```
+- (void)paymentQueue:(SKPaymentQueue *)queue
+ updatedTransactions:(NSArray *)transactions
+{
+    for (SKPaymentTransaction *transaction in transactions) {
+        switch (transaction.transactionState) {
+            // Call the appropriate custom method for the transaction state.
+            case SKPaymentTransactionStatePurchasing:
+                [self showTransactionAsInProgress:transaction deferred:NO];
+                break;
+            case SKPaymentTransactionStateDeferred:
+                [self showTransactionAsInProgress:transaction deferred:YES];
+                break;
+            case SKPaymentTransactionStateFailed:
+                [self failedTransaction:transaction];
+                break;
+            case SKPaymentTransactionStatePurchased:
+                [self completeTransaction:transaction];
+                break;
+            case SKPaymentTransactionStateRestored:
+                [self restoreTransaction:transaction];
+                break;
+            default:
+                // For debugging
+                NSLog(@"Unexpected transaction state %@", @(transaction.transactionState));
+                break;
+        }
+    }
+}
+
+```
+
+与restore操作关联的两个代理方法```The paymentQueueRestoreCompletedTransactionsFinished:``` 或```paymentQueue:restoreCompletedTransactionsFailedWithError:```，分别在成功和失败时调用。
+
+##存储已购买项目
+
+- 对于非消耗商品和自动更新订阅商品，使用app receipt作为永久存储；
+- 对于非更新订阅商品，使用自己的服务器来存储；
+- 对于消耗品，app自己管理。
+
+# 完成交易
+完成下面事情：1，存储购买；2，下载相当商品；3，更新UI。之后就可以完成交易了。
+
+```
+SKPaymentTransaction *transaction = <# The current payment #>;
+[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+```
 
 验证发票需要考虑的点：
 
@@ -107,7 +155,57 @@ payment.quantity = 2;
 [[SKPaymentQueue defaultQueue] addPayment:payment];
 </code></pre>
 
-<h2 id="">交付商品</h2>
+<h1 id="">交付商品</h1>
+
+<p>我们需要实现<code>SKPaymentTransactionObserver</code>协议来接收App Store对购买的处理，其中<code>paymentQueue:updatedTransactions:</code>会接收到购买的各个状态，以便对各个状态进行处理。</p>
+
+<pre><code>- (void)paymentQueue:(SKPaymentQueue *)queue
+ updatedTransactions:(NSArray *)transactions
+{
+    for (SKPaymentTransaction *transaction in transactions) {
+        switch (transaction.transactionState) {
+            // Call the appropriate custom method for the transaction state.
+            case SKPaymentTransactionStatePurchasing:
+                [self showTransactionAsInProgress:transaction deferred:NO];
+                break;
+            case SKPaymentTransactionStateDeferred:
+                [self showTransactionAsInProgress:transaction deferred:YES];
+                break;
+            case SKPaymentTransactionStateFailed:
+                [self failedTransaction:transaction];
+                break;
+            case SKPaymentTransactionStatePurchased:
+                [self completeTransaction:transaction];
+                break;
+            case SKPaymentTransactionStateRestored:
+                [self restoreTransaction:transaction];
+                break;
+            default:
+                // For debugging
+                NSLog(@"Unexpected transaction state %@", @(transaction.transactionState));
+                break;
+        }
+    }
+}
+</code></pre>
+
+<p>与restore操作关联的两个代理方法<code>The paymentQueueRestoreCompletedTransactionsFinished:</code> 或<code>paymentQueue:restoreCompletedTransactionsFailedWithError:</code>，分别在成功和失败时调用。</p>
+
+<h2 id="">存储已购买项目</h2>
+
+<ul>
+<li>对于非消耗商品和自动更新订阅商品，使用app receipt作为永久存储；</li>
+<li>对于非更新订阅商品，使用自己的服务器来存储；</li>
+<li>对于消耗品，app自己管理。</li>
+</ul>
+
+<h1 id="">完成交易</h1>
+
+<p>完成下面事情：1，存储购买；2，下载相当商品；3，更新UI。之后就可以完成交易了。</p>
+
+<pre><code>SKPaymentTransaction *transaction = &lt;# The current payment #&gt;;
+[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
+</code></pre>
 
 <p>验证发票需要考虑的点：</p>
 
