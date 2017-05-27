@@ -27,6 +27,9 @@
 <!-- markdown -->
 本文是转载的，见<http://openfibers.github.io/blog/2015/02/28/in-app-purchase-walk-through/>。
 
+
+##以下是自己总结的：
+
 IAP分为三步：展示商品，购买，发送商品。
 
 #展示
@@ -57,6 +60,8 @@ payment.quantity = 2;
 [[SKPaymentQueue defaultQueue] addPayment:payment];
 ```
 
+##交付商品
+
 
 验证发票需要考虑的点：
 
@@ -70,6 +75,8 @@ payment.quantity = 2;
 <div class="entry" id="main">
 <!-- content -->
 <p>本文是转载的，见<a href="http://openfibers.github.io/blog/2015/02/28/in-app-purchase-walk-through/">http://openfibers.github.io/blog/2015/02/28/in-app-purchase-walk-through/</a>。</p>
+
+<h2 id="">以下是自己总结的：</h2>
 
 <p>IAP分为三步：展示商品，购买，发送商品。</p>
 
@@ -99,6 +106,8 @@ payment.quantity = 2;
 //Your application should add an observer to the payment queue during application initialization
 [[SKPaymentQueue defaultQueue] addPayment:payment];
 </code></pre>
+
+<h2 id="">交付商品</h2>
 
 <p>验证发票需要考虑的点：</p>
 
