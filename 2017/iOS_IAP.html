@@ -27,6 +27,18 @@
 <!-- markdown -->
 本文是转载的，见<http://openfibers.github.io/blog/2015/02/28/in-app-purchase-walk-through/>。
 
+从服务器取回IAP信息时，最好加上版本号等验证，防止出现错误。
+
+显示价格时使用App Store的locale而不是user's locale，例子如下：
+
+```
+NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+[numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+[numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+[numberFormatter setLocale:product.priceLocale];
+NSString *formattedPrice = [numberFormatter stringFromNumber:product.price];
+```
+
 验证发票需要考虑的点：
 
 - 真伪性: 购买收据确实来自苹果；
@@ -39,6 +51,17 @@
 <div class="entry" id="main">
 <!-- content -->
 <p>本文是转载的，见<a href="http://openfibers.github.io/blog/2015/02/28/in-app-purchase-walk-through/">http://openfibers.github.io/blog/2015/02/28/in-app-purchase-walk-through/</a>。</p>
+
+<p>从服务器取回IAP信息时，最好加上版本号等验证，防止出现错误。</p>
+
+<p>显示价格时使用App Store的locale而不是user's locale，例子如下：</p>
+
+<pre><code>NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+[numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+[numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+[numberFormatter setLocale:product.priceLocale];
+NSString *formattedPrice = [numberFormatter stringFromNumber:product.price];
+</code></pre>
 
 <p>验证发票需要考虑的点：</p>
 
