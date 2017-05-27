@@ -27,6 +27,9 @@
 <!-- markdown -->
 本文是转载的，见<http://openfibers.github.io/blog/2015/02/28/in-app-purchase-walk-through/>。
 
+IAP分为三步：展示商品，购买，发送商品。
+
+#展示
 从服务器取回IAP信息时，最好加上版本号等验证，防止出现错误。
 
 显示价格时使用App Store的locale而不是user's locale，例子如下：
@@ -38,6 +41,22 @@ NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
 [numberFormatter setLocale:product.priceLocale];
 NSString *formattedPrice = [numberFormatter stringFromNumber:product.price];
 ```
+
+注意：测试iOS的IAP时，需要先退出手机的App Store。
+
+#购买
+
+创建一个购买请求——使用上步中返回的```SKProduct ```来创建一个购买请求，然后将这个请求加到```SKPaymentQueue```队列中，就完成了发起请求的步骤：
+
+```
+SKProduct *product = <# Product returned by a products request #>;
+SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
+payment.quantity = 2;
+
+//Your application should add an observer to the payment queue during application initialization
+[[SKPaymentQueue defaultQueue] addPayment:payment];
+```
+
 
 验证发票需要考虑的点：
 
@@ -52,6 +71,10 @@ NSString *formattedPrice = [numberFormatter stringFromNumber:product.price];
 <!-- content -->
 <p>本文是转载的，见<a href="http://openfibers.github.io/blog/2015/02/28/in-app-purchase-walk-through/">http://openfibers.github.io/blog/2015/02/28/in-app-purchase-walk-through/</a>。</p>
 
+<p>IAP分为三步：展示商品，购买，发送商品。</p>
+
+<h1 id="">展示</h1>
+
 <p>从服务器取回IAP信息时，最好加上版本号等验证，防止出现错误。</p>
 
 <p>显示价格时使用App Store的locale而不是user's locale，例子如下：</p>
@@ -61,6 +84,20 @@ NSString *formattedPrice = [numberFormatter stringFromNumber:product.price];
 [numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
 [numberFormatter setLocale:product.priceLocale];
 NSString *formattedPrice = [numberFormatter stringFromNumber:product.price];
+</code></pre>
+
+<p>注意：测试iOS的IAP时，需要先退出手机的App Store。</p>
+
+<h1 id="">购买</h1>
+
+<p>创建一个购买请求——使用上步中返回的<code>SKProduct</code>来创建一个购买请求，然后将这个请求加到<code>SKPaymentQueue</code>队列中，就完成了发起请求的步骤：</p>
+
+<pre><code>SKProduct *product = &lt;# Product returned by a products request #&gt;;
+SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
+payment.quantity = 2;
+
+//Your application should add an observer to the payment queue during application initialization
+[[SKPaymentQueue defaultQueue] addPayment:payment];
 </code></pre>
 
 <p>验证发票需要考虑的点：</p>
