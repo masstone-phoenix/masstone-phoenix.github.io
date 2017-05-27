@@ -112,6 +112,29 @@ SKPaymentTransaction *transaction = <# The current payment #>;
 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 ```
 
+# Subscriptions
+![](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Art/subscription_timeline_2x.png)
+
+为了实现订阅，需要在产品上加入产品更新的时间，然后读取receipt中的订阅时间段，需要考虑有 Cancellation Date的情况，解锁段内的内容。如上图所示。
+
+当进行renew的时候，Store Kit会自动加一个transaction，这个transaction的回调只有等到下次程序启动的时候才能收到（即在订阅的时候即使app在前台，也不会有回调，得等下次app启动）。
+
+订阅管理：<https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/manageSubscriptions>
+
+#恢复购买
+
+##App receipt
+直接创建request,start即可。
+
+```
+request = [[SKReceiptRefreshRequest alloc] init];
+request.delegate = self;
+[request start];
+```
+
+##Restore Completed 
+新建一个transaction，这个transaction会引用老的transaction。
+
 验证发票需要考虑的点：
 
 - 真伪性: 购买收据确实来自苹果；
@@ -209,6 +232,31 @@ payment.quantity = 2;
 <pre><code>SKPaymentTransaction *transaction = &lt;# The current payment #&gt;;
 [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
 </code></pre>
+
+<h1 id="subscriptions">Subscriptions</h1>
+
+<p><img src="https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Art/subscription_timeline_2x.png" alt="" title=""></p>
+
+<p>为了实现订阅，需要在产品上加入产品更新的时间，然后读取receipt中的订阅时间段，需要考虑有 Cancellation Date的情况，解锁段内的内容。如上图所示。</p>
+
+<p>当进行renew的时候，Store Kit会自动加一个transaction，这个transaction的回调只有等到下次程序启动的时候才能收到（即在订阅的时候即使app在前台，也不会有回调，得等下次app启动）。</p>
+
+<p>订阅管理：<a href="https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/manageSubscriptions">https://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/manageSubscriptions</a></p>
+
+<h1 id="">恢复购买</h1>
+
+<h2 id="appreceipt">App receipt</h2>
+
+<p>直接创建request,start即可。</p>
+
+<pre><code>request = [[SKReceiptRefreshRequest alloc] init];
+request.delegate = self;
+[request start];
+</code></pre>
+
+<h2 id="restorecompleted">Restore Completed</h2>
+
+<p>新建一个transaction，这个transaction会引用老的transaction。</p>
 
 <p>验证发票需要考虑的点：</p>
 
