@@ -32,6 +32,7 @@
 这里吐槽一下JS语言，这个语言的设计真是时间太短啊，明显有问题的东西也要编程者来绕过，坑的可以，最简单的说，判断一个object是不是数组用typeof这个语法在不同的global execution context会有问题，因为它们的Array的Contructor不是同一个，需要使用Array.isArray()方法来判断，这种类型的坑不要太多。比起python来还是python吧。
 
 # 读取普通位图图层信息
+![](https://masstone-phoenix.github.io/image/ps_javascript/ps_dom.png)
 这个比较简单，通过阅读官方文档，我们可以通过遍历PS的DOM中的图层，来得到最终得到ArtLayer类型，通过读取其中的bounds属性，我们就得到了中心点坐标。
 <!-- markdown end -->
 </div>
@@ -45,7 +46,8 @@
 
 <h1 id="">读取普通位图图层信息</h1>
 
-<p>这个比较简单，通过阅读官方文档，我们可以通过遍历PS的DOM中的图层，来得到最终得到ArtLayer类型，通过读取其中的bounds属性，我们就得到了中心点坐标。</p>
+<p><img src="https://masstone-phoenix.github.io/image/ps_javascript/ps_dom.png" alt="" title="">
+这个比较简单，通过阅读官方文档，我们可以通过遍历PS的DOM中的图层，来得到最终得到ArtLayer类型，通过读取其中的bounds属性，我们就得到了中心点坐标。</p>
 <!-- content end -->
 </div>
 <br>
