@@ -41,8 +41,10 @@
 
 我们这里采取了使用模拟操作的方式来得到transform信息，大体思路如下：判断图层是否是SO，如果是的话，执行一个AppleScript脚本来模拟Ctrl + T，然后Enter的按键组合，这样相当同在Photoshop中执行了一次transform，通过通知，我们可以读取到transform的旋转角度，记为alpla,通过读取普通位图图层信息的方法，我们可以得到中心点；到这里，我们只差缩放信息没有得到了，这个得通过打开SO，得到图层的原始大小，然后关闭打开的SO，回到原来的PSD文件中，旋转负alpla度，此时再读取图层大小，与原始的图层大小相比，就得到缩放比例了，得到这个信息后，就可以干想干的任何事情了。
 
-这里无论是读取旋转信息，还是旋转图层，都需要用到Action Manager来执行，它是通过一个Script Listener的插件，当PS执行操作时，这个插件会生成相应的代码，我们通过分析和修改这个代码，执行所需要的操作，但是可惜的是，这方面的资料非常少，我也是通过网络搜索学习：
+这里无论是读取旋转信息，还是旋转图层，都需要用到Action Manager来执行，它是通过一个Script Listener的插件，当PS执行操作时，这个插件会生成相应的代码，我们通过分析和修改这个代码，执行所需要的操作，但是可惜的是，这方面的资料非常少，我也是通过网络搜索学习，比如：
+
 <https://stackoverflow.com/questions/45009039/how-to-write-photoshop-action-manager-code-like-this>
+
 <https://forums.adobe.com/thread/1536677>
 
 # 遇到的坑
@@ -70,9 +72,11 @@
 
 <p>我们这里采取了使用模拟操作的方式来得到transform信息，大体思路如下：判断图层是否是SO，如果是的话，执行一个AppleScript脚本来模拟Ctrl + T，然后Enter的按键组合，这样相当同在Photoshop中执行了一次transform，通过通知，我们可以读取到transform的旋转角度，记为alpla,通过读取普通位图图层信息的方法，我们可以得到中心点；到这里，我们只差缩放信息没有得到了，这个得通过打开SO，得到图层的原始大小，然后关闭打开的SO，回到原来的PSD文件中，旋转负alpla度，此时再读取图层大小，与原始的图层大小相比，就得到缩放比例了，得到这个信息后，就可以干想干的任何事情了。</p>
 
-<p>这里无论是读取旋转信息，还是旋转图层，都需要用到Action Manager来执行，它是通过一个Script Listener的插件，当PS执行操作时，这个插件会生成相应的代码，我们通过分析和修改这个代码，执行所需要的操作，但是可惜的是，这方面的资料非常少，我也是通过网络搜索学习：
-<a href="https://stackoverflow.com/questions/45009039/how-to-write-photoshop-action-manager-code-like-this">https://stackoverflow.com/questions/45009039/how-to-write-photoshop-action-manager-code-like-this</a>
-<a href="https://forums.adobe.com/thread/1536677">https://forums.adobe.com/thread/1536677</a></p>
+<p>这里无论是读取旋转信息，还是旋转图层，都需要用到Action Manager来执行，它是通过一个Script Listener的插件，当PS执行操作时，这个插件会生成相应的代码，我们通过分析和修改这个代码，执行所需要的操作，但是可惜的是，这方面的资料非常少，我也是通过网络搜索学习，比如：</p>
+
+<p><a href="https://stackoverflow.com/questions/45009039/how-to-write-photoshop-action-manager-code-like-this">https://stackoverflow.com/questions/45009039/how-to-write-photoshop-action-manager-code-like-this</a></p>
+
+<p><a href="https://forums.adobe.com/thread/1536677">https://forums.adobe.com/thread/1536677</a></p>
 
 <h1 id="">遇到的坑</h1>
 
