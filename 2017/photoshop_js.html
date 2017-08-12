@@ -34,6 +34,12 @@
 # 读取普通位图图层信息
 ![](https://masstone-phoenix.github.io/image/ps_javascript/ps_dom.png)
 这个比较简单，通过阅读官方文档，我们可以通过遍历PS的DOM中的图层，来得到最终得到ArtLayer类型，通过读取其中的bounds属性，我们就得到了中心点坐标。
+
+
+# 读取智能对象（SO）的transform信息
+这个在Adobe的官方文档中没有直接的DOM对应的类直接读取，在网上搜索了半天，发现有两种方法：一种是通过模拟操作来得到transform变换的通知，在通知中读取相应的信息；一种是直接分析.psd文件，来得到相应信息。
+
+我们这里采取了使用模拟操作的方式来得到transform信息，大体思路如下：判断图层是否是SO，如果是的话，执行一个AppleScript脚本来模拟Ctrl + T，然后Enter的按键组合，这样相当同在Photoshop中执行了一次transform，通过通知，我们可以读取到transform的旋转角度，记为alpla,通过读取普通位图图层信息的方法，我们可以得到中心点；到这里，我们只差缩放信息没有得到了，这个得通过打开SO，得到图层的原始大小，然后关闭打开的SO，回到原来的PSD文件中，旋转负alpla度，此时再读取图层大小，与原始的图层大小相比，就得到缩放比例了，得到这个信息后，就可以干想干的任何事情了。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -48,6 +54,12 @@
 
 <p><img src="https://masstone-phoenix.github.io/image/ps_javascript/ps_dom.png" alt="" title="">
 这个比较简单，通过阅读官方文档，我们可以通过遍历PS的DOM中的图层，来得到最终得到ArtLayer类型，通过读取其中的bounds属性，我们就得到了中心点坐标。</p>
+
+<h1 id="sotransform">读取智能对象（SO）的transform信息</h1>
+
+<p>这个在Adobe的官方文档中没有直接的DOM对应的类直接读取，在网上搜索了半天，发现有两种方法：一种是通过模拟操作来得到transform变换的通知，在通知中读取相应的信息；一种是直接分析.psd文件，来得到相应信息。</p>
+
+<p>我们这里采取了使用模拟操作的方式来得到transform信息，大体思路如下：判断图层是否是SO，如果是的话，执行一个AppleScript脚本来模拟Ctrl + T，然后Enter的按键组合，这样相当同在Photoshop中执行了一次transform，通过通知，我们可以读取到transform的旋转角度，记为alpla,通过读取普通位图图层信息的方法，我们可以得到中心点；到这里，我们只差缩放信息没有得到了，这个得通过打开SO，得到图层的原始大小，然后关闭打开的SO，回到原来的PSD文件中，旋转负alpla度，此时再读取图层大小，与原始的图层大小相比，就得到缩放比例了，得到这个信息后，就可以干想干的任何事情了。</p>
 <!-- content end -->
 </div>
 <br>
