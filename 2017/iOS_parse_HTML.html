@@ -25,12 +25,54 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
+最近有个需求需要解析HTML成NSAttributedString，本来使用系统提供的```initWithData:options:documentAttributes:error:```是能够完成功能的，但在开发过程中发现这个函数很慢；在应用上线后，发现有少量webcore的crash，基本也可以确定是由于这个调用引起的。于是，我们就得自己解析HTML了。
 
+这里有两个方案：一个是使用[Ono](https://github.com/mattt/Ono)；一个使用[DTCoreText](https://github.com/Cocoanetics/DTCoreText)。以下分别介绍。
+
+
+#Ono
+
+Ono使用libxml2来解析，只有1000行都不到的代码，真是小巧。什么？你不知道libxml2?我们来学习一下：
+
+## libxml2
+
+### Data Types
+
+#### xmlChar
+xmlChar表示UTF-8编码的字符串中的一个字符。如果你的字符串是使用别的编码方式，需要转换到UTF-8编码。
+
+#### xmlDoc
+xmlDoc是一个表示分析文档后得到的DOM树。 xmlDocPtr 是一个指向xmlDoc的指针。
+
+#### xmlNodePtr and xmlNode
+xmlNode表示节点的数据结构，xmlNodePtr是它的指针。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>最近有个需求需要解析HTML成NSAttributedString，本来使用系统提供的<code>initWithData:options:documentAttributes:error:</code>是能够完成功能的，但在开发过程中发现这个函数很慢；在应用上线后，发现有少量webcore的crash，基本也可以确定是由于这个调用引起的。于是，我们就得自己解析HTML了。</p>
 
+<p>这里有两个方案：一个是使用<a href="https://github.com/mattt/Ono">Ono</a>；一个使用<a href="https://github.com/Cocoanetics/DTCoreText">DTCoreText</a>。以下分别介绍。</p>
+
+<h1 id="ono">Ono</h1>
+
+<p>Ono使用libxml2来解析，只有1000行都不到的代码，真是小巧。什么？你不知道libxml2?我们来学习一下：</p>
+
+<h2 id="libxml2">libxml2</h2>
+
+<h3 id="datatypes">Data Types</h3>
+
+<h4 id="xmlchar">xmlChar</h4>
+
+<p>xmlChar表示UTF-8编码的字符串中的一个字符。如果你的字符串是使用别的编码方式，需要转换到UTF-8编码。</p>
+
+<h4 id="xmldoc">xmlDoc</h4>
+
+<p>xmlDoc是一个表示分析文档后得到的DOM树。 xmlDocPtr 是一个指向xmlDoc的指针。</p>
+
+<h4 id="xmlnodeptrandxmlnode">xmlNodePtr and xmlNode</h4>
+
+<p>xmlNode表示节点的数据结构，xmlNodePtr是它的指针。</p>
 <!-- content end -->
 </div>
 <br>
