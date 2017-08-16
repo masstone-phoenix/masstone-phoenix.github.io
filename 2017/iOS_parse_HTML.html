@@ -46,6 +46,64 @@ xmlDoc是一个表示分析文档后得到的DOM树。 xmlDocPtr 是一个指向
 
 #### xmlNodePtr and xmlNode
 xmlNode表示节点的数据结构，xmlNodePtr是它的指针。
+
+### libxml2的使用
+以下代码演示了如何分析一个XML文件。
+```
+        xmlDocPtr doc;
+	xmlNodePtr cur;
+
+        //读取文件
+	doc = xmlParseFile(docname);
+	
+	if (doc == NULL ) {
+		fprintf(stderr,"Document not parsed successfully. \n");
+		return;
+	}
+        //得到根节点
+	cur = xmlDocGetRootElement(doc);
+	
+	if (cur == NULL) {
+		fprintf(stderr,"empty document\n");
+		xmlFreeDoc(doc);
+		return;
+	}
+	
+        //判断节点的名字是不是story
+	if (xmlStrcmp(cur->name, (const xmlChar *) "story")) {
+		fprintf(stderr,"document of the wrong type, root node != story");
+		xmlFreeDoc(doc);
+		return;
+	}
+
+        //遍历子节点，查询storyinfo为名称的节点，找到后使用parseStory函数对其进行处理
+        cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"storyinfo"))){
+			parseStory (doc, cur);
+		}
+		 
+	cur = cur->next;
+	}
+
+
+void
+parseStory (xmlDocPtr doc, xmlNodePtr cur) {
+
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+	    if ((!xmlStrcmp(cur->name, (const xmlChar *)"keyword"))) {
+                    //the text contained within an element is a child node of that element，使用xmlNodeListGetString取到它
+		    key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+		    printf("keyword: %s\n", key);
+		    xmlFree(key);
+ 	    }
+	cur = cur->next;
+	}
+    return;
+}
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -73,6 +131,65 @@ xmlNode表示节点的数据结构，xmlNodePtr是它的指针。
 <h4 id="xmlnodeptrandxmlnode">xmlNodePtr and xmlNode</h4>
 
 <p>xmlNode表示节点的数据结构，xmlNodePtr是它的指针。</p>
+
+<h3 id="libxml2">libxml2的使用</h3>
+
+<p>以下代码演示了如何分析一个XML文件。</p>
+
+<pre><code>        xmlDocPtr doc;
+    xmlNodePtr cur;
+
+        //读取文件
+    doc = xmlParseFile(docname);
+
+    if (doc == NULL ) {
+        fprintf(stderr,"Document not parsed successfully. \n");
+        return;
+    }
+        //得到根节点
+    cur = xmlDocGetRootElement(doc);
+
+    if (cur == NULL) {
+        fprintf(stderr,"empty document\n");
+        xmlFreeDoc(doc);
+        return;
+    }
+
+        //判断节点的名字是不是story
+    if (xmlStrcmp(cur-&gt;name, (const xmlChar *) "story")) {
+        fprintf(stderr,"document of the wrong type, root node != story");
+        xmlFreeDoc(doc);
+        return;
+    }
+
+        //遍历子节点，查询storyinfo为名称的节点，找到后使用parseStory函数对其进行处理
+        cur = cur-&gt;xmlChildrenNode;
+    while (cur != NULL) {
+        if ((!xmlStrcmp(cur-&gt;name, (const xmlChar *)"storyinfo"))){
+            parseStory (doc, cur);
+        }
+
+    cur = cur-&gt;next;
+    }
+
+
+void
+parseStory (xmlDocPtr doc, xmlNodePtr cur) {
+
+    xmlChar *key;
+    cur = cur-&gt;xmlChildrenNode;
+    while (cur != NULL) {
+        if ((!xmlStrcmp(cur-&gt;name, (const xmlChar *)"keyword"))) {
+                    //the text contained within an element is a child node of that element，使用xmlNodeListGetString取到它
+            key = xmlNodeListGetString(doc, cur-&gt;xmlChildrenNode, 1);
+            printf("keyword: %s\n", key);
+            xmlFree(key);
+         }
+    cur = cur-&gt;next;
+    }
+    return;
+}
+</code></pre>
 <!-- content end -->
 </div>
 <br>
