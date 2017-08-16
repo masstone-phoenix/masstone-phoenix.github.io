@@ -103,6 +103,28 @@ parseStory (xmlDocPtr doc, xmlNodePtr cur) {
 	}
     return;
 }
+
+//写入Text节点
+void
+parseStory (xmlDocPtr doc, xmlNodePtr cur, char *keyword) {
+
+	xmlNewTextChild (cur, NULL, "keyword", keyword);
+    return;
+}
+//调用下面函数写入文件
+xmlSaveFormatFile (docname, doc, 1);
+
+//写入属性
+xmlNodePtr newnode;
+xmlAttrPtr newattr;
+
+//省略寻找要写处位置的操作
+newnode = xmlNewTextChild (cur, NULL, "reference", NULL);
+newattr = xmlNewProp (newnode, "uri", uri)
+//之后调用写入文件的函数xmlSaveFormatFile即可
+
+
+
 ```
 
 ### XPath的使用
@@ -242,6 +264,25 @@ parseStory (xmlDocPtr doc, xmlNodePtr cur) {
     }
     return;
 }
+
+//写入Text节点
+void
+parseStory (xmlDocPtr doc, xmlNodePtr cur, char *keyword) {
+
+    xmlNewTextChild (cur, NULL, "keyword", keyword);
+    return;
+}
+//调用下面函数写入文件
+xmlSaveFormatFile (docname, doc, 1);
+
+//写入属性
+xmlNodePtr newnode;
+xmlAttrPtr newattr;
+
+//省略寻找要写处位置的操作
+newnode = xmlNewTextChild (cur, NULL, "reference", NULL);
+newattr = xmlNewProp (newnode, "uri", uri)
+//之后调用写入文件的函数xmlSaveFormatFile即可
 </code></pre>
 
 <h3 id="xpath">XPath的使用</h3>
