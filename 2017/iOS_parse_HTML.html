@@ -107,6 +107,56 @@ parseStory (xmlDocPtr doc, xmlNodePtr cur) {
 
 ### XPath的使用
 XPath提供了另外一种访问XML文档的方法，具体用法在[这里](https://www.w3.org/TR/xpath/)，API请[参考](http://xmlsoft.org/html/libxml-xpath.html)。
+
+在使用XPath时，需要建立一个 xmlXPathContext，然后将这个context 和XPath表达式传递给 xmlXPathEvalExpression 函数， xmlXPathEvalExpression的返回值是 xmlXPathObjectPtr类型，其中存储着符合XPath表达式的所有节点。
+
+```
+xmlXPathObjectPtr
+getnodeset (xmlDocPtr doc, xmlChar *xpath){
+	
+	xmlXPathContextPtr context;
+	xmlXPathObjectPtr result;
+
+	context = xmlXPathNewContext(doc);
+	if (context == NULL) {
+		printf("Error in xmlXPathNewContext\n");
+		return NULL;
+	}
+	result = xmlXPathEvalExpression(xpath, context);
+	xmlXPathFreeContext(context);
+	if (result == NULL) {
+		printf("Error in xmlXPathEvalExpression\n");
+		return NULL;
+	}
+	if(xmlXPathNodeSetIsEmpty(result->nodesetval)){
+		xmlXPathFreeObject(result);
+                printf("No result\n");
+		return NULL;
+	}
+	return result;
+}
+
+
+//上述函数的使用
+	result = getnodeset (doc, xpath);
+	if (result) {
+		nodeset = result->nodesetval;
+		for (i=0; i < nodeset->nodeNr; i++) {
+			keyword = xmlNodeListGetString(doc, nodeset->nodeTab[i]->xmlChildrenNode, 1);
+		printf("keyword: %s\n", keyword);
+		xmlFree(keyword);
+		}
+		xmlXPathFreeObject (result);
+	}
+
+
+//最后，解析完成后，不安忘记调用下面函数
+xmlFreeDoc(doc);
+xmlCleanupParser();
+```
+
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -197,6 +247,52 @@ parseStory (xmlDocPtr doc, xmlNodePtr cur) {
 <h3 id="xpath">XPath的使用</h3>
 
 <p>XPath提供了另外一种访问XML文档的方法，具体用法在<a href="https://www.w3.org/TR/xpath/">这里</a>，API请<a href="http://xmlsoft.org/html/libxml-xpath.html">参考</a>。</p>
+
+<p>在使用XPath时，需要建立一个 xmlXPathContext，然后将这个context 和XPath表达式传递给 xmlXPathEvalExpression 函数， xmlXPathEvalExpression的返回值是 xmlXPathObjectPtr类型，其中存储着符合XPath表达式的所有节点。</p>
+
+<pre><code>xmlXPathObjectPtr
+getnodeset (xmlDocPtr doc, xmlChar *xpath){
+
+    xmlXPathContextPtr context;
+    xmlXPathObjectPtr result;
+
+    context = xmlXPathNewContext(doc);
+    if (context == NULL) {
+        printf("Error in xmlXPathNewContext\n");
+        return NULL;
+    }
+    result = xmlXPathEvalExpression(xpath, context);
+    xmlXPathFreeContext(context);
+    if (result == NULL) {
+        printf("Error in xmlXPathEvalExpression\n");
+        return NULL;
+    }
+    if(xmlXPathNodeSetIsEmpty(result-&gt;nodesetval)){
+        xmlXPathFreeObject(result);
+                printf("No result\n");
+        return NULL;
+    }
+    return result;
+}
+
+
+//上述函数的使用
+    result = getnodeset (doc, xpath);
+    if (result) {
+        nodeset = result-&gt;nodesetval;
+        for (i=0; i &lt; nodeset-&gt;nodeNr; i++) {
+            keyword = xmlNodeListGetString(doc, nodeset-&gt;nodeTab[i]-&gt;xmlChildrenNode, 1);
+        printf("keyword: %s\n", keyword);
+        xmlFree(keyword);
+        }
+        xmlXPathFreeObject (result);
+    }
+
+
+//最后，解析完成后，不安忘记调用下面函数
+xmlFreeDoc(doc);
+xmlCleanupParser();
+</code></pre>
 <!-- content end -->
 </div>
 <br>
