@@ -177,8 +177,22 @@ xmlFreeDoc(doc);
 xmlCleanupParser();
 ```
 
+## 使用Ono解析HTML
+以下例子取到id为account_settings的节点，然后就可以想干什么干什么了...
+```
+    NSError *error = nil;
+    NSString *filePath = [[NSBundle bundleForClass:[self class]] pathForResource:@"web" ofType:@"html"];
+    self.document = [ONOXMLDocument HTMLDocumentWithData:[NSData dataWithContentsOfFile:filePath] error:&error];
 
+    NSUInteger idx = 0;
+    for (ONOXMLElement *element in [self.document CSS:@"#account_settings"]) {
+        XCTAssertTrue(idx == 0, @"more than one element found");
+        XCTAssertEqualObjects(element[@"href"], @"/settings/profile", @"href mismatch");
+        idx++;
+    }
+    XCTAssertTrue(idx == 1, @"fewer than one element found");
 
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -333,6 +347,23 @@ getnodeset (xmlDocPtr doc, xmlChar *xpath){
 //最后，解析完成后，不安忘记调用下面函数
 xmlFreeDoc(doc);
 xmlCleanupParser();
+</code></pre>
+
+<h2 id="onohtml">使用Ono解析HTML</h2>
+
+<p>以下例子取到id为account_settings的节点，然后就可以想干什么干什么了...</p>
+
+<pre><code>    NSError *error = nil;
+    NSString *filePath = [[NSBundle bundleForClass:[self class]] pathForResource:@"web" ofType:@"html"];
+    self.document = [ONOXMLDocument HTMLDocumentWithData:[NSData dataWithContentsOfFile:filePath] error:&amp;error];
+
+    NSUInteger idx = 0;
+    for (ONOXMLElement *element in [self.document CSS:@"#account_settings"]) {
+        XCTAssertTrue(idx == 0, @"more than one element found");
+        XCTAssertEqualObjects(element[@"href"], @"/settings/profile", @"href mismatch");
+        idx++;
+    }
+    XCTAssertTrue(idx == 1, @"fewer than one element found");
 </code></pre>
 <!-- content end -->
 </div>
