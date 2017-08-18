@@ -196,11 +196,74 @@ xmlCleanupParser();
 到这里，我发现这只是完成了HTML的解析部分，还需要将这个信息拼起来，得到NSAttributedString，于是就有了下面的研究。
 
 # DTCoreText
+我们这里只需要将HTML转化为NSAttributedString，并没有用到DTCoreText中的渲染部分，于是只在设置了其解析HTML和将之转化为NSAttributedString。
 
-##工程设置
+## 工程设置
+工程需要引入CoreText、libxml2等framework，当提示找不到libxml的头文件时，还需要在Build Setting页的Header Search Path中加入下面的路径。
 ```
 ${SDK_DIR}/usr/include/libxml2
 ```
+
+在Build Rules中将默认的CSS文件转成.c：
+对*.css文件使用下面的脚本进行处理，Output files设置为```${INPUT_FILE_BASE}.css.c```
+
+```
+cd "$INPUT_FILE_DIR"  # move into file dir, otherwise xxd takes the full path for the symbol
+/usr/bin/xxd -i "$INPUT_FILE_NAME" "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.css.c" # builds a c file with a hex array
+```
+
+## 字体问题
+使用DTHTMLAttributedStringBuilder得到的NSAttributedString和系统的接口```initWithData:options:documentAttributes:error:```得到的在字体上bold不太一样；后来仔细一查，系统的使用的是bold字体，而DTHTMLAttributedStringBuilder解析得到的是semi-bold字体，这就不太好了，我们希望的结果是和系统是一样的，速度比它快！！！
+
+经过定位，在DTCoreTextFontDescriptor中的_findOrMakeMatchingFont是根据设置的属性找到相应的字体，当 我们使用系统字体，并要求加粗是，CTFontDescriptorCreateMatchingFontDescriptor返回的就是semi-bold，这里采取的解决办法是先查找一个bold字体的名字，如果找到就使用它，找不到就继续使用CTFontDescriptorCreateMatchingFontDescriptor返回的结果。
+
+```
+....
+
+		// do the search
+        NSString *boldFontName = [self boldFontNameForFontFamily:_fontFamily];
+        if (boldFontName)
+        {
+            matchingFontDescriptor = CTFontDescriptorCreateWithNameAndSize((__bridge CFStringRef)boldFontName, _pointSize);
+        }
+        
+        //try not find font name
+        if (!matchingFontDescriptor)
+        {
+            matchingFontDescriptor = CTFontDescriptorCreateMatchingFontDescriptor(searchingFontDescriptor, (__bridge CFSetRef)mandatoryAttributes);
+            //		CFArrayRef array = CTFontDescriptorCreateMatchingFontDescriptors(searchingFontDescriptor, NULL);
+        }
+
+...
+
+
+
+- (NSString *)boldFontNameForFontFamily:(NSString *)familyName {
+    //walk around fontNamesForFamilyName can not get system font
+    if ([familyName isEqualToString:[UIFont  systemFontOfSize:12].familyName]) {
+        //ios 8.2以后
+        if ([HSUtils isOSVersionPriorTo:8.2]) {
+            return [UIFont boldSystemFontOfSize:12].fontName;
+        } else {
+            return [UIFont systemFontOfSize:12 weight:UIFontWeightBold].fontName;
+        }
+    }
+    
+    
+    NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
+    for (NSString *fontName in fontNames) {
+        if ([fontName rangeOfString:@"Bold"].location != NSNotFound) {
+            return [UIFont fontWithName:fontName size:12].fontName;
+        }
+    }
+    return nil;
+}
+```
+
+这里需要注意：UIFont的fontNamesForFamilyName函数，当参数是系统字体的familyName时，返回的是空数组；UIFont的familyNames返回的数组也不含有系统字体。
+
+## 使用
+当使用UILabel显示使用DTHTMLAttributedStringBuilder得到的NSAttributedString时，需要将DTUseiOS6Attributes这个属性设置为YES。它表示使用NSForegroundColorAttributeName这类的key来设置属性，否则使用Core Text中的kCTForegroundColorAttributeName。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -378,10 +441,75 @@ xmlCleanupParser();
 
 <h1 id="dtcoretext">DTCoreText</h1>
 
+<p>我们这里只需要将HTML转化为NSAttributedString，并没有用到DTCoreText中的渲染部分，于是只在设置了其解析HTML和将之转化为NSAttributedString。</p>
+
 <h2 id="">工程设置</h2>
+
+<p>工程需要引入CoreText、libxml2等framework，当提示找不到libxml的头文件时，还需要在Build Setting页的Header Search Path中加入下面的路径。</p>
 
 <pre><code>${SDK_DIR}/usr/include/libxml2
 </code></pre>
+
+<p>在Build Rules中将默认的CSS文件转成.c：
+对*.css文件使用下面的脚本进行处理，Output files设置为<code>${INPUT_FILE_BASE}.css.c</code></p>
+
+<pre><code>cd "$INPUT_FILE_DIR"  # move into file dir, otherwise xxd takes the full path for the symbol
+/usr/bin/xxd -i "$INPUT_FILE_NAME" "$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE.css.c" # builds a c file with a hex array
+</code></pre>
+
+<h2 id="">字体问题</h2>
+
+<p>使用DTHTMLAttributedStringBuilder得到的NSAttributedString和系统的接口<code>initWithData:options:documentAttributes:error:</code>得到的在字体上bold不太一样；后来仔细一查，系统的使用的是bold字体，而DTHTMLAttributedStringBuilder解析得到的是semi-bold字体，这就不太好了，我们希望的结果是和系统是一样的，速度比它快！！！</p>
+
+<p>经过定位，在DTCoreTextFontDescriptor中的_findOrMakeMatchingFont是根据设置的属性找到相应的字体，当 我们使用系统字体，并要求加粗是，CTFontDescriptorCreateMatchingFontDescriptor返回的就是semi-bold，这里采取的解决办法是先查找一个bold字体的名字，如果找到就使用它，找不到就继续使用CTFontDescriptorCreateMatchingFontDescriptor返回的结果。</p>
+
+<pre><code>....
+
+        // do the search
+        NSString *boldFontName = [self boldFontNameForFontFamily:_fontFamily];
+        if (boldFontName)
+        {
+            matchingFontDescriptor = CTFontDescriptorCreateWithNameAndSize((__bridge CFStringRef)boldFontName, _pointSize);
+        }
+
+        //try not find font name
+        if (!matchingFontDescriptor)
+        {
+            matchingFontDescriptor = CTFontDescriptorCreateMatchingFontDescriptor(searchingFontDescriptor, (__bridge CFSetRef)mandatoryAttributes);
+            //        CFArrayRef array = CTFontDescriptorCreateMatchingFontDescriptors(searchingFontDescriptor, NULL);
+        }
+
+...
+
+
+
+- (NSString *)boldFontNameForFontFamily:(NSString *)familyName {
+    //walk around fontNamesForFamilyName can not get system font
+    if ([familyName isEqualToString:[UIFont  systemFontOfSize:12].familyName]) {
+        //ios 8.2以后
+        if ([HSUtils isOSVersionPriorTo:8.2]) {
+            return [UIFont boldSystemFontOfSize:12].fontName;
+        } else {
+            return [UIFont systemFontOfSize:12 weight:UIFontWeightBold].fontName;
+        }
+    }
+
+
+    NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
+    for (NSString *fontName in fontNames) {
+        if ([fontName rangeOfString:@"Bold"].location != NSNotFound) {
+            return [UIFont fontWithName:fontName size:12].fontName;
+        }
+    }
+    return nil;
+}
+</code></pre>
+
+<p>这里需要注意：UIFont的fontNamesForFamilyName函数，当参数是系统字体的familyName时，返回的是空数组；UIFont的familyNames返回的数组也不含有系统字体。</p>
+
+<h2 id="">使用</h2>
+
+<p>当使用UILabel显示使用DTHTMLAttributedStringBuilder得到的NSAttributedString时，需要将DTUseiOS6Attributes这个属性设置为YES。它表示使用NSForegroundColorAttributeName这类的key来设置属性，否则使用Core Text中的kCTForegroundColorAttributeName。</p>
 <!-- content end -->
 </div>
 <br>
