@@ -193,8 +193,11 @@ xmlCleanupParser();
     XCTAssertTrue(idx == 1, @"fewer than one element found");
 
 ```
+到这里，我发现这只是完成了HTML的解析部分，还需要将这个信息拼起来，得到NSAttributedString，于是就有了下面的研究。
 
 # DTCoreText
+
+##工程设置
 ```
 ${SDK_DIR}/usr/include/libxml2
 ```
@@ -371,7 +374,11 @@ xmlCleanupParser();
     XCTAssertTrue(idx == 1, @"fewer than one element found");
 </code></pre>
 
+<p>到这里，我发现这只是完成了HTML的解析部分，还需要将这个信息拼起来，得到NSAttributedString，于是就有了下面的研究。</p>
+
 <h1 id="dtcoretext">DTCoreText</h1>
+
+<h2 id="">工程设置</h2>
 
 <pre><code>${SDK_DIR}/usr/include/libxml2
 </code></pre>
