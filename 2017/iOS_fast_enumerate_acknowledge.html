@@ -83,6 +83,27 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
 
 上述没有考虑UIGestureRecognizer。
 
+
+附：UIButton响应调用堆栈
+```
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 60.1 61.1
+  * frame #0: 0x0000000106eb6219 UIKit`-[UIControl sendAction:to:forEvent:]
+    frame #1: 0x0000000106eb6577 UIKit`-[UIControl _sendActionsForEvents:withEvent:] + 450
+    frame #2: 0x0000000106eb54b2 UIKit`-[UIControl touchesEnded:withEvent:] + 618
+    frame #3: 0x0000000106d9f49a UIKit`-[UIWindow _sendTouchesForEvent:] + 2707
+    frame #4: 0x0000000106da0bb0 UIKit`-[UIWindow sendEvent:] + 4114
+    frame #5: 0x0000000106d4d7b0 UIKit`-[UIApplication sendEvent:] + 352
+    frame #6: 0x0000000107530adc UIKit`__dispatchPreprocessedEventFromEventQueue + 2926
+    frame #7: 0x0000000107528a3a UIKit`__handleEventQueue + 1122
+    frame #8: 0x000000010c12bc01 CoreFoundation`__CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__ + 17
+    frame #9: 0x000000010c1110cf CoreFoundation`__CFRunLoopDoSources0 + 527
+    frame #10: 0x000000010c1105ff CoreFoundation`__CFRunLoopRun + 911
+    frame #11: 0x000000010c110016 CoreFoundation`CFRunLoopRunSpecific + 406
+    frame #12: 0x000000010e779a24 GraphicsServices`GSEventRunModal + 62
+    frame #13: 0x0000000106d300d4 UIKit`UIApplicationMain + 159
+    frame #14: 0x000000010584e91f Zmoji`main(argc=1, argv=0x00007fff5a3f9590) at main.m:14
+    frame #15: 0x000000010dbf265d libdyld.dylib`start + 1
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -141,6 +162,27 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
 <p>由系统将事件发给UIApplication的队列，UIApplication将事件从队列中取出，使用hitTest找到事件发生的view，然后使用sendEvent:方法将事件发送给这个view(hit-testing view)，然后就会沿着这个view的响应链（[UIResponder nextResponder]）找到相应的事件处理方法，然后执行；还一种是没有找到处理方法，就会作丢弃处理。</p>
 
 <p>上述没有考虑UIGestureRecognizer。</p>
+
+<p>附：UIButton响应调用堆栈</p>
+
+<pre><code>* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 60.1 61.1
+  * frame #0: 0x0000000106eb6219 UIKit`-[UIControl sendAction:to:forEvent:]
+    frame #1: 0x0000000106eb6577 UIKit`-[UIControl _sendActionsForEvents:withEvent:] + 450
+    frame #2: 0x0000000106eb54b2 UIKit`-[UIControl touchesEnded:withEvent:] + 618
+    frame #3: 0x0000000106d9f49a UIKit`-[UIWindow _sendTouchesForEvent:] + 2707
+    frame #4: 0x0000000106da0bb0 UIKit`-[UIWindow sendEvent:] + 4114
+    frame #5: 0x0000000106d4d7b0 UIKit`-[UIApplication sendEvent:] + 352
+    frame #6: 0x0000000107530adc UIKit`__dispatchPreprocessedEventFromEventQueue + 2926
+    frame #7: 0x0000000107528a3a UIKit`__handleEventQueue + 1122
+    frame #8: 0x000000010c12bc01 CoreFoundation`__CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__ + 17
+    frame #9: 0x000000010c1110cf CoreFoundation`__CFRunLoopDoSources0 + 527
+    frame #10: 0x000000010c1105ff CoreFoundation`__CFRunLoopRun + 911
+    frame #11: 0x000000010c110016 CoreFoundation`CFRunLoopRunSpecific + 406
+    frame #12: 0x000000010e779a24 GraphicsServices`GSEventRunModal + 62
+    frame #13: 0x0000000106d300d4 UIKit`UIApplicationMain + 159
+    frame #14: 0x000000010584e91f Zmoji`main(argc=1, argv=0x00007fff5a3f9590) at main.m:14
+    frame #15: 0x000000010dbf265d libdyld.dylib`start + 1
+</code></pre>
 <!-- content end -->
 </div>
 <br>
