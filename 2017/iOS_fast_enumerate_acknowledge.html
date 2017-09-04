@@ -86,8 +86,39 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
 
 附：UIButton响应调用堆栈
 ```
-* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 30.1
-  * frame #0: 0x000000010e72d7fb Zmoji`-[ListViewController clothesPressed:](self=0x00007fc60e0b9200, _cmd="clothesPressed:", sender=0x00007fc60dc82c90) at ListViewController.m:620
+(lldb) bt
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 32.1
+  * frame #0: 0x000000010ff0f4f1 UIKit`-[UIView(Geometry) hitTest:withEvent:]
+    frame #1: 0x000000010ff0fc56 UIKit`-[UIView(Geometry) _hitTest:withEvent:windowServerHitTestWindow:] + 85
+    frame #2: 0x000000010ff0fb24 UIKit`__38-[UIView(Geometry) hitTest:withEvent:]_block_invoke + 129
+    frame #3: 0x0000000115133652 CoreFoundation`__53-[__NSArrayM enumerateObjectsWithOptions:usingBlock:]_block_invoke + 114
+    frame #4: 0x000000011513356f CoreFoundation`-[__NSArrayM enumerateObjectsWithOptions:usingBlock:] + 335
+    frame #5: 0x000000010ff0f6d3 UIKit`-[UIView(Geometry) hitTest:withEvent:] + 482
+    frame #6: 0x000000010ffe5eff UIKit`-[UITransitionView hitTest:withEvent:] + 44
+    frame #7: 0x000000010ff0fc56 UIKit`-[UIView(Geometry) _hitTest:withEvent:windowServerHitTestWindow:] + 85
+    frame #8: 0x000000010ff0fb24 UIKit`__38-[UIView(Geometry) hitTest:withEvent:]_block_invoke + 129
+    frame #9: 0x0000000115133652 CoreFoundation`__53-[__NSArrayM enumerateObjectsWithOptions:usingBlock:]_block_invoke + 114
+    frame #10: 0x000000011513356f CoreFoundation`-[__NSArrayM enumerateObjectsWithOptions:usingBlock:] + 335
+    frame #11: 0x000000010ff0f6d3 UIKit`-[UIView(Geometry) hitTest:withEvent:] + 482
+    frame #12: 0x000000010ff0fc56 UIKit`-[UIView(Geometry) _hitTest:withEvent:windowServerHitTestWindow:] + 85
+    frame #13: 0x000000010feecafb UIKit`__70+[UIWindow _hitTestToPoint:forEvent:windowServerHitTestWindow:screen:]_block_invoke + 247
+    frame #14: 0x000000010feec874 UIKit`+[UIWindow _topVisibleWindowPassingTest:] + 197
+    frame #15: 0x000000010feec9b4 UIKit`+[UIWindow _hitTestToPoint:forEvent:windowServerHitTestWindow:screen:] + 204
+    frame #16: 0x000000010feecd13 UIKit`-[UIWindow _targetWindowForPathIndex:atPoint:forEvent:windowServerHitTestWindow:onScreen:] + 200
+    frame #17: 0x0000000110666fc8 UIKit`__dispatchDigitizerEvent + 8485
+    frame #18: 0x000000011066b19a UIKit`__dispatchPreprocessedEventFromEventQueue + 556
+    frame #19: 0x0000000110663a3a UIKit`__handleEventQueue + 1122
+    frame #20: 0x0000000115148c01 CoreFoundation`__CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__ + 17
+    frame #21: 0x000000011512e0cf CoreFoundation`__CFRunLoopDoSources0 + 527
+    frame #22: 0x000000011512d5ff CoreFoundation`__CFRunLoopRun + 911
+    frame #23: 0x000000011512d016 CoreFoundation`CFRunLoopRunSpecific + 406
+    frame #24: 0x00000001177b8a24 GraphicsServices`GSEventRunModal + 62
+    frame #25: 0x000000010fe6b0d4 UIKit`UIApplicationMain + 159
+    frame #26: 0x000000010e6b36ef Zmoji`main(argc=1, argv=0x00007fff515a9590) at main.m:14
+    frame #27: 0x0000000116c3165d libdyld.dylib`start + 1
+(lldb) bt
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 34.1
+  * frame #0: 0x000000010e7595ee Zmoji`-[ShareViewController close:](self=0x00007fc60df5e360, _cmd="close:", sender=0x00007fc60dc06190) at ShareViewController.m:325
     frame #1: 0x000000010fe6cd22 UIKit`-[UIApplication sendAction:to:from:forEvent:] + 83
     frame #2: 0x000000010fff125c UIKit`-[UIControl sendAction:to:forEvent:] + 67
     frame #3: 0x000000010fff1577 UIKit`-[UIControl _sendActionsForEvents:withEvent:] + 450
@@ -97,14 +128,17 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
     frame #7: 0x000000010fe887b0 UIKit`-[UIApplication sendEvent:] + 352
     frame #8: 0x000000011066badc UIKit`__dispatchPreprocessedEventFromEventQueue + 2926
     frame #9: 0x0000000110663a3a UIKit`__handleEventQueue + 1122
-    frame #10: 0x0000000115148c01 CoreFoundation`__CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__ + 17
-    frame #11: 0x000000011512e0cf CoreFoundation`__CFRunLoopDoSources0 + 527
-    frame #12: 0x000000011512d5ff CoreFoundation`__CFRunLoopRun + 911
-    frame #13: 0x000000011512d016 CoreFoundation`CFRunLoopRunSpecific + 406
-    frame #14: 0x00000001177b8a24 GraphicsServices`GSEventRunModal + 62
-    frame #15: 0x000000010fe6b0d4 UIKit`UIApplicationMain + 159
-    frame #16: 0x000000010e6b36ef Zmoji`main(argc=1, argv=0x00007fff515a9590) at main.m:14
-    frame #17: 0x0000000116c3165d libdyld.dylib`start + 1
+    frame #10: 0x0000000110664d08 UIKit`__handleEventQueue + 5936
+    frame #11: 0x0000000110664d08 UIKit`__handleEventQueue + 5936
+    frame #12: 0x0000000115148c01 CoreFoundation`__CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__ + 17
+    frame #13: 0x000000011512e0cf CoreFoundation`__CFRunLoopDoSources0 + 527
+    frame #14: 0x000000011512d5ff CoreFoundation`__CFRunLoopRun + 911
+    frame #15: 0x000000011512d016 CoreFoundation`CFRunLoopRunSpecific + 406
+    frame #16: 0x00000001177b8a24 GraphicsServices`GSEventRunModal + 62
+    frame #17: 0x000000010fe6b0d4 UIKit`UIApplicationMain + 159
+    frame #18: 0x000000010e6b36ef Zmoji`main(argc=1, argv=0x00007fff515a9590) at main.m:14
+    frame #19: 0x0000000116c3165d libdyld.dylib`start + 1
+(lldb) 
 
 ```
 <!-- markdown end -->
@@ -168,8 +202,39 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
 
 <p>附：UIButton响应调用堆栈</p>
 
-<pre><code>* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 30.1
-  * frame #0: 0x000000010e72d7fb Zmoji`-[ListViewController clothesPressed:](self=0x00007fc60e0b9200, _cmd="clothesPressed:", sender=0x00007fc60dc82c90) at ListViewController.m:620
+<pre><code>(lldb) bt
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 32.1
+  * frame #0: 0x000000010ff0f4f1 UIKit`-[UIView(Geometry) hitTest:withEvent:]
+    frame #1: 0x000000010ff0fc56 UIKit`-[UIView(Geometry) _hitTest:withEvent:windowServerHitTestWindow:] + 85
+    frame #2: 0x000000010ff0fb24 UIKit`__38-[UIView(Geometry) hitTest:withEvent:]_block_invoke + 129
+    frame #3: 0x0000000115133652 CoreFoundation`__53-[__NSArrayM enumerateObjectsWithOptions:usingBlock:]_block_invoke + 114
+    frame #4: 0x000000011513356f CoreFoundation`-[__NSArrayM enumerateObjectsWithOptions:usingBlock:] + 335
+    frame #5: 0x000000010ff0f6d3 UIKit`-[UIView(Geometry) hitTest:withEvent:] + 482
+    frame #6: 0x000000010ffe5eff UIKit`-[UITransitionView hitTest:withEvent:] + 44
+    frame #7: 0x000000010ff0fc56 UIKit`-[UIView(Geometry) _hitTest:withEvent:windowServerHitTestWindow:] + 85
+    frame #8: 0x000000010ff0fb24 UIKit`__38-[UIView(Geometry) hitTest:withEvent:]_block_invoke + 129
+    frame #9: 0x0000000115133652 CoreFoundation`__53-[__NSArrayM enumerateObjectsWithOptions:usingBlock:]_block_invoke + 114
+    frame #10: 0x000000011513356f CoreFoundation`-[__NSArrayM enumerateObjectsWithOptions:usingBlock:] + 335
+    frame #11: 0x000000010ff0f6d3 UIKit`-[UIView(Geometry) hitTest:withEvent:] + 482
+    frame #12: 0x000000010ff0fc56 UIKit`-[UIView(Geometry) _hitTest:withEvent:windowServerHitTestWindow:] + 85
+    frame #13: 0x000000010feecafb UIKit`__70+[UIWindow _hitTestToPoint:forEvent:windowServerHitTestWindow:screen:]_block_invoke + 247
+    frame #14: 0x000000010feec874 UIKit`+[UIWindow _topVisibleWindowPassingTest:] + 197
+    frame #15: 0x000000010feec9b4 UIKit`+[UIWindow _hitTestToPoint:forEvent:windowServerHitTestWindow:screen:] + 204
+    frame #16: 0x000000010feecd13 UIKit`-[UIWindow _targetWindowForPathIndex:atPoint:forEvent:windowServerHitTestWindow:onScreen:] + 200
+    frame #17: 0x0000000110666fc8 UIKit`__dispatchDigitizerEvent + 8485
+    frame #18: 0x000000011066b19a UIKit`__dispatchPreprocessedEventFromEventQueue + 556
+    frame #19: 0x0000000110663a3a UIKit`__handleEventQueue + 1122
+    frame #20: 0x0000000115148c01 CoreFoundation`__CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__ + 17
+    frame #21: 0x000000011512e0cf CoreFoundation`__CFRunLoopDoSources0 + 527
+    frame #22: 0x000000011512d5ff CoreFoundation`__CFRunLoopRun + 911
+    frame #23: 0x000000011512d016 CoreFoundation`CFRunLoopRunSpecific + 406
+    frame #24: 0x00000001177b8a24 GraphicsServices`GSEventRunModal + 62
+    frame #25: 0x000000010fe6b0d4 UIKit`UIApplicationMain + 159
+    frame #26: 0x000000010e6b36ef Zmoji`main(argc=1, argv=0x00007fff515a9590) at main.m:14
+    frame #27: 0x0000000116c3165d libdyld.dylib`start + 1
+(lldb) bt
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 34.1
+  * frame #0: 0x000000010e7595ee Zmoji`-[ShareViewController close:](self=0x00007fc60df5e360, _cmd="close:", sender=0x00007fc60dc06190) at ShareViewController.m:325
     frame #1: 0x000000010fe6cd22 UIKit`-[UIApplication sendAction:to:from:forEvent:] + 83
     frame #2: 0x000000010fff125c UIKit`-[UIControl sendAction:to:forEvent:] + 67
     frame #3: 0x000000010fff1577 UIKit`-[UIControl _sendActionsForEvents:withEvent:] + 450
@@ -179,14 +244,17 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
     frame #7: 0x000000010fe887b0 UIKit`-[UIApplication sendEvent:] + 352
     frame #8: 0x000000011066badc UIKit`__dispatchPreprocessedEventFromEventQueue + 2926
     frame #9: 0x0000000110663a3a UIKit`__handleEventQueue + 1122
-    frame #10: 0x0000000115148c01 CoreFoundation`__CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__ + 17
-    frame #11: 0x000000011512e0cf CoreFoundation`__CFRunLoopDoSources0 + 527
-    frame #12: 0x000000011512d5ff CoreFoundation`__CFRunLoopRun + 911
-    frame #13: 0x000000011512d016 CoreFoundation`CFRunLoopRunSpecific + 406
-    frame #14: 0x00000001177b8a24 GraphicsServices`GSEventRunModal + 62
-    frame #15: 0x000000010fe6b0d4 UIKit`UIApplicationMain + 159
-    frame #16: 0x000000010e6b36ef Zmoji`main(argc=1, argv=0x00007fff515a9590) at main.m:14
-    frame #17: 0x0000000116c3165d libdyld.dylib`start + 1
+    frame #10: 0x0000000110664d08 UIKit`__handleEventQueue + 5936
+    frame #11: 0x0000000110664d08 UIKit`__handleEventQueue + 5936
+    frame #12: 0x0000000115148c01 CoreFoundation`__CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION__ + 17
+    frame #13: 0x000000011512e0cf CoreFoundation`__CFRunLoopDoSources0 + 527
+    frame #14: 0x000000011512d5ff CoreFoundation`__CFRunLoopRun + 911
+    frame #15: 0x000000011512d016 CoreFoundation`CFRunLoopRunSpecific + 406
+    frame #16: 0x00000001177b8a24 GraphicsServices`GSEventRunModal + 62
+    frame #17: 0x000000010fe6b0d4 UIKit`UIApplicationMain + 159
+    frame #18: 0x000000010e6b36ef Zmoji`main(argc=1, argv=0x00007fff515a9590) at main.m:14
+    frame #19: 0x0000000116c3165d libdyld.dylib`start + 1
+(lldb) 
 </code></pre>
 <!-- content end -->
 </div>
