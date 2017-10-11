@@ -47,9 +47,116 @@ Foundation提供了以下4个宏来进行多语言的实现，大多数情况下
 tbl是.string文件的文件名
 ```
 
-以上4个宏都是对```NSBundle```的```localizedStringForKey:value:table:```函数的封装。NSBundle是文件夹的一个抽象，可以表示apps, frameworks, plug-ins以及一些其它的内容，我们可以在不了解它内部结构的情况下，使用bundle内的资源。
+以上4个宏都是对```NSBundle```的```localizedStringForKey:value:table:```函数的封装。NSBundle是文件夹的一个抽象，可以表示apps, frameworks, plug-ins以及一些其它的内容，我们可以在不了解它内部结构的情况下，通过其API使用bundle内的资源。
 
-但是要实现程序内的多语言切换，需要使用```NSLocalizedStringFromTableInBundle```这个宏
+
+
+# 程序内多语言切换
+有了上面实现的多语言，程序应该已经可以根据系统的语言设置自动改变语言的功能了。要实现程序内的多语言切换，需要使用```NSLocalizedStringFromTableInBundle```这个宏，在程序里通过用户的设置在相应语言的bundle中的Localizable.strings文件中找到对应的字符串并显示出来。
+
+思路：在UserDefault中记录用户选择的当前语言，在相应的bundle中找到其对应的字符串，然后显示出来，此时需要刷新正在显示的页面：一种方法是改变语言时发出一个通知，在页面中接收通知，刷新页面；二是直接替换window的rootViewController。
+
+具体代码：
+```
+LanguageManager.h
+#import <Foundation/Foundation.h>
+
+#define NSStringWithKeyFromTable(key, tbl) [[LanguageManager sharedInstance] stringForKey:key withTable:tbl]
+@interface LanguageManager : NSObject
+
++ (instancetype)sharedInstance;
+
+/**
+ *  返回table中指定的key的值
+ *
+ *  @param key   key
+ *  @param table table
+ *
+ *  @return 返回table中指定的key的值
+ */
+- (NSString *)stringForKey:(NSString *)key withTable:(NSString *)table;
+
+
+/**
+ *  设置新的语言
+ *
+ *  @param language 新语言
+ */
+- (void)setNewLanguage:(NSString *)language;
+@end
+
+
+LanguageManager.m
+#import "LanguageManager.h"
+//#import <Foundation/Foundation.h>
+
+static NSString * const kCurrentLanguage = @"kCurrentLanguage";
+
+@interface LanguageManager ()
+
+@property (nonatomic,strong) NSBundle *bundle;
+@property (nonatomic,copy) NSString *language;
+@end
+
+
+@implementation LanguageManager
+
++ (instancetype)sharedInstance {
+    static dispatch_once_t predicate;
+    static LanguageManager *manager = nil;
+    dispatch_once(&predicate, ^ {
+        manager = [[LanguageManager alloc] init];
+    });
+    return manager;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [self initLanguage];
+    }
+    
+    return self;
+}
+
+- (void)initLanguage {
+    NSString *tmp = [[NSUserDefaults standardUserDefaults] objectForKey:kCurrentLanguage];
+    NSString *path;
+    if (!tmp) {
+        tmp = [[[NSUserDefaults standardUserDefaults] objectForKey:@"AppleLanguages"] firstObject];
+    }
+    
+    _language = tmp;
+    path = [[NSBundle mainBundle]pathForResource:_language ofType:@"lproj"];
+    _bundle = [NSBundle bundleWithPath:path];
+}
+
+
+
+- (NSString *)stringForKey:(NSString *)key withTable:(NSString *)table {
+    if (self.bundle) {
+        return NSLocalizedStringFromTableInBundle(key, table, self.bundle, @"");
+    }
+    
+    return NSLocalizedStringFromTable(key, table, @"");
+}
+
+- (void)setNewLanguage:(NSString *)language {
+    if ([language isEqualToString:self.language]) {
+        return;
+    }
+    
+    NSString *path = [[NSBundle mainBundle]pathForResource:language ofType:@"lproj"];
+    NSBundle *bundle = [NSBundle bundleWithPath:path];
+    if (bundle) {
+        self.bundle = [NSBundle bundleWithPath:path];
+        self.language = language;
+        [[NSUserDefaults standardUserDefaults]setObject:language forKey:kCurrentLanguage];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+    }
+}
+@end
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -75,9 +182,115 @@ tbl是.string文件的文件名
 tbl是.string文件的文件名
 </code></pre>
 
-<p>以上4个宏都是对<code>NSBundle</code>的<code>localizedStringForKey:value:table:</code>函数的封装。NSBundle是文件夹的一个抽象，可以表示apps, frameworks, plug-ins以及一些其它的内容，我们可以在不了解它内部结构的情况下，使用bundle内的资源。</p>
+<p>以上4个宏都是对<code>NSBundle</code>的<code>localizedStringForKey:value:table:</code>函数的封装。NSBundle是文件夹的一个抽象，可以表示apps, frameworks, plug-ins以及一些其它的内容，我们可以在不了解它内部结构的情况下，通过其API使用bundle内的资源。</p>
 
-<p>但是要实现程序内的多语言切换，需要使用<code>NSLocalizedStringFromTableInBundle</code>这个宏</p>
+<h1 id="">程序内多语言切换</h1>
+
+<p>有了上面实现的多语言，程序应该已经可以根据系统的语言设置自动改变语言的功能了。要实现程序内的多语言切换，需要使用<code>NSLocalizedStringFromTableInBundle</code>这个宏，在程序里通过用户的设置在相应语言的bundle中的Localizable.strings文件中找到对应的字符串并显示出来。</p>
+
+<p>思路：在UserDefault中记录用户选择的当前语言，在相应的bundle中找到其对应的字符串，然后显示出来，此时需要刷新正在显示的页面：一种方法是改变语言时发出一个通知，在页面中接收通知，刷新页面；二是直接替换window的rootViewController。</p>
+
+<p>具体代码：</p>
+
+<pre><code>LanguageManager.h
+#import &lt;Foundation/Foundation.h&gt;
+
+#define NSStringWithKeyFromTable(key, tbl) [[LanguageManager sharedInstance] stringForKey:key withTable:tbl]
+@interface LanguageManager : NSObject
+
++ (instancetype)sharedInstance;
+
+/**
+ *  返回table中指定的key的值
+ *
+ *  @param key   key
+ *  @param table table
+ *
+ *  @return 返回table中指定的key的值
+ */
+- (NSString *)stringForKey:(NSString *)key withTable:(NSString *)table;
+
+
+/**
+ *  设置新的语言
+ *
+ *  @param language 新语言
+ */
+- (void)setNewLanguage:(NSString *)language;
+@end
+
+
+LanguageManager.m
+#import "LanguageManager.h"
+//#import &lt;Foundation/Foundation.h&gt;
+
+static NSString * const kCurrentLanguage = @"kCurrentLanguage";
+
+@interface LanguageManager ()
+
+@property (nonatomic,strong) NSBundle *bundle;
+@property (nonatomic,copy) NSString *language;
+@end
+
+
+@implementation LanguageManager
+
++ (instancetype)sharedInstance {
+    static dispatch_once_t predicate;
+    static LanguageManager *manager = nil;
+    dispatch_once(&amp;predicate, ^ {
+        manager = [[LanguageManager alloc] init];
+    });
+    return manager;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        [self initLanguage];
+    }
+
+    return self;
+}
+
+- (void)initLanguage {
+    NSString *tmp = [[NSUserDefaults standardUserDefaults] objectForKey:kCurrentLanguage];
+    NSString *path;
+    if (!tmp) {
+        tmp = [[[NSUserDefaults standardUserDefaults] objectForKey:@"AppleLanguages"] firstObject];
+    }
+
+    _language = tmp;
+    path = [[NSBundle mainBundle]pathForResource:_language ofType:@"lproj"];
+    _bundle = [NSBundle bundleWithPath:path];
+}
+
+
+
+- (NSString *)stringForKey:(NSString *)key withTable:(NSString *)table {
+    if (self.bundle) {
+        return NSLocalizedStringFromTableInBundle(key, table, self.bundle, @"");
+    }
+
+    return NSLocalizedStringFromTable(key, table, @"");
+}
+
+- (void)setNewLanguage:(NSString *)language {
+    if ([language isEqualToString:self.language]) {
+        return;
+    }
+
+    NSString *path = [[NSBundle mainBundle]pathForResource:language ofType:@"lproj"];
+    NSBundle *bundle = [NSBundle bundleWithPath:path];
+    if (bundle) {
+        self.bundle = [NSBundle bundleWithPath:path];
+        self.language = language;
+        [[NSUserDefaults standardUserDefaults]setObject:language forKey:kCurrentLanguage];
+        [[NSUserDefaults standardUserDefaults]synchronize];
+    }
+}
+@end
+</code></pre>
 <!-- content end -->
 </div>
 <br>
