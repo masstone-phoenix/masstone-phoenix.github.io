@@ -32,34 +32,22 @@
 Foundation提供了以下4个宏来进行多语言的实现，大多数情况下，使用```NSLocalizedString```替换使用字符串的地方,在```Localizable.strings```中，写入不同语言对应的字符串即可。
 
 ```
-NSString * NSLocalizedString(
-  NSString *key,
-  NSString *comment
-)
+#define NSLocalizedString(key, comment) \
+	    [NSBundle.mainBundle localizedStringForKey:(key) value:@"" table:nil]
 
-NSString * NSLocalizedStringFromTable(
-  NSString *key,
-  NSString *tableName,
-  NSString *comment
-)
+#define NSLocalizedStringFromTable(key, tbl, comment) \
+	    [NSBundle.mainBundle localizedStringForKey:(key) value:@"" table:(tbl)]
 
-NSString * NSLocalizedStringFromTableInBundle(
-  NSString *key,
-  NSString *tableName,
-  NSBundle *bundle,
-  NSString *comment
-)
+#define NSLocalizedStringFromTableInBundle(key, tbl, bundle, comment) \
+	    [bundle localizedStringForKey:(key) value:@"" table:(tbl)]
 
-NSString * NSLocalizedStringWithDefaultValue(
-  NSString *key,
-  NSString *tableName,
-  NSBundle *bundle,
-  NSString *value,
-  NSString *comment
-)
+#define NSLocalizedStringWithDefaultValue(key, tbl, bundle, val, comment) \
+	    [bundle localizedStringForKey:(key) value:(val) table:(tbl)]
+
+tbl是.string文件的文件名
 ```
 
-以上4个宏都是对```NSBundle```的```localizedStringForKey:value:table:```函数的封装。
+以上4个宏都是对```NSBundle```的```localizedStringForKey:value:table:```函数的封装。NSBundle是文件夹的一个抽象，可以表示apps, frameworks, plug-ins以及一些其它的内容，我们可以在不了解它内部结构的情况下，使用bundle内的资源。
 
 但是要实现程序内的多语言切换，需要使用```NSLocalizedStringFromTableInBundle```这个宏
 <!-- markdown end -->
@@ -72,34 +60,22 @@ NSString * NSLocalizedStringWithDefaultValue(
 
 <p>Foundation提供了以下4个宏来进行多语言的实现，大多数情况下，使用<code>NSLocalizedString</code>替换使用字符串的地方,在<code>Localizable.strings</code>中，写入不同语言对应的字符串即可。</p>
 
-<pre><code>NSString * NSLocalizedString(
-  NSString *key,
-  NSString *comment
-)
+<pre><code>#define NSLocalizedString(key, comment) \
+        [NSBundle.mainBundle localizedStringForKey:(key) value:@"" table:nil]
 
-NSString * NSLocalizedStringFromTable(
-  NSString *key,
-  NSString *tableName,
-  NSString *comment
-)
+#define NSLocalizedStringFromTable(key, tbl, comment) \
+        [NSBundle.mainBundle localizedStringForKey:(key) value:@"" table:(tbl)]
 
-NSString * NSLocalizedStringFromTableInBundle(
-  NSString *key,
-  NSString *tableName,
-  NSBundle *bundle,
-  NSString *comment
-)
+#define NSLocalizedStringFromTableInBundle(key, tbl, bundle, comment) \
+        [bundle localizedStringForKey:(key) value:@"" table:(tbl)]
 
-NSString * NSLocalizedStringWithDefaultValue(
-  NSString *key,
-  NSString *tableName,
-  NSBundle *bundle,
-  NSString *value,
-  NSString *comment
-)
+#define NSLocalizedStringWithDefaultValue(key, tbl, bundle, val, comment) \
+        [bundle localizedStringForKey:(key) value:(val) table:(tbl)]
+
+tbl是.string文件的文件名
 </code></pre>
 
-<p>以上4个宏都是对<code>NSBundle</code>的<code>localizedStringForKey:value:table:</code>函数的封装。</p>
+<p>以上4个宏都是对<code>NSBundle</code>的<code>localizedStringForKey:value:table:</code>函数的封装。NSBundle是文件夹的一个抽象，可以表示apps, frameworks, plug-ins以及一些其它的内容，我们可以在不了解它内部结构的情况下，使用bundle内的资源。</p>
 
 <p>但是要实现程序内的多语言切换，需要使用<code>NSLocalizedStringFromTableInBundle</code>这个宏</p>
 <!-- content end -->
