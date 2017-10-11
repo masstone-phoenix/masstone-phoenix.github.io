@@ -127,7 +127,7 @@ static NSString * const kCurrentLanguage = @"kCurrentLanguage";
     }
     
     _language = tmp;
-    path = [[NSBundle mainBundle]pathForResource:_language ofType:@"lproj"];
+    path = [[NSBundle mainBundle] pathForResource:_language ofType:@"lproj"];
     _bundle = [NSBundle bundleWithPath:path];
 }
 
@@ -151,12 +151,14 @@ static NSString * const kCurrentLanguage = @"kCurrentLanguage";
     if (bundle) {
         self.bundle = [NSBundle bundleWithPath:path];
         self.language = language;
-        [[NSUserDefaults standardUserDefaults]setObject:language forKey:kCurrentLanguage];
-        [[NSUserDefaults standardUserDefaults]synchronize];
+        [[NSUserDefaults standardUserDefaults] setObject:language forKey:kCurrentLanguage];
+        [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
 @end
 ```
+在使用字符串时使用```NSStringWithKeyFromTable```这个宏，与NSLocalizedString不同的是，第二个参数是tableName。在改变语言时，使用```setNewLanguage:```这个函数设置，然后刷新UI即可。
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -261,7 +263,7 @@ static NSString * const kCurrentLanguage = @"kCurrentLanguage";
     }
 
     _language = tmp;
-    path = [[NSBundle mainBundle]pathForResource:_language ofType:@"lproj"];
+    path = [[NSBundle mainBundle] pathForResource:_language ofType:@"lproj"];
     _bundle = [NSBundle bundleWithPath:path];
 }
 
@@ -285,12 +287,14 @@ static NSString * const kCurrentLanguage = @"kCurrentLanguage";
     if (bundle) {
         self.bundle = [NSBundle bundleWithPath:path];
         self.language = language;
-        [[NSUserDefaults standardUserDefaults]setObject:language forKey:kCurrentLanguage];
-        [[NSUserDefaults standardUserDefaults]synchronize];
+        [[NSUserDefaults standardUserDefaults] setObject:language forKey:kCurrentLanguage];
+        [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
 @end
 </code></pre>
+
+<p>在使用字符串时使用<code>NSStringWithKeyFromTable</code>这个宏，与NSLocalizedString不同的是，第二个参数是tableName。在改变语言时，使用<code>setNewLanguage:</code>这个函数设置，然后刷新UI即可。</p>
 <!-- content end -->
 </div>
 <br>
