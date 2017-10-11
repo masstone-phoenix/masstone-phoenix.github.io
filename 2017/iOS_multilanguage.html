@@ -28,6 +28,40 @@
 我们的程序要做一个程序内多语言切换的功能，这里做一个总结。
 
 # iOS实现多语言
+
+Foundation提供了以下4个宏来进行多语言的实现，大多数情况下，使用```NSLocalizedString```替换使用字符串的地方,在```Localizable.strings```中，写入不同语言对应的字符串即可。
+
+```
+NSString * NSLocalizedString(
+  NSString *key,
+  NSString *comment
+)
+
+NSString * NSLocalizedStringFromTable(
+  NSString *key,
+  NSString *tableName,
+  NSString *comment
+)
+
+NSString * NSLocalizedStringFromTableInBundle(
+  NSString *key,
+  NSString *tableName,
+  NSBundle *bundle,
+  NSString *comment
+)
+
+NSString * NSLocalizedStringWithDefaultValue(
+  NSString *key,
+  NSString *tableName,
+  NSBundle *bundle,
+  NSString *value,
+  NSString *comment
+)
+```
+
+以上4个宏都是对```NSBundle```的```localizedStringForKey:value:table:```函数的封装。
+
+但是要实现程序内的多语言切换，需要使用```NSLocalizedStringFromTableInBundle```这个宏
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -35,6 +69,39 @@
 <p>我们的程序要做一个程序内多语言切换的功能，这里做一个总结。</p>
 
 <h1 id="ios">iOS实现多语言</h1>
+
+<p>Foundation提供了以下4个宏来进行多语言的实现，大多数情况下，使用<code>NSLocalizedString</code>替换使用字符串的地方,在<code>Localizable.strings</code>中，写入不同语言对应的字符串即可。</p>
+
+<pre><code>NSString * NSLocalizedString(
+  NSString *key,
+  NSString *comment
+)
+
+NSString * NSLocalizedStringFromTable(
+  NSString *key,
+  NSString *tableName,
+  NSString *comment
+)
+
+NSString * NSLocalizedStringFromTableInBundle(
+  NSString *key,
+  NSString *tableName,
+  NSBundle *bundle,
+  NSString *comment
+)
+
+NSString * NSLocalizedStringWithDefaultValue(
+  NSString *key,
+  NSString *tableName,
+  NSBundle *bundle,
+  NSString *value,
+  NSString *comment
+)
+</code></pre>
+
+<p>以上4个宏都是对<code>NSBundle</code>的<code>localizedStringForKey:value:table:</code>函数的封装。</p>
+
+<p>但是要实现程序内的多语言切换，需要使用<code>NSLocalizedStringFromTableInBundle</code>这个宏</p>
 <!-- content end -->
 </div>
 <br>
