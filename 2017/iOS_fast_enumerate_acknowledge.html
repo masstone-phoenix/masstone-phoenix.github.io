@@ -141,6 +141,26 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
 (lldb) 
 
 ```
+
+hittest系统实现的逻辑：
+```
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    if (!self.isUserInteractionEnabled || self.isHidden || self.alpha <= 0.01) {
+        return nil;
+    }
+    if ([self pointInside:point withEvent:event]) {
+        for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
+            CGPoint convertedPoint = [subview convertPoint:point fromView:self];
+            UIView *hitTestView = [subview hitTest:convertedPoint withEvent:event];
+            if (hitTestView) {
+                return hitTestView;
+            }
+        }
+        return self;
+    }
+    return nil;
+}
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -255,6 +275,26 @@ PS：UIGestureRecognizer is an abstract base class for concrete gesture-recogniz
     frame #18: 0x000000010e6b36ef Zmoji`main(argc=1, argv=0x00007fff515a9590) at main.m:14
     frame #19: 0x0000000116c3165d libdyld.dylib`start + 1
 (lldb) 
+</code></pre>
+
+<p>hittest系统实现的逻辑：</p>
+
+<pre><code>- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    if (!self.isUserInteractionEnabled || self.isHidden || self.alpha &lt;= 0.01) {
+        return nil;
+    }
+    if ([self pointInside:point withEvent:event]) {
+        for (UIView *subview in [self.subviews reverseObjectEnumerator]) {
+            CGPoint convertedPoint = [subview convertPoint:point fromView:self];
+            UIView *hitTestView = [subview hitTest:convertedPoint withEvent:event];
+            if (hitTestView) {
+                return hitTestView;
+            }
+        }
+        return self;
+    }
+    return nil;
+}
 </code></pre>
 <!-- content end -->
 </div>
