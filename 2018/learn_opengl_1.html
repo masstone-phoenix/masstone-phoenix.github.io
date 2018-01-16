@@ -66,6 +66,24 @@
 ![](http://masstone-phoenix.github.io/image/opengl/20171123194035.jpg)
 
 
+# OpenGL概述
+OpenGL自身是一个状态机，状态存在context中，当我们进行绘制时，使用context中参数进行绘制。
+
+An ```object``` in OpenGL is a collection of options that represents a subset of OpenGL's state.
+使用OpenGL objects的例子：
+```
+// create object
+unsigned int objectId = 0;
+glGenObject(1, &objectId);
+// bind object to context
+glBindObject(GL_WINDOW_TARGET, objectId);
+// set options of object currently bound to GL_WINDOW_TARGET
+glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_WIDTH, 800);
+glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_HEIGHT, 600);
+// set context target back to default
+glBindObject(GL_WINDOW_TARGET, 0);
+
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -110,6 +128,25 @@
 <p>光栅化概念阶段中的三角形设置和三角形遍历阶段也都是固定函数的阶段。接下来的片元着色器，则是完全可编程的，它用于实现逐片元的着色操作。最后逐片元操作阶段负责执行很多重要的操作，例如修改颜色、深度缓冲、进行混合等，它是不可编程的，但具有很高的配置性。 </p>
 
 <p><img src="http://masstone-phoenix.github.io/image/opengl/20171123194035.jpg" alt="" title=""></p>
+
+<h1 id="opengl">OpenGL概述</h1>
+
+<p>OpenGL自身是一个状态机，状态存在context中，当我们进行绘制时，使用context中参数进行绘制。</p>
+
+<p>An <code>object</code> in OpenGL is a collection of options that represents a subset of OpenGL's state.
+使用OpenGL objects的例子：</p>
+
+<pre><code>// create object
+unsigned int objectId = 0;
+glGenObject(1, &amp;objectId);
+// bind object to context
+glBindObject(GL_WINDOW_TARGET, objectId);
+// set options of object currently bound to GL_WINDOW_TARGET
+glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_WIDTH, 800);
+glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_HEIGHT, 600);
+// set context target back to default
+glBindObject(GL_WINDOW_TARGET, 0);
+</code></pre>
 <!-- content end -->
 </div>
 <br>
