@@ -25,11 +25,9 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-上篇文章提到我们想做一个直播的功能，这里客户端有一些难点，于是我就一个一个的进行攻克，这里先研究下美颜处理，一般的美颜是基于GPUImage这个第三方库进行的，它是OpenGL的一个封装，于是激起了我对学习OpenGL的兴趣，简单学习了一下，这里是个学习的系列，主要参考《UnityShader入门精要》的前两章以及[这个网站](https://learnopengl.com/)。
+这是一个学习OpenGL的系列，我也不知道会写到什么时候。。。[上篇文章](https://masstone-phoenix.github.io/2018/learn_opengl_1.html)已经学习了一些基础知识，这篇文章主要在iOS中搭建一个OpenGL的环境，如果篇幅不长的话就写一个简单的程序绘制一个三角形，如果太长就在下一篇中继续绘制。
 
-这篇文章主要介绍一个OpenGL的渲染流水线以及一些基础知识。
-
-#渲染流水线
+#在iOS中使用OpenGL
 ![](http://masstone-phoenix.github.io/image/opengl/20180116101919.jpg)
 
 《Real-Time Rendering》将渲染流程分成3个阶段：应用阶段，几何阶段，光栅化阶段。
@@ -99,7 +97,75 @@ glBindObject(GL_WINDOW_TARGET, 0);
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>这是一个学习OpenGL的系列，我也不知道会写到什么时候。。。<a href="https://masstone-phoenix.github.io/2018/learn_opengl_1.html">上篇文章</a>已经学习了一些基础知识，这篇文章主要在iOS中搭建一个OpenGL的环境，如果篇幅不长的话就写一个简单的程序绘制一个三角形，如果太长就在下一篇中继续绘制。</p>
 
+<h1 id="iosopengl">在iOS中使用OpenGL</h1>
+
+<p><img src="http://masstone-phoenix.github.io/image/opengl/20180116101919.jpg" alt="" title=""></p>
+
+<p>《Real-Time Rendering》将渲染流程分成3个阶段：应用阶段，几何阶段，光栅化阶段。</p>
+
+<h2 id="">应用阶段</h2>
+
+<p>应用阶段主要是由开发者准备场景数据，将场景中的不可见物体做一个粗粒度的剔除工作以及设置好每个模型的渲染状态，当完成上述工作后，CPU通过调用Draw Call命令，让GPU进行绘制，这个阶段由CPU负责实现。</p>
+
+<h2 id="">几何阶段</h2>
+
+<p>几何阶段主要是决定绘制图元是怎么绘制的，它的一个重要任务是将顶点坐标变换到屏幕空间上，以供光栅化阶段处理。这个阶段由GPU负责实现。</p>
+
+<h2 id="">光栅化阶段</h2>
+
+<p>使用几何阶段传递的数据来产生屏幕上的像素。这个阶段由GPU负责实现。</p>
+
+<h1 id="gpu">GPU流水线</h1>
+
+<p><img src="http://masstone-phoenix.github.io/image/opengl/20170410152129489.png" alt="" title="">
+图中绿色表示该流水线阶段是完全可编程控制的，黄色表示该流水线可以配置但不是可编程的，蓝色表示该流水线阶段是由GPU固定实现的，开发者没有任何控制权。实线表示该Shader必须由开发者编程实线，虚线表示该Shader是可选的。</p>
+
+<p>顶点着色器（Vertext Shader）是完全可编程的，它通常用于实现顶点的空间变换、顶点着色等功能。</p>
+
+<p>曲面细分着色器（Tessellation Shader）是一个可选的着色器，它用于细分图元。</p>
+
+<p>几何着色器（Geometry Shader）是可选的着色器，可以被用于执行逐图元的着色操作，或者被用于产生更多的图元。</p>
+
+<p>下一个流水线阶段是裁剪，这一阶段的目的是将不在摄像机视野内的顶点裁减掉，并剔除某些三角图元的面片。这个阶段是可配置的。</p>
+
+<p>几何阶段中的最后一个流水线阶段是屏幕映射。这一阶段是不可配置和编程的，它负责把每个图元的坐标转换到屏幕坐标系中。</p>
+
+<p>接下来将进入光栅化阶段。
+三角形设置：在几何阶段，我们只是知道三角形的三个顶点，当进行渲染时，我们需要知道哪些像素被三角形覆盖，而三角形设置阶段就是计算三角形边界的表示方式。它是一个固定函数的阶段。</p>
+
+<p>三角形遍历阶段也都是固定函数的阶段，在这个阶段，将会检查每个像素是否被一个三角网格所覆盖。如果被覆盖的话，就会生成一个片元。</p>
+
+<p>接下来的片元着色器，则是完全可编程的，它用于实现逐片元的着色操作，输出信息是该片元的颜色。</p>
+
+<p>最后逐片元操作阶段（也叫做输出合并阶段）负责执行很多重要的操作，例如修改颜色、深度缓冲、进行混合等，它是不可编程的，但具有很高的配置性。 
+<img src="http://static.zybuluo.com/candycat/epejev04t6vudwsyo2el8rp0/Per-fragment%20Operations.png" alt="" title=""></p>
+
+<p><img src="http://masstone-phoenix.github.io/image/opengl/20171123194035.jpg" alt="" title=""></p>
+
+<h1 id="opengl">OpenGL概述</h1>
+
+<p>OpengGL是一个C语言的3D图形绘制API，用于游戏，3D建模等图形学应用的各个方面。</p>
+
+<p>OpenGL自身是一个状态机，状态存在context中，当我们进行绘制时，通过改变这个状态机内部的状态，达到绘制的目的。而OpenGL会使用context中当前状态的参数进行绘制。</p>
+
+<p>object是OpenGL的一个抽象——An <code>object</code> in OpenGL is a collection of options that represents a subset of OpenGL's state.
+使用OpenGL objects的例子：</p>
+
+<pre><code>// create object
+unsigned int objectId = 0;
+glGenObject(1, &amp;objectId);
+// bind object to context
+glBindObject(GL_WINDOW_TARGET, objectId);
+// set options of object currently bound to GL_WINDOW_TARGET
+glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_WIDTH, 800);
+glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_HEIGHT, 600);
+// set context target back to default
+glBindObject(GL_WINDOW_TARGET, 0);
+</code></pre>
+
+<p>这里介绍了一些绘图的基本知识，但这很重要，有人不明白这个渲染的过程就往下学习API，这样会越来越糊涂。下篇会开始一个简单的绘制。</p>
 <!-- content end -->
 </div>
 <br>
