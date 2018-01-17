@@ -28,7 +28,33 @@
 这是一个学习OpenGL的系列，我也不知道会写到什么时候。。。[上篇文章](https://masstone-phoenix.github.io/2018/learn_opengl_1.html)已经学习了一些基础知识，这篇文章主要在iOS中搭建一个OpenGL的环境，如果篇幅不长的话就写一个简单的程序绘制一个三角形，如果太长就在下一篇中继续绘制。
 
 #在iOS中使用OpenGL
-![](http://masstone-phoenix.github.io/image/opengl/20180116101919.jpg)
+我们遵照[苹果的官方步骤](https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/OpenGLESontheiPhone/OpenGLESontheiPhone.html)，一步一步来：
+
+1. 先确定使用OpenGL ES的版本，然后创建一个OpenGL ES context。
+2. 在使用OpenGL ES过程中，检测context是否支持。
+3. 选择一个渲染的目的地。
+4. 确定程序能正确的运行在iOS中.
+
+剩下的写一个渲染引擎这个已经超出了这个教程的范围了，就省略了。
+
+总结一下，在类似iOS的平台上使用openGL，需要平台提供两个条件：一是创建openGL的rendering context；一是提供openGL绘制的目的framebuffer。
+
+
+## 创建OpenGL ES context
+我们决定使用OpenGL ES 3.0版本，因为目前iOS 7.0以上，GPU在Apple A7 GPU以上支持这个版本，而世面上大家使用的iPhone基本都满足这个条件，当然，如果不支持，使用OpenGL ES 2.0进行兼容，如下：
+
+```
+EAGLContext* CreateBestEAGLContext()
+{
+   EAGLContext *context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
+   if (context == nil) {
+      context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+   }
+   return context;
+}
+```
+
+
 
 《Real-Time Rendering》将渲染流程分成3个阶段：应用阶段，几何阶段，光栅化阶段。
 
@@ -101,7 +127,32 @@ glBindObject(GL_WINDOW_TARGET, 0);
 
 <h1 id="iosopengl">在iOS中使用OpenGL</h1>
 
-<p><img src="http://masstone-phoenix.github.io/image/opengl/20180116101919.jpg" alt="" title=""></p>
+<p>我们遵照<a href="https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/OpenGLESontheiPhone/OpenGLESontheiPhone.html">苹果的官方步骤</a>，一步一步来：</p>
+
+<ol>
+<li>先确定使用OpenGL ES的版本，然后创建一个OpenGL ES context。</li>
+<li>在使用OpenGL ES过程中，检测context是否支持。</li>
+<li>选择一个渲染的目的地。</li>
+<li>确定程序能正确的运行在iOS中.</li>
+</ol>
+
+<p>剩下的写一个渲染引擎这个已经超出了这个教程的范围了，就省略了。</p>
+
+<p>总结一下，在类似iOS的平台上使用openGL，需要平台提供两个条件：一是创建openGL的rendering context；一是提供openGL绘制的目的framebuffer。</p>
+
+<h2 id="openglescontext">创建OpenGL ES context</h2>
+
+<p>我们决定使用OpenGL ES 3.0版本，因为目前iOS 7.0以上，GPU在Apple A7 GPU以上支持这个版本，而世面上大家使用的iPhone基本都满足这个条件，当然，如果不支持，使用OpenGL ES 2.0进行兼容，如下：</p>
+
+<pre><code>EAGLContext* CreateBestEAGLContext()
+{
+&nbsp;&nbsp; EAGLContext *context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
+&nbsp;&nbsp; if (context == nil) {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+&nbsp;&nbsp; }
+&nbsp;&nbsp; return context;
+}
+</code></pre>
 
 <p>《Real-Time Rendering》将渲染流程分成3个阶段：应用阶段，几何阶段，光栅化阶段。</p>
 
