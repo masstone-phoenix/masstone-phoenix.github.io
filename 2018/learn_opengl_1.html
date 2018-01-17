@@ -74,9 +74,11 @@
 
 
 # OpenGL概述
-OpenGL自身是一个状态机，状态存在context中，当我们进行绘制时，使用context中参数进行绘制。
+OpengGL是一个C语言的3D图形绘制API，用于游戏，3D建模等图形学应用的各个方面。
 
-An ```object``` in OpenGL is a collection of options that represents a subset of OpenGL's state.
+OpenGL自身是一个状态机，状态存在context中，当我们进行绘制时，通过改变这个状态机内部的状态，达到绘制的目的。而OpenGL会使用context中当前状态的参数进行绘制。
+
+object是OpenGL的一个抽象——An ```object``` in OpenGL is a collection of options that represents a subset of OpenGL's state.
 使用OpenGL objects的例子：
 ```
 // create object
@@ -91,6 +93,8 @@ glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_HEIGHT, 600);
 glBindObject(GL_WINDOW_TARGET, 0);
 
 ```
+
+这里介绍了一些绘图的基本知识，但这很重要，有人不明白这个渲染的过程就往下学习API，这样会越来越糊涂。下篇会开始一个简单的绘制。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -146,9 +150,11 @@ glBindObject(GL_WINDOW_TARGET, 0);
 
 <h1 id="opengl">OpenGL概述</h1>
 
-<p>OpenGL自身是一个状态机，状态存在context中，当我们进行绘制时，使用context中参数进行绘制。</p>
+<p>OpengGL是一个C语言的3D图形绘制API，用于游戏，3D建模等图形学应用的各个方面。</p>
 
-<p>An <code>object</code> in OpenGL is a collection of options that represents a subset of OpenGL's state.
+<p>OpenGL自身是一个状态机，状态存在context中，当我们进行绘制时，通过改变这个状态机内部的状态，达到绘制的目的。而OpenGL会使用context中当前状态的参数进行绘制。</p>
+
+<p>object是OpenGL的一个抽象——An <code>object</code> in OpenGL is a collection of options that represents a subset of OpenGL's state.
 使用OpenGL objects的例子：</p>
 
 <pre><code>// create object
@@ -162,6 +168,8 @@ glSetObjectOption(GL_WINDOW_TARGET, GL_OPTION_WINDOW_HEIGHT, 600);
 // set context target back to default
 glBindObject(GL_WINDOW_TARGET, 0);
 </code></pre>
+
+<p>这里介绍了一些绘图的基本知识，但这很重要，有人不明白这个渲染的过程就往下学习API，这样会越来越糊涂。下篇会开始一个简单的绘制。</p>
 <!-- content end -->
 </div>
 <br>
