@@ -267,6 +267,27 @@ void main()
 在使用完vertex shader和fragment shader后，使用```glDeleteShader(shader);```来删除它们，因为已经不需要它们了。
 
 ## Linking Vertex Attributes
+![](https://learnopengl.com/img/getting-started/vertex_attribute_pointer.png)
+
+我们把顶点数据交给OpenGL了，但是需要OpenGL理解数据的格式，这个通过下面的代码完成：
+```
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);
+```
+
+函数glVertexAttribPointer的参数解决如下：
+
+- 第一个参数指定需要配置的vertex attribute是哪个，这里就用到了上面提到的`layout (location = 0)`
+- 第二个参数是vertex attribute的长度
+- 第三个参数是数据类型，这里是```GL_FLOAT```
+- 第四个参数是指数据是否需要正则化
+- 第五个参数是步长，指的是相邻两个vertex attribute的间隔
+- 最后一个参数是相对于开始的偏移
+
+设置好上面的步骤后，我们就可以使用glDraw*这簇函数来绘制了，但是每画一个物体都需要重新设置VBO等，操作好多。。。所以OpenGL提供了vertex array object来解决这个问题
+
+## Vertex array object
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -521,6 +542,29 @@ void main()
 <p>在使用完vertex shader和fragment shader后，使用<code>glDeleteShader(shader);</code>来删除它们，因为已经不需要它们了。</p>
 
 <h2 id="linkingvertexattributes">Linking Vertex Attributes</h2>
+
+<p><img src="https://learnopengl.com/img/getting-started/vertex_attribute_pointer.png" alt="" title=""></p>
+
+<p>我们把顶点数据交给OpenGL了，但是需要OpenGL理解数据的格式，这个通过下面的代码完成：</p>
+
+<pre><code>glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);
+</code></pre>
+
+<p>函数glVertexAttribPointer的参数解决如下：</p>
+
+<ul>
+<li>第一个参数指定需要配置的vertex attribute是哪个，这里就用到了上面提到的<code>layout (location = 0)</code></li>
+<li>第二个参数是vertex attribute的长度</li>
+<li>第三个参数是数据类型，这里是<code>GL_FLOAT</code></li>
+<li>第四个参数是指数据是否需要正则化</li>
+<li>第五个参数是步长，指的是相邻两个vertex attribute的间隔</li>
+<li>最后一个参数是相对于开始的偏移</li>
+</ul>
+
+<p>设置好上面的步骤后，我们就可以使用glDraw*这簇函数来绘制了，但是每画一个物体都需要重新设置VBO等，操作好多。。。所以OpenGL提供了vertex array object来解决这个问题</p>
+
+<h2 id="vertexarrayobject">Vertex array object</h2>
 <!-- content end -->
 </div>
 <br>
