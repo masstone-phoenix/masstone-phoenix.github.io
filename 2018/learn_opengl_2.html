@@ -236,7 +236,37 @@ void main()
 同样，fragment shader也需要上面一样的编译。
 
 ## Shader program
+为了使用上面定义的vertex shader和fragment shader，我们需要将它们link成一个shader program，并在绘制前激活这个shader program。
 
+```
+- (GLuint)linkWithVertexShader:(GLuint)vertex andFragmentShader:(GLuint)fragment
+{
+    GLuint shaderProgram = glCreateProgram();
+    
+    glAttachShader(shaderProgram, vertex);
+    glAttachShader(shaderProgram, fragment);
+    glLinkProgram(shaderProgram);
+    
+    GLint success;
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if(!success) {
+        GLchar messages[256];
+        glGetProgramInfoLog(shaderProgram, sizeof(messages), NULL, &messages[0]);
+        NSString *messageString = [NSString stringWithUTF8String:messages];
+        NSLog(@"%@", messageString);
+        exit(1);
+    }
+    
+    return shaderProgram;
+}
+```
+上面的步骤应该很容易了，先创建一个shader program，然后将vertex shader和fragment shader attach到shader program上，然后链接shader program。
+
+为了使用这个shader program，需要调用```glUseProgram(shaderProgram)```。
+
+在使用完vertex shader和fragment shader后，使用```glDeleteShader(shader);```来删除它们，因为已经不需要它们了。
+
+## Linking Vertex Attributes
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -459,6 +489,38 @@ void main()
 <p>同样，fragment shader也需要上面一样的编译。</p>
 
 <h2 id="shaderprogram">Shader program</h2>
+
+<p>为了使用上面定义的vertex shader和fragment shader，我们需要将它们link成一个shader program，并在绘制前激活这个shader program。</p>
+
+<pre><code>- (GLuint)linkWithVertexShader:(GLuint)vertex andFragmentShader:(GLuint)fragment
+{
+    GLuint shaderProgram = glCreateProgram();
+
+    glAttachShader(shaderProgram, vertex);
+    glAttachShader(shaderProgram, fragment);
+    glLinkProgram(shaderProgram);
+
+    GLint success;
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &amp;success);
+    if(!success) {
+        GLchar messages[256];
+        glGetProgramInfoLog(shaderProgram, sizeof(messages), NULL, &amp;messages[0]);
+        NSString *messageString = [NSString stringWithUTF8String:messages];
+        NSLog(@"%@", messageString);
+        exit(1);
+    }
+
+    return shaderProgram;
+}
+</code></pre>
+
+<p>上面的步骤应该很容易了，先创建一个shader program，然后将vertex shader和fragment shader attach到shader program上，然后链接shader program。</p>
+
+<p>为了使用这个shader program，需要调用<code>glUseProgram(shaderProgram)</code>。</p>
+
+<p>在使用完vertex shader和fragment shader后，使用<code>glDeleteShader(shader);</code>来删除它们，因为已经不需要它们了。</p>
+
+<h2 id="linkingvertexattributes">Linking Vertex Attributes</h2>
 <!-- content end -->
 </div>
 <br>
