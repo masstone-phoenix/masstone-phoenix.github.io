@@ -144,7 +144,7 @@ OpenGL有许多buffer objects，vertex buffer objects的类型是```GL_ARRAY_BUF
     //bind to a buffer type
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 ```
-最后，我们使用glBufferData函数将数据从CPU传输到GPU。
+最后，我们使用glBufferData函数将数据从CPU传输到GPU。函数的前三个参数应该很容易理解，第四个参数是指数据的变化情况，```GL_STATIC_DRAW```表示几乎不变，```GL_DYNAMIC_DRAW```表示变化的比较频繁，```GL_STREAM_DRAW```表示每帧的数据都会改变。
 
 ```
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -286,7 +286,7 @@ OpenGL有许多buffer objects，vertex buffer objects的类型是```GL_ARRAY_BUF
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 </code></pre>
 
-<p>最后，我们使用glBufferData函数将数据从CPU传输到GPU。</p>
+<p>最后，我们使用glBufferData函数将数据从CPU传输到GPU。函数的前三个参数应该很容易理解，第四个参数是指数据的变化情况，<code>GL_STATIC_DRAW</code>表示几乎不变，<code>GL_DYNAMIC_DRAW</code>表示变化的比较频繁，<code>GL_STREAM_DRAW</code>表示每帧的数据都会改变。</p>
 
 <pre><code>    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 </code></pre>
