@@ -41,7 +41,7 @@
 
 
 ## 创建OpenGL ES context
-我们决定使用OpenGL ES 3.0版本，因为目前iOS 7.0以上，GPU在Apple A7 GPU以上支持这个版本，而世面上大家使用的iPhone基本都满足这个条件，当然，如果不支持，使用OpenGL ES 2.0进行兼容，如下：
+我们决定使用OpenGL ES 3.0版本，因为目前iOS 7.0以上，GPU在Apple A7 GPU以上支持这个版本，而世面上大家使用的iPhone基本都满足这个条件，当然，如果不支持，可以考虑使用OpenGL ES 2.0进行兼容，这里就不考虑这种情况了（但在代码里写了这种），如下：
 
 ```
 EAGLContext* CreateBestEAGLContext()
@@ -160,7 +160,7 @@ EAGLContext* CreateBestEAGLContext()
 
 <h2 id="openglescontext">创建OpenGL ES context</h2>
 
-<p>我们决定使用OpenGL ES 3.0版本，因为目前iOS 7.0以上，GPU在Apple A7 GPU以上支持这个版本，而世面上大家使用的iPhone基本都满足这个条件，当然，如果不支持，使用OpenGL ES 2.0进行兼容，如下：</p>
+<p>我们决定使用OpenGL ES 3.0版本，因为目前iOS 7.0以上，GPU在Apple A7 GPU以上支持这个版本，而世面上大家使用的iPhone基本都满足这个条件，当然，如果不支持，可以考虑使用OpenGL ES 2.0进行兼容，这里就不考虑这种情况了（但在代码里写了这种），如下：</p>
 
 <pre><code>EAGLContext* CreateBestEAGLContext()
 {
