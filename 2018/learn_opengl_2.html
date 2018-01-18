@@ -152,6 +152,72 @@ OpenGL有许多buffer objects，vertex buffer objects的类型是```GL_ARRAY_BUF
 
 
 ## vertex shader
+先使用GLSL写一个vertex shader程序，然后在我们的程序是编译它。下面是一个很简单的shader程序：
+```
+#version 300 es
+layout (location = 0) in vec3 aPos;
+
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+}
+
+```
+这看上去和C语言很像。第一句指明版本是ES 3.0。
+
+下一步，我们用关键字in声明了vertex attribute，在这里，我们只声明了位置这个vertex attribute，同时，我们使用```layout (location = 0)```声明了其位置， 在一会我们会使用到这个位置信息。
+
+vertex shader的输出是gl_Position，我们只需要将需要的值赋值给它就可以了。
+
+## 编译shader
+使用下面的函数来编译shader:
+
+```
+- (GLuint)compileShader:(NSString*)shaderName withType:(GLenum)shaderType
+{
+    // 1
+    NSString *shaderPath = [[NSBundle mainBundle] pathForResource:shaderName
+                                                           ofType:@"glsl"];
+    NSError *error;
+    NSString *shaderString = [NSString stringWithContentsOfFile:shaderPath
+                                                       encoding:NSUTF8StringEncoding error:&error];
+    if (!shaderString) {
+        NSLog(@"Error loading shader: %@", error.localizedDescription);
+        exit(1);
+    }
+    
+    // 2
+    GLuint shaderHandle = glCreateShader(shaderType);
+    
+    // 3
+    const char * shaderStringUTF8 = [shaderString UTF8String];
+    int shaderStringLength = [shaderString length];
+    glShaderSource(shaderHandle, 1, &shaderStringUTF8, &shaderStringLength);
+    
+    // 4
+    glCompileShader(shaderHandle);
+    
+    // 5
+    GLint compileSuccess;
+    glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &compileSuccess);
+    if (compileSuccess == GL_FALSE) {
+        GLchar messages[256];
+        glGetShaderInfoLog(shaderHandle, sizeof(messages), 0, &messages[0]);
+        NSString *messageString = [NSString stringWithUTF8String:messages];
+        NSLog(@"%@", messageString);
+        exit(1);
+    }
+    
+    return shaderHandle;
+    
+}
+```
+
+1. 找到shader的源文件并读取其内容到shaderString
+2. 生成一个shader object
+3. 将代码附着到shader object上
+4. 编译shader
+5. 看看是否编译成功，如果不成功，输出错误信息并退出
 
 ## fragment shader
 
@@ -292,6 +358,75 @@ OpenGL有许多buffer objects，vertex buffer objects的类型是```GL_ARRAY_BUF
 </code></pre>
 
 <h2 id="vertexshader">vertex shader</h2>
+
+<p>先使用GLSL写一个vertex shader程序，然后在我们的程序是编译它。下面是一个很简单的shader程序：</p>
+
+<pre><code>#version 300 es
+layout (location = 0) in vec3 aPos;
+
+void main()
+{
+    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+}
+</code></pre>
+
+<p>这看上去和C语言很像。第一句指明版本是ES 3.0。</p>
+
+<p>下一步，我们用关键字in声明了vertex attribute，在这里，我们只声明了位置这个vertex attribute，同时，我们使用<code>layout (location = 0)</code>声明了其位置， 在一会我们会使用到这个位置信息。</p>
+
+<p>vertex shader的输出是gl_Position，我们只需要将需要的值赋值给它就可以了。</p>
+
+<h2 id="shader">编译shader</h2>
+
+<p>使用下面的函数来编译shader:</p>
+
+<pre><code>- (GLuint)compileShader:(NSString*)shaderName withType:(GLenum)shaderType
+{
+    // 1
+    NSString *shaderPath = [[NSBundle mainBundle] pathForResource:shaderName
+                                                           ofType:@"glsl"];
+    NSError *error;
+    NSString *shaderString = [NSString stringWithContentsOfFile:shaderPath
+                                                       encoding:NSUTF8StringEncoding error:&amp;error];
+    if (!shaderString) {
+        NSLog(@"Error loading shader: %@", error.localizedDescription);
+        exit(1);
+    }
+
+    // 2
+    GLuint shaderHandle = glCreateShader(shaderType);
+
+    // 3
+    const char * shaderStringUTF8 = [shaderString UTF8String];
+    int shaderStringLength = [shaderString length];
+    glShaderSource(shaderHandle, 1, &amp;shaderStringUTF8, &amp;shaderStringLength);
+
+    // 4
+    glCompileShader(shaderHandle);
+
+    // 5
+    GLint compileSuccess;
+    glGetShaderiv(shaderHandle, GL_COMPILE_STATUS, &amp;compileSuccess);
+    if (compileSuccess == GL_FALSE) {
+        GLchar messages[256];
+        glGetShaderInfoLog(shaderHandle, sizeof(messages), 0, &amp;messages[0]);
+        NSString *messageString = [NSString stringWithUTF8String:messages];
+        NSLog(@"%@", messageString);
+        exit(1);
+    }
+
+    return shaderHandle;
+
+}
+</code></pre>
+
+<ol>
+<li>找到shader的源文件并读取其内容到shaderString</li>
+<li>生成一个shader object</li>
+<li>将代码附着到shader object上</li>
+<li>编译shader</li>
+<li>看看是否编译成功，如果不成功，输出错误信息并退出</li>
+</ol>
 
 <h2 id="fragmentshader">fragment shader</h2>
 <!-- content end -->
