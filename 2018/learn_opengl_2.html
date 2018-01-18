@@ -53,6 +53,12 @@ EAGLContext* CreateBestEAGLContext()
    return context;
 }
 ```
+这里需要说明一下，虽然EAGLContext持有OpenGL ES的状态，但是EAGLContext并不直接管理OpenGL objects，而是下面这张图这样，通过EAGLSharegroup来管理。
+
+![](https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Art/eaglContext_eagleSharegroup_2x.png)
+
+
+
 
 ## 选择一个渲染的目的地
 首先，创建工程，加入OpenGLES.framework、GLKit.framework和QuartzCore.framework
@@ -106,35 +112,10 @@ EAGLContext* CreateBestEAGLContext()
     glBindTexture(GL_TEXTURE_CUBE_MAP, _cubeTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
-    
-    //second skybox
-    //This way the skybox will always be drawn at the background of all the other objects
-    glUseProgram(_shader);
-    GLKMatrix4 model = GLKMatrix4Identity;
-    GLKMatrix4 viewM = GLKMatrix4MakeLookAt(.0, .0, 9.,
-                                            .0, .0, .0,
-                                            .0, 1., .0);
-    viewM = GLKMatrix4MakeFromMatrix3( GLKMatrix4GetMatrix3(viewM));
-    GLKMatrix4 projection = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    GLuint viewLocation = glGetUniformLocation(_shader, "view");
-    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, (void *)viewM.m);
-    
-    GLuint projectionLocation = glGetUniformLocation(_shader, "projection");
-    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, (void *)projection.m);
-    // skybox
-    glDepthFunc(GL_LEQUAL);
-    glBindVertexArray(_planeVAO);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _cubeTexture);
-    GLuint modelLocation = glGetUniformLocation(_shader, "model");
-    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, (void *)model.m);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glDepthFunc(GL_LESS);
 }
 ```
 
 
-![](http://static.zybuluo.com/candycat/epejev04t6vudwsyo2el8rp0/Per-fragment%20Operations.png)
 
 
 <!-- markdown end -->
@@ -171,6 +152,10 @@ EAGLContext* CreateBestEAGLContext()
 &nbsp;&nbsp; return context;
 }
 </code></pre>
+
+<p>这里需要说明一下，虽然EAGLContext持有OpenGL ES的状态，但是EAGLContext并不直接管理OpenGL objects，而是下面这张图这样，通过EAGLSharegroup来管理。</p>
+
+<p><img src="https://developer.apple.com/library/content/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Art/eaglContext_eagleSharegroup_2x.png" alt="" title=""></p>
 
 <h2 id="">选择一个渲染的目的地</h2>
 
@@ -226,34 +211,8 @@ EAGLContext* CreateBestEAGLContext()
     glBindTexture(GL_TEXTURE_CUBE_MAP, _cubeTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
-
-    //second skybox
-    //This way the skybox will always be drawn at the background of all the other objects
-    glUseProgram(_shader);
-    GLKMatrix4 model = GLKMatrix4Identity;
-    GLKMatrix4 viewM = GLKMatrix4MakeLookAt(.0, .0, 9.,
-                                            .0, .0, .0,
-                                            .0, 1., .0);
-    viewM = GLKMatrix4MakeFromMatrix3( GLKMatrix4GetMatrix3(viewM));
-    GLKMatrix4 projection = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(45.), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-    GLuint viewLocation = glGetUniformLocation(_shader, "view");
-    glUniformMatrix4fv(viewLocation, 1, GL_FALSE, (void *)viewM.m);
-
-    GLuint projectionLocation = glGetUniformLocation(_shader, "projection");
-    glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, (void *)projection.m);
-    // skybox
-    glDepthFunc(GL_LEQUAL);
-    glBindVertexArray(_planeVAO);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _cubeTexture);
-    GLuint modelLocation = glGetUniformLocation(_shader, "model");
-    glUniformMatrix4fv(modelLocation, 1, GL_FALSE, (void *)model.m);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glDepthFunc(GL_LESS);
 }
 </code></pre>
-
-<p><img src="http://static.zybuluo.com/candycat/epejev04t6vudwsyo2el8rp0/Per-fragment%20Operations.png" alt="" title=""></p>
 <!-- content end -->
 </div>
 <br>
