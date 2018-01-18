@@ -287,7 +287,37 @@ glEnableVertexAttribArray(0);
 设置好上面的步骤后，我们就可以使用glDraw*这簇函数来绘制了，但是每画一个物体都需要重新设置VBO等，操作好多。。。所以OpenGL提供了vertex array object来解决这个问题
 
 ## Vertex array object
+Vertex array object 存储了以下操作:
 
+- glEnableVertexAttribArray和glDisableVertexAttribArray的函数调用
+- 函数glVertexAttribPointer设置的数据格式
+- Vertex buffer objects 的数据设置.
+- 存储在Element Buffer Object中的数据（这个以后会讲到）
+![](https://learnopengl.com/img/getting-started/vertex_array_objects_ebo.png)
+
+于是，绘制不同物体时，我们可以通过简单的切换不同的VAO来绘制就可以了。
+
+```
+// ..:: Initialization code (done once (unless your object frequently changes)) :: ..
+// 1. bind Vertex Array Object
+glBindVertexArray(VAO);
+// 2. copy our vertices array in a buffer for OpenGL to use
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 3. then set our vertex attributes pointers
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);  
+
+  
+[...]
+
+// ..:: Drawing code (in render loop) :: ..
+// 4. draw the object
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+someOpenGLFunctionThatDrawsOurTriangle();   
+
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -565,6 +595,38 @@ glEnableVertexAttribArray(0);
 <p>设置好上面的步骤后，我们就可以使用glDraw*这簇函数来绘制了，但是每画一个物体都需要重新设置VBO等，操作好多。。。所以OpenGL提供了vertex array object来解决这个问题</p>
 
 <h2 id="vertexarrayobject">Vertex array object</h2>
+
+<p>Vertex array object 存储了以下操作:</p>
+
+<ul>
+<li>glEnableVertexAttribArray和glDisableVertexAttribArray的函数调用</li>
+<li>函数glVertexAttribPointer设置的数据格式</li>
+<li>Vertex buffer objects 的数据设置.</li>
+<li>存储在Element Buffer Object中的数据（这个以后会讲到）
+<img src="https://learnopengl.com/img/getting-started/vertex_array_objects_ebo.png" alt="" title=""></li>
+</ul>
+
+<p>于是，绘制不同物体时，我们可以通过简单的切换不同的VAO来绘制就可以了。</p>
+
+<pre><code>// ..:: Initialization code (done once (unless your object frequently changes)) :: ..
+// 1. bind Vertex Array Object
+glBindVertexArray(VAO);
+// 2. copy our vertices array in a buffer for OpenGL to use
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 3. then set our vertex attributes pointers
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);  
+
+
+[...]
+
+// ..:: Drawing code (in render loop) :: ..
+// 4. draw the object
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+someOpenGLFunctionThatDrawsOurTriangle();   
+</code></pre>
 <!-- content end -->
 </div>
 <br>
