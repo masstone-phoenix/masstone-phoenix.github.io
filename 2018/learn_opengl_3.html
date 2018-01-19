@@ -104,8 +104,65 @@ glBindVertexArray(0);
 
 
 # Shader
+Shader（着色器）是跑在GPU上的“小程序”。每个shader是GPU流水线的某一个特定阶段。从根本上来说，shader只是接收输入的数据，然后经过运算，输出输出数据而矣。它们是比较独立的程序，只能通过输入输出与彼此通信。
 
-我们可以得到如下图形了：
+## GLSL
+Shader使用GLSL语言编写，GLSL对GPU操作进行了定制，包括矢量和矩阵操作。
+
+着色器总是以声明版本开头，接着是输入和输出变量、uniform和main函数。每个着色器的入口点都是main函数，在这个函数中我们处理所有的输入变量，并将结果输出到输出变量中。如果你不知道什么是uniform也不用担心，我们后面会进行讲解。
+
+一个典型的着色器有下面的结构：
+```
+#version version_number
+in type in_variable_name;
+in type in_variable_name;
+
+out type out_variable_name;
+  
+uniform type uniform_name;
+  
+void main()
+{
+  // process input(s) and do some weird graphics stuff
+  ...
+  // output processed stuff to output variable
+  out_variable_name = weird_stuff_we_processed;
+}
+```
+
+## 数据类型
+GLSL中包含C等其它语言大部分的默认基础数据类型：int、float、double、uint和bool。GLSL也有两种容器类型，分别是向量(Vector)和矩阵(Matrix)。
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vecn</code></td>
+<td>包含<code>n</code>个float分量的默认向量</td>
+</tr>
+<tr>
+<td><code>bvecn</code></td>
+<td>包含<code>n</code>个bool分量的向量</td>
+</tr>
+<tr>
+<td><code>ivecn</code></td>
+<td>包含<code>n</code>个int分量的向量</td>
+</tr>
+<tr>
+<td><code>uvecn</code></td>
+<td>包含<code>n</code>个unsigned int分量的向量</td>
+</tr>
+<tr>
+<td><code>dvecn</code></td>
+<td>包含<code>n</code>个double分量的向量</td>
+</tr>
+</tbody>
+</table>
+
 ![](http://masstone-phoenix.github.io/image/opengl/triangle_demo.png)
 <!-- markdown end -->
 </div>
@@ -188,8 +245,69 @@ glBindVertexArray(0);
 
 <h1 id="shader">Shader</h1>
 
-<p>我们可以得到如下图形了：
-<img src="http://masstone-phoenix.github.io/image/opengl/triangle_demo.png" alt="" title=""></p>
+<p>Shader（着色器）是跑在GPU上的“小程序”。每个shader是GPU流水线的某一个特定阶段。从根本上来说，shader只是接收输入的数据，然后经过运算，输出输出数据而矣。它们是比较独立的程序，只能通过输入输出与彼此通信。</p>
+
+<h2 id="glsl">GLSL</h2>
+
+<p>Shader使用GLSL语言编写，GLSL对GPU操作进行了定制，包括矢量和矩阵操作。</p>
+
+<p>着色器总是以声明版本开头，接着是输入和输出变量、uniform和main函数。每个着色器的入口点都是main函数，在这个函数中我们处理所有的输入变量，并将结果输出到输出变量中。如果你不知道什么是uniform也不用担心，我们后面会进行讲解。</p>
+
+<p>一个典型的着色器有下面的结构：</p>
+
+<pre><code>#version version_number
+in type in_variable_name;
+in type in_variable_name;
+
+out type out_variable_name;
+
+uniform type uniform_name;
+
+void main()
+{
+  // process input(s) and do some weird graphics stuff
+  ...
+  // output processed stuff to output variable
+  out_variable_name = weird_stuff_we_processed;
+}
+</code></pre>
+
+<h2 id="">数据类型</h2>
+
+<p>GLSL中包含C等其它语言大部分的默认基础数据类型：int、float、double、uint和bool。GLSL也有两种容器类型，分别是向量(Vector)和矩阵(Matrix)。</p>
+
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vecn</code></td>
+<td>包含<code>n</code>个float分量的默认向量</td>
+</tr>
+<tr>
+<td><code>bvecn</code></td>
+<td>包含<code>n</code>个bool分量的向量</td>
+</tr>
+<tr>
+<td><code>ivecn</code></td>
+<td>包含<code>n</code>个int分量的向量</td>
+</tr>
+<tr>
+<td><code>uvecn</code></td>
+<td>包含<code>n</code>个unsigned int分量的向量</td>
+</tr>
+<tr>
+<td><code>dvecn</code></td>
+<td>包含<code>n</code>个double分量的向量</td>
+</tr>
+</tbody>
+</table>
+
+<p><img src="http://masstone-phoenix.github.io/image/opengl/triangle_demo.png" alt="" title=""></p>
 <!-- content end -->
 </div>
 <br>
