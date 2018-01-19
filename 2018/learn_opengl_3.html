@@ -163,6 +163,23 @@ GLSL中包含C等其它语言大部分的默认基础数据类型：int、float�
 </tbody>
 </table>
 
+一个向量的分量可以通过vec.x这种方式获取，这里x是指这个向量的第一个分量。你可以分别使用.x、.y、.z和.w来获取它们的第1、2、3、4个分量。GLSL也允许你对颜色使用rgba，或是对纹理坐标使用stpq访问相同的分量。
+
+向量这一数据类型也允许一些有趣而灵活的分量选择方式，叫做重组(Swizzling)。重组允许这样的语法：
+
+```
+vec2 someVec;
+vec4 differentVec = someVec.xyxx;
+vec3 anotherVec = differentVec.zyw;
+vec4 otherVec = someVec.xxxx + anotherVec.yxzy;
+```
+
+我们可以使用至多4个分量，当然，所引用的分量在原向量中必须存在。
+
+## 输入输出
+
+## Uniforms
+
 ![](http://masstone-phoenix.github.io/image/opengl/triangle_demo.png)
 <!-- markdown end -->
 </div>
@@ -306,6 +323,22 @@ void main()
 </tr>
 </tbody>
 </table>
+
+<p>一个向量的分量可以通过vec.x这种方式获取，这里x是指这个向量的第一个分量。你可以分别使用.x、.y、.z和.w来获取它们的第1、2、3、4个分量。GLSL也允许你对颜色使用rgba，或是对纹理坐标使用stpq访问相同的分量。</p>
+
+<p>向量这一数据类型也允许一些有趣而灵活的分量选择方式，叫做重组(Swizzling)。重组允许这样的语法：</p>
+
+<pre><code>vec2 someVec;
+vec4 differentVec = someVec.xyxx;
+vec3 anotherVec = differentVec.zyw;
+vec4 otherVec = someVec.xxxx + anotherVec.yxzy;
+</code></pre>
+
+<p>我们可以使用至多4个分量，当然，所引用的分量在原向量中必须存在。</p>
+
+<h2 id="">输入输出</h2>
+
+<h2 id="uniforms">Uniforms</h2>
 
 <p><img src="http://masstone-phoenix.github.io/image/opengl/triangle_demo.png" alt="" title=""></p>
 <!-- content end -->
