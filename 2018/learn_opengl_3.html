@@ -177,10 +177,64 @@ vec4 otherVec = someVec.xxxx + anotherVec.yxzy;
 我们可以使用至多4个分量，当然，所引用的分量在原向量中必须存在。
 
 ## 输入输出
+前面提到过shader只是接收输入的数据，经过运算，输出输出数据而矣。这里的输入输出数据通过关键字in和out定义。当一个输出变量的名字和类型与下一阶段shader中的输入的匹配时，变量值就会传递到下一个shader中。
+
+Vertex shader的输入来自vertex data，为了使用OpenGL认识数据的格式，我们需要在CPU端配置这个vertex data，这里就用到了```layout (location = 0)```中的location。
+
+```
+//下面两个函数的第一个参数就是location
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *)0);
+glEnableVertexAttribArray(0);
+```
+Fragment shader需要输出一个类型为vec4的颜色值。如果没有这个值，那么绘制出来的将都是黑色。
+
+下面我们看一个从vertex shader传递数据到fragment shader的例子：
+
+vertex shader：
+```
+ #version 300 es
+layout (location = 0) in vec3 aPos; // the position variable has attribute position 0
+  
+out vec4 vertexColor; // specify a color output to the fragment shader
+
+void main()
+{
+    gl_Position = vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor
+    vertexColor = vec4(1.0, 0.5, 0.2, 1.0);
+}
+```
+
+fragment shader:
+```
+ #version 300 es
+precision mediump float;
+out vec4 FragColor;
+  
+in vec4 vertexColor; // the input variable from the vertex shader (same name and same type)  
+
+void main()
+{
+    FragColor = vertexColor;
+} 
+```
+这个vertexColor这个数据就从vertex shader传递到fragment shader了，效果：
+![](http://masstone-phoenix.github.io/image/opengl/triangle_demo.png)
 
 ## Uniforms
+Uniforms是一种从CPU传递数据到GPU的方式。但是它和顶点数据有一些不同：首先，它是全局的，也就是说，一个shader program中，一个uniform变量是唯一的；其次，如果设置了uniform变量的值，uniform变量将会保持这个值直到下次设置或重置。
 
-![](http://masstone-phoenix.github.io/image/opengl/triangle_demo.png)
+以下声明了一个uniform变量ourColor。
+
+```
+out vec4 FragColor;
+  
+uniform vec4 ourColor; // we set this variable in the OpenGL code.
+
+void main()
+{
+    FragColor = ourColor;
+}  
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -338,9 +392,65 @@ vec4 otherVec = someVec.xxxx + anotherVec.yxzy;
 
 <h2 id="">输入输出</h2>
 
+<p>前面提到过shader只是接收输入的数据，经过运算，输出输出数据而矣。这里的输入输出数据通过关键字in和out定义。当一个输出变量的名字和类型与下一阶段shader中的输入的匹配时，变量值就会传递到下一个shader中。</p>
+
+<p>Vertex shader的输入来自vertex data，为了使用OpenGL认识数据的格式，我们需要在CPU端配置这个vertex data，这里就用到了<code>layout (location = 0)</code>中的location。</p>
+
+<pre><code>//下面两个函数的第一个参数就是location
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *)0);
+glEnableVertexAttribArray(0);
+</code></pre>
+
+<p>Fragment shader需要输出一个类型为vec4的颜色值。如果没有这个值，那么绘制出来的将都是黑色。</p>
+
+<p>下面我们看一个从vertex shader传递数据到fragment shader的例子：</p>
+
+<p>vertex shader：</p>
+
+<pre><code> #version 300 es
+layout (location = 0) in vec3 aPos; // the position variable has attribute position 0
+
+out vec4 vertexColor; // specify a color output to the fragment shader
+
+void main()
+{
+    gl_Position = vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor
+    vertexColor = vec4(1.0, 0.5, 0.2, 1.0);
+}
+</code></pre>
+
+<p>fragment shader:</p>
+
+<pre><code> #version 300 es
+precision mediump float;
+out vec4 FragColor;
+
+in vec4 vertexColor; // the input variable from the vertex shader (same name and same type)  
+
+void main()
+{
+    FragColor = vertexColor;
+} 
+</code></pre>
+
+<p>这个vertexColor这个数据就从vertex shader传递到fragment shader了，效果：
+<img src="http://masstone-phoenix.github.io/image/opengl/triangle_demo.png" alt="" title=""></p>
+
 <h2 id="uniforms">Uniforms</h2>
 
-<p><img src="http://masstone-phoenix.github.io/image/opengl/triangle_demo.png" alt="" title=""></p>
+<p>Uniforms是一种从CPU传递数据到GPU的方式。但是它和顶点数据有一些不同：首先，它是全局的，也就是说，一个shader program中，一个uniform变量是唯一的；其次，如果设置了uniform变量的值，uniform变量将会保持这个值直到下次设置或重置。</p>
+
+<p>以下声明了一个uniform变量ourColor。</p>
+
+<pre><code>out vec4 FragColor;
+
+uniform vec4 ourColor; // we set this variable in the OpenGL code.
+
+void main()
+{
+    FragColor = ourColor;
+}  
+</code></pre>
 <!-- content end -->
 </div>
 <br>
