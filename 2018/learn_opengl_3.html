@@ -235,6 +235,16 @@ void main()
     FragColor = ourColor;
 }  
 ```
+
+使用下面的方法设置uniform变量的值：
+
+```
+int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+glUseProgram(shaderProgram);
+glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+```
+先通过名字找到uniform变量在program中的位置，然后使用glUniform4f来设置这个变量的值。*这个里面要注意，需要先设置program为当前使用的program才行，即glUseProgram在这里的作用*
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -451,6 +461,15 @@ void main()
     FragColor = ourColor;
 }  
 </code></pre>
+
+<p>使用下面的方法设置uniform变量的值：</p>
+
+<pre><code>int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+glUseProgram(shaderProgram);
+glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+</code></pre>
+
+<p>先通过名字找到uniform变量在program中的位置，然后使用glUniform4f来设置这个变量的值。<em>这个里面要注意，需要先设置program为当前使用的program才行，即glUseProgram在这里的作用</em></p>
 <!-- content end -->
 </div>
 <br>
