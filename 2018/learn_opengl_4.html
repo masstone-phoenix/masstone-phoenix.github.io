@@ -33,8 +33,50 @@
 我们先从简单的2D纹理开始，一步一步达到图中的效果。
 ![](http://masstone-phoenix.github.io/image/opengl/texture_demo2.png)
 
+# 纹理坐标
 想要完成图片中的贴图效果，我们需要告诉每个顶点映射到纹理中的哪个点，这就是顶点数据中的*纹理坐标*的作用。纹理坐标的定义如下：原点在左下角，x,y轴的正方向是向左，向上的。
 ![](https://learnopengl.com/img/getting-started/tex_coords.png)
+
+# 纹理环绕（Texture Wrapping）
+纹理坐标x和y的范围是0~1，如果定义的纹理坐标超出上面的值会怎么样？OpenGL的默认形为是重复，当然还可以自定义一些其它选项：
+<table>
+<thead>
+<tr>
+<th>环绕方式(Wrapping)</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>GL_REPEAT</var></td>
+<td>对纹理的默认行为。重复纹理图像。</td>
+</tr>
+<tr>
+<td><var>GL_MIRRORED_REPEAT</var></td>
+<td>和<var>GL_REPEAT</var>一样，但每次重复图片是镜像放置的。</td>
+</tr>
+<tr>
+<td><var>GL_CLAMP_TO_EDGE</var></td>
+<td>纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，产生一种边缘被拉伸的效果。</td>
+</tr>
+<tr>
+<td><var>GL_CLAMP_TO_BORDER</var></td>
+<td>超出的坐标为用户指定的边缘颜色。</td>
+</tr>
+</tbody>
+</table>
+
+图片解释的会更清楚：
+![](https://learnopengl.com/img/getting-started/texture_wrapping.png)
+
+使用下面的函数修改这个参数：
+```
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+```
+
+# 纹理过滤（Texture Filtering）
+OpenGL是如何从一个纹理坐标得到它所对应的颜色的？当一个小的图片映射到一个很大的区域时
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -47,8 +89,54 @@
 <p>我们先从简单的2D纹理开始，一步一步达到图中的效果。
 <img src="http://masstone-phoenix.github.io/image/opengl/texture_demo2.png" alt="" title=""></p>
 
+<h1 id="">纹理坐标</h1>
+
 <p>想要完成图片中的贴图效果，我们需要告诉每个顶点映射到纹理中的哪个点，这就是顶点数据中的<em>纹理坐标</em>的作用。纹理坐标的定义如下：原点在左下角，x,y轴的正方向是向左，向上的。
 <img src="https://learnopengl.com/img/getting-started/tex_coords.png" alt="" title=""></p>
+
+<h1 id="texturewrapping">纹理环绕（Texture Wrapping）</h1>
+
+<p>纹理坐标x和y的范围是0~1，如果定义的纹理坐标超出上面的值会怎么样？OpenGL的默认形为是重复，当然还可以自定义一些其它选项：</p>
+
+<table>
+<thead>
+<tr>
+<th>环绕方式(Wrapping)</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>GL_REPEAT</var></td>
+<td>对纹理的默认行为。重复纹理图像。</td>
+</tr>
+<tr>
+<td><var>GL_MIRRORED_REPEAT</var></td>
+<td>和<var>GL_REPEAT</var>一样，但每次重复图片是镜像放置的。</td>
+</tr>
+<tr>
+<td><var>GL_CLAMP_TO_EDGE</var></td>
+<td>纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，产生一种边缘被拉伸的效果。</td>
+</tr>
+<tr>
+<td><var>GL_CLAMP_TO_BORDER</var></td>
+<td>超出的坐标为用户指定的边缘颜色。</td>
+</tr>
+</tbody>
+</table>
+
+<p>图片解释的会更清楚：
+<img src="https://learnopengl.com/img/getting-started/texture_wrapping.png" alt="" title=""></p>
+
+<p>使用下面的函数修改这个参数：</p>
+
+<pre><code>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+</code></pre>
+
+<h1 id="texturefiltering">纹理过滤（Texture Filtering）</h1>
+
+<p>OpenGL是如何从一个纹理坐标得到它所对应的颜色的？当一个小的图片映射到一个很大的区域时</p>
 <!-- content end -->
 </div>
 <br>
