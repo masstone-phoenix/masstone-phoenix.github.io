@@ -1,0 +1,326 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+[上篇文章](https://masstone-phoenix.github.io/2018/learn_opengl_2.html)已经可以画出一个三角形了，可以说我们已经有了很大的进步了，这回我们将上篇文章提到的Element Buffer Objects解释一下，然后学习一下GLSL shader的一些语法。
+
+#Element Buffer Objects
+如果我们要画一个矩形，那么就需要6个点，这是为什么呢？因为OpenGL主要是画三角形，即通过绘制三角形来绘制其它图形。一个矩形需要绘制两个三角形就需要下面的6个点，但是有两个点是重复的，这使数据量增加了50%（由4到6），如果有一种技术能够只用4个点就画出这个矩形有多好？
+
+```
+float vertices[] = {
+    // first triangle
+     0.5f,  0.5f, 0.0f,  // top right
+     0.5f, -0.5f, 0.0f,  // bottom right
+    -0.5f,  0.5f, 0.0f,  // top left 
+    // second triangle
+     0.5f, -0.5f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f,  // bottom left
+    -0.5f,  0.5f, 0.0f   // top left
+}; 
+```
+
+这是就开头说的Element Buffer Objects了，它是一个buffer，存储了顶点的索引数据，OpenGL能够使用这个索引来决定使用哪个顶点数据来进行绘制。下面我使用EBO来绘制一个矩形。
+
+首先定义数据：
+
+```
+float vertices[] = {
+     0.5f,  0.5f, 0.0f,  // top right
+     0.5f, -0.5f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f,  // bottom left
+    -0.5f,  0.5f, 0.0f   // top left 
+};
+unsigned int indices[] = {  // note that we start from 0!
+    0, 1, 3,   // first triangle
+    1, 2, 3    // second triangle
+}; 
+```
+
+然后，生成一个VBO来存储顶点数据（和以前一样，所以省略了），生成一个EBO来存储索引数据
+```
+unsigned int EBO;
+glGenBuffers(1, &EBO);
+
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+```
+可以看到EBO buffer的类型是```GL_ELEMENT_ARRAY_BUFFER```。
+
+最后在绘制时绑定EBO，并调用glDrawElements来进行绘制。
+
+```
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+```
+
+当然，我们也可以使用VAO来存储所有信息，这样程序结构就变成了：
+
+```
+// ..:: Initialization code :: ..
+// 1. bind Vertex Array Object
+glBindVertexArray(VAO);
+// 2. copy our vertices array in a vertex buffer for OpenGL to use
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+// 3. copy our index array in a element buffer for OpenGL to use
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+// 4. then set the vertex attributes pointers
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glEnableVertexAttribArray(0);  
+
+[...]
+  
+// ..:: Drawing code (in render loop) :: ..
+glUseProgram(shaderProgram);
+glBindVertexArray(VAO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0)
+glBindVertexArray(0);
+```
+
+
+# Shader
+Shader（着色器）是跑在GPU上的“小程序”。每个shader是GPU流水线的某一个特定阶段。从根本上来说，shader只是接收输入的数据，然后经过运算，输出输出数据而矣。它们是比较独立的程序，只能通过输入输出与彼此通信。
+
+## GLSL
+Shader使用GLSL语言编写，GLSL对GPU操作进行了定制，包括矢量和矩阵操作。
+
+着色器总是以声明版本开头，接着是输入和输出变量、uniform和main函数。每个着色器的入口点都是main函数，在这个函数中我们处理所有的输入变量，并将结果输出到输出变量中。如果你不知道什么是uniform也不用担心，我们后面会进行讲解。
+
+一个典型的着色器有下面的结构：
+```
+#version version_number
+in type in_variable_name;
+in type in_variable_name;
+
+out type out_variable_name;
+  
+uniform type uniform_name;
+  
+void main()
+{
+  // process input(s) and do some weird graphics stuff
+  ...
+  // output processed stuff to output variable
+  out_variable_name = weird_stuff_we_processed;
+}
+```
+
+## 数据类型
+GLSL中包含C等其它语言大部分的默认基础数据类型：int、float、double、uint和bool。GLSL也有两种容器类型，分别是向量(Vector)和矩阵(Matrix)。
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vecn</code></td>
+<td>包含<code>n</code>个float分量的默认向量</td>
+</tr>
+<tr>
+<td><code>bvecn</code></td>
+<td>包含<code>n</code>个bool分量的向量</td>
+</tr>
+<tr>
+<td><code>ivecn</code></td>
+<td>包含<code>n</code>个int分量的向量</td>
+</tr>
+<tr>
+<td><code>uvecn</code></td>
+<td>包含<code>n</code>个unsigned int分量的向量</td>
+</tr>
+<tr>
+<td><code>dvecn</code></td>
+<td>包含<code>n</code>个double分量的向量</td>
+</tr>
+</tbody>
+</table>
+
+一个向量的分量可以通过vec.x这种方式获取，这里x是指这个向量的第一个分量。你可以分别使用.x、.y、.z和.w来获取它们的第1、2、3、4个分量。GLSL也允许你对颜色使用rgba，或是对纹理坐标使用stpq访问相同的分量。
+
+向量这一数据类型也允许一些有趣而灵活的分量选择方式，叫做重组(Swizzling)。重组允许这样的语法：
+
+```
+vec2 someVec;
+vec4 differentVec = someVec.xyxx;
+vec3 anotherVec = differentVec.zyw;
+vec4 otherVec = someVec.xxxx + anotherVec.yxzy;
+```
+
+我们可以使用至多4个分量，当然，所引用的分量在原向量中必须存在。
+
+## 输入输出
+前面提到过shader只是接收输入的数据，经过运算，输出输出数据而矣。这里的输入输出数据通过关键字in和out定义。当一个输出变量的名字和类型与下一阶段shader中的输入的匹配时，变量值就会传递到下一个shader中。
+
+Vertex shader的输入来自vertex data，为了使用OpenGL认识数据的格式，我们需要在CPU端配置这个vertex data，这里就用到了```layout (location = 0)```中的location。
+
+```
+//下面两个函数的第一个参数就是location
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void *)0);
+glEnableVertexAttribArray(0);
+```
+Fragment shader需要输出一个类型为vec4的颜色值。如果没有这个值，那么绘制出来的将都是黑色。
+
+下面我们看一个从vertex shader传递数据到fragment shader的例子：
+
+vertex shader：
+```
+ #version 300 es
+layout (location = 0) in vec3 aPos; // the position variable has attribute position 0
+  
+out vec4 vertexColor; // specify a color output to the fragment shader
+
+void main()
+{
+    gl_Position = vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor
+    vertexColor = vec4(1.0, 0.5, 0.2, 1.0);
+}
+```
+
+fragment shader:
+```
+ #version 300 es
+precision mediump float;
+out vec4 FragColor;
+  
+in vec4 vertexColor; // the input variable from the vertex shader (same name and same type)  
+
+void main()
+{
+    FragColor = vertexColor;
+} 
+```
+这个vertexColor这个数据就从vertex shader传递到fragment shader了，效果：
+![](http://masstone-phoenix.github.io/image/opengl/triangle_demo.png)
+
+## Uniforms
+Uniforms是一种从CPU传递数据到GPU的方式。但是它和顶点数据有一些不同：首先，它是全局的，也就是说，一个shader program中，一个uniform变量是唯一的；其次，如果设置了uniform变量的值，uniform变量将会保持这个值直到下次设置或重置。
+
+以下声明了一个uniform变量ourColor。
+
+```
+out vec4 FragColor;
+  
+uniform vec4 ourColor; // we set this variable in the OpenGL code.
+
+void main()
+{
+    FragColor = ourColor;
+}  
+```
+
+使用下面的方法设置uniform变量的值：
+
+```
+int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+glUseProgram(shaderProgram);
+glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
+```
+先通过名字找到uniform变量在program中的位置，然后使用glUniform4f来设置这个变量的值。*这个里面要注意，需要先设置program为当前使用的program才行，即glUseProgram在这里的作用*
+
+学习完以上知识，自己能否画出下面的三角形：
+![](https://learnopengl.com/img/getting-started/shaders3.png)
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "2018/learn_opengl_4.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
