@@ -76,7 +76,51 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 ```
 
 # 纹理过滤（Texture Filtering）
-OpenGL是如何从一个纹理坐标得到它所对应的颜色的？当一个小的图片映射到一个很大的区域时
+OpenGL是如何从一个纹理坐标得到它所对应的颜色的？纹理坐标是一个精确的值，而图像的像素是一个范围，在点落在一个像素中时，如何得到这个点的颜色值？
+
+有两种办法，一是直接取包含该点的像素的颜色，这就是```GL_NEAREST```；还有，根据点到周围像素中心点的距离来加权出一个颜色值，这就是```GL_LINEAR```。它们的效果如下：
+![](https://learnopengl.com/img/getting-started/texture_filtering.png)
+
+我们使用下面的函数修改纹理过滤：
+```
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+```
+
+# Mipmaps
+想象一下，在我们的场景中有成千上万个物体，每个都需要纹理映射，如果处于远处的纹理使用与近处纹理相同的分辨率的话，我们将浪费许多内存；而且，如果一点的颜色值通过很大一个区域的颜色值来加权的话，可以产生可见的污点，这也是我们不想见到的。
+
+OpenGL提供了一种叫Mipmaps的概念来解决这个问题，当物体离镜头近时，使用高分辨率的纹理，当物体在远处时，使用低分辨率的纹理。```glGenerateMipmaps ```用来生成这样的Mipmaps纹理。
+
+当全用Mipmaps时，物体由远及近时，需要混合两个Mipmaps，此时，也产生了如同纹理过滤的选项，总结起来就有4种：
+<table>
+<thead>
+<tr>
+<th>过滤方式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>GL_NEAREST_MIPMAP_NEAREST</var></td>
+<td>使用最邻近的多级渐远纹理来匹配像素大小，并使用邻近插值进行纹理采样</td>
+</tr>
+<tr>
+<td><var>GL_LINEAR_MIPMAP_NEAREST</var></td>
+<td>使用最邻近的多级渐远纹理级别，并使用线性插值进行采样</td>
+</tr>
+<tr>
+<td><var>GL_NEAREST_MIPMAP_LINEAR</var></td>
+<td>在两个最匹配像素大小的多级渐远纹理之间进行线性插值，使用邻近插值进行采样</td>
+</tr>
+<tr>
+<td><var>GL_LINEAR_MIPMAP_LINEAR</var></td>
+<td>在两个邻近的多级渐远纹理之间使用线性插值，并使用线性插值进行采样</td>
+</tr>
+</tbody>
+</table>
+
+同样使用```glTexParameteri```函数来改变这个选项，但是要注意，Mipmaps只对缩小有作用，放大时是不使用Mipmaps的。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -136,7 +180,53 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
 <h1 id="texturefiltering">纹理过滤（Texture Filtering）</h1>
 
-<p>OpenGL是如何从一个纹理坐标得到它所对应的颜色的？当一个小的图片映射到一个很大的区域时</p>
+<p>OpenGL是如何从一个纹理坐标得到它所对应的颜色的？纹理坐标是一个精确的值，而图像的像素是一个范围，在点落在一个像素中时，如何得到这个点的颜色值？</p>
+
+<p>有两种办法，一是直接取包含该点的像素的颜色，这就是<code>GL_NEAREST</code>；还有，根据点到周围像素中心点的距离来加权出一个颜色值，这就是<code>GL_LINEAR</code>。它们的效果如下：
+<img src="https://learnopengl.com/img/getting-started/texture_filtering.png" alt="" title=""></p>
+
+<p>我们使用下面的函数修改纹理过滤：</p>
+
+<pre><code>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+</code></pre>
+
+<h1 id="mipmaps">Mipmaps</h1>
+
+<p>想象一下，在我们的场景中有成千上万个物体，每个都需要纹理映射，如果处于远处的纹理使用与近处纹理相同的分辨率的话，我们将浪费许多内存；而且，如果一点的颜色值通过很大一个区域的颜色值来加权的话，可以产生可见的污点，这也是我们不想见到的。</p>
+
+<p>OpenGL提供了一种叫Mipmaps的概念来解决这个问题，当物体离镜头近时，使用高分辨率的纹理，当物体在远处时，使用低分辨率的纹理。<code>glGenerateMipmaps</code>用来生成这样的Mipmaps纹理。</p>
+
+<p>当全用Mipmaps时，物体由远及近时，需要混合两个Mipmaps，此时，也产生了如同纹理过滤的选项，总结起来就有4种：</p>
+
+<table>
+<thead>
+<tr>
+<th>过滤方式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>GL_NEAREST_MIPMAP_NEAREST</var></td>
+<td>使用最邻近的多级渐远纹理来匹配像素大小，并使用邻近插值进行纹理采样</td>
+</tr>
+<tr>
+<td><var>GL_LINEAR_MIPMAP_NEAREST</var></td>
+<td>使用最邻近的多级渐远纹理级别，并使用线性插值进行采样</td>
+</tr>
+<tr>
+<td><var>GL_NEAREST_MIPMAP_LINEAR</var></td>
+<td>在两个最匹配像素大小的多级渐远纹理之间进行线性插值，使用邻近插值进行采样</td>
+</tr>
+<tr>
+<td><var>GL_LINEAR_MIPMAP_LINEAR</var></td>
+<td>在两个邻近的多级渐远纹理之间使用线性插值，并使用线性插值进行采样</td>
+</tr>
+</tbody>
+</table>
+
+<p>同样使用<code>glTexParameteri</code>函数来改变这个选项，但是要注意，Mipmaps只对缩小有作用，放大时是不使用Mipmaps的。</p>
 <!-- content end -->
 </div>
 <br>
