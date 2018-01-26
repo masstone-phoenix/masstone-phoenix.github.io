@@ -121,6 +121,21 @@ OpenGL提供了一种叫Mipmaps的概念来解决这个问题，当物体离镜�
 </table>
 
 同样使用```glTexParameteri```函数来改变这个选项，但是要注意，Mipmaps只对缩小有作用，放大时是不使用Mipmaps的。
+
+# 创建一个纹理
+```
+//load texture
+    NSError *error;
+    GLKTextureInfo *appleTextureMetadata = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo_2017-10-26_19-39-39" ofType:@"jpg"] options:nil error:&error];
+    NSAssert( appleTextureMetadata != nil, @"Error loading texture: %@", error);
+    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+    glBindTexture(GL_TEXTURE_2D, appleTextureMetadata.name);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -227,6 +242,21 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 </table>
 
 <p>同样使用<code>glTexParameteri</code>函数来改变这个选项，但是要注意，Mipmaps只对缩小有作用，放大时是不使用Mipmaps的。</p>
+
+<h1 id="">创建一个纹理</h1>
+
+<pre><code>//load texture
+    NSError *error;
+    GLKTextureInfo *appleTextureMetadata = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo_2017-10-26_19-39-39" ofType:@"jpg"] options:nil error:&amp;error];
+    NSAssert( appleTextureMetadata != nil, @"Error loading texture: %@", error);
+    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+    glBindTexture(GL_TEXTURE_2D, appleTextureMetadata.name);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);
+</code></pre>
 <!-- content end -->
 </div>
 <br>
