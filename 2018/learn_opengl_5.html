@@ -46,6 +46,10 @@ OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间�
 3. 这步是将 world coordinates 转换到view-space coordinates。在 view-space coordinates中，每个坐标是从镜头观察的。
 4. 然后将坐标从view-space coordinates转换到clip coordinates。裁剪坐标会被处理到-1.0 到 1.0 之间，从而决定了哪些是可见元素。
 5. 最后，我们从 clip coordinates 转换到screen coordinates，这一步的变换叫 viewport transform。这个变换是由函数 glViewport 定义的。screen coordinates会被输送给光栅化阶段，然后转换为片元。
+
+这里要强调一下，从vertex shader输出的gl_Position是一个4D向量，而NDC是一个3D空间，所以中间进行了一个叫perspective division的操作：
+$out = \begin{pmatrix} x /w \\ y / w \\ z / w \end{matrix}$
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -75,6 +79,9 @@ OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间�
 <li>然后将坐标从view-space coordinates转换到clip coordinates。裁剪坐标会被处理到-1.0 到 1.0 之间，从而决定了哪些是可见元素。</li>
 <li>最后，我们从 clip coordinates 转换到screen coordinates，这一步的变换叫 viewport transform。这个变换是由函数 glViewport 定义的。screen coordinates会被输送给光栅化阶段，然后转换为片元。</li>
 </ol>
+
+<p>这里要强调一下，从vertex shader输出的gl_Position是一个4D向量，而NDC是一个3D空间，所以中间进行了一个叫perspective division的操作：
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-21-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;merror&gt;&lt;mtext&gt;out&amp;#xA0;=&amp;#xA0;\begin{pmatrix}&amp;#xA0;x&amp;#xA0;/w&amp;#xA0;\&amp;#xA0;y&amp;#xA0;/&amp;#xA0;w&amp;#xA0;\&amp;#xA0;z&amp;#xA0;/&amp;#xA0;w&amp;#xA0;\end{matrix}&lt;/mtext&gt;&lt;/merror&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span class="math" id="MathJax-Span-152" aria-hidden="true" style=""><span class="noError" id="MathJax-Span-153" style="display: inline-block;">out&nbsp;=&nbsp;\begin{pmatrix}&nbsp;x&nbsp;/w&nbsp;\&nbsp;y&nbsp;/&nbsp;w&nbsp;\&nbsp;z&nbsp;/&nbsp;w&nbsp;\end{matrix}</span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><merror><mtext>out&nbsp;=&nbsp;\begin{pmatrix}&nbsp;x&nbsp;/w&nbsp;\&nbsp;y&nbsp;/&nbsp;w&nbsp;\&nbsp;z&nbsp;/&nbsp;w&nbsp;\end{matrix}</mtext></merror></math></span></span><script type="math/tex" id="MathJax-Element-21">out = \begin{pmatrix} x /w \ y / w \ z / w \end{matrix}</script></p>
 <!-- content end -->
 </div>
 <br>
