@@ -89,7 +89,36 @@ OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间�
 </math>
 
 
+# Clip space
+上面所有空间有，其它空间都好理解，这个空间其实也很好理解，变换就是将view space中的一个视锥体（frustum）映射到clip space的一个正方体上。但是，我们为什么要说一说这个空间呢？因为有两种映射的方式，一个是正交映射，一个是透视映射。
 
+## 正交映射
+其实就是投影，像是光线从无限远的地方照射过来。没有考虑近大远小的影响。它的视锥体是一个长方体。
+![](https://learnopengl.com/img/getting-started/orthographic_frustum.png)
+
+## 透视映射
+这个就是模拟我们人眼看世界时的视角，近大远小，它的视锥体是一个平截头体。
+![](https://learnopengl.com/img/getting-started/perspective_frustum.png)
+
+
+# 3D
+根据上述知识，我们重新编写vertex shader即可绘制3D图形：
+
+```
+#version 300 es
+layout (location = 0) in vec3 aPos;
+...
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    // note that we read the multiplication from right to left
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    ...
+}
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -122,7 +151,7 @@ OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间�
 
 <p>这里要强调一下，从vertex shader输出的gl_Position是一个4D向量，而NDC是一个3D空间，所以中间进行了一个叫perspective division的操作：</p>
 
-<span class="MathJax_Preview" style="color: inherit; display: none;"></span><div class="MathJax_Display" style="text-align: center;"><span class="MathJax" id="MathJax-Element-26-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;u&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mrow&gt;&lt;mo&gt;(&lt;/mo&gt;&lt;mtable rowspacing=&quot;4pt&quot; columnspacing=&quot;1em&quot;&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;/&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;/&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;/&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;/mtable&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/math&gt;" role="presentation" style="text-align: center; position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-220" style="width: 6.456em; display: inline-block;"><span style="display: inline-block; position: relative; width: 5.236em; height: 0px; font-size: 123%;"><span style="position: absolute; clip: rect(2.289em, 1005.185em, 6.507em, -999.947em); top: -4.571em; left: 0em;"><span class="mrow" id="MathJax-Span-221"><span class="mi" id="MathJax-Span-222" style="font-family: STIXGeneral-Italic;">o</span><span class="mi" id="MathJax-Span-223" style="font-family: STIXGeneral-Italic;">u</span><span class="mi" id="MathJax-Span-224" style="font-family: STIXGeneral-Italic;">t<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="mo" id="MathJax-Span-225" style="font-family: STIXGeneral-Regular; padding-left: 0.307em;">=</span><span class="mrow" id="MathJax-Span-226" style="padding-left: 0.307em;"><span class="mo" id="MathJax-Span-227" style="vertical-align: 2.188em;"><span style="display: inline-block; position: relative; width: 0.46em; height: 0px;"><span style="position: absolute; font-family: STIXSizeOneSym; top: -3.249em; left: 0em;">⎛<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; font-family: STIXSizeOneSym; top: -0.353em; left: 0em;">⎝<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -2.284em; left: 0em;">⎜<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -1.319em; left: 0em;">⎜<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span></span></span><span class="mtable" id="MathJax-Span-228" style="padding-right: 0.155em; padding-left: 0.155em;"><span style="display: inline-block; position: relative; width: 1.374em; height: 0px;"><span style="position: absolute; clip: rect(2.442em, 1001.374em, 6.405em, -999.947em); top: -4.621em; left: 0em;"><span style="display: inline-block; position: relative; width: 1.374em; height: 0px;"><span style="position: absolute; clip: rect(3.204em, 1001.374em, 4.169em, -999.947em); top: -5.384em; left: 50%; margin-left: -0.658em;"><span class="mtd" id="MathJax-Span-229"><span class="mrow" id="MathJax-Span-230"><span class="mi" id="MathJax-Span-231" style="font-family: STIXGeneral-Italic;">x<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="texatom" id="MathJax-Span-232"><span class="mrow" id="MathJax-Span-233"><span class="mo" id="MathJax-Span-234" style="font-family: STIXGeneral-Regular;">/</span></span></span><span class="mi" id="MathJax-Span-235" style="font-family: STIXGeneral-Italic;">w</span></span></span><span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; clip: rect(3.204em, 1001.374em, 4.372em, -999.947em); top: -3.91em; left: 50%; margin-left: -0.658em;"><span class="mtd" id="MathJax-Span-236"><span class="mrow" id="MathJax-Span-237"><span class="mi" id="MathJax-Span-238" style="font-family: STIXGeneral-Italic;">y</span><span class="texatom" id="MathJax-Span-239"><span class="mrow" id="MathJax-Span-240"><span class="mo" id="MathJax-Span-241" style="font-family: STIXGeneral-Regular;">/</span></span></span><span class="mi" id="MathJax-Span-242" style="font-family: STIXGeneral-Italic;">w</span></span></span><span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; clip: rect(3.204em, 1001.324em, 4.271em, -999.947em); top: -2.436em; left: 50%; margin-left: -0.607em;"><span class="mtd" id="MathJax-Span-243"><span class="mrow" id="MathJax-Span-244"><span class="mi" id="MathJax-Span-245" style="font-family: STIXGeneral-Italic;">z</span><span class="texatom" id="MathJax-Span-246"><span class="mrow" id="MathJax-Span-247"><span class="mo" id="MathJax-Span-248" style="font-family: STIXGeneral-Regular;">/</span></span></span><span class="mi" id="MathJax-Span-249" style="font-family: STIXGeneral-Italic;">w</span></span></span><span style="display: inline-block; width: 0px; height: 4.017em;"></span></span></span><span style="display: inline-block; width: 0px; height: 4.677em;"></span></span></span></span><span class="mo" id="MathJax-Span-250" style="vertical-align: 2.188em;"><span style="display: inline-block; position: relative; width: 0.46em; height: 0px;"><span style="position: absolute; font-family: STIXSizeOneSym; top: -3.249em; left: 0em;">⎞<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; font-family: STIXSizeOneSym; top: -0.353em; left: 0em;">⎠<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -2.284em; left: 0em;">⎟<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -1.319em; left: 0em;">⎟<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.627em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -2.122em; border-left-width: 0px; border-left-style: solid; width: 0px; height: 4.941em;"></span></span></nobr><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mi>o</mi><mi>u</mi><mi>t</mi><mo>=</mo><mrow><mo>(</mo><mtable rowspacing="4pt" columnspacing="1em"><mtr><mtd><mi>x</mi><mrow class="MJX-TeXAtom-ORD"><mo>/</mo></mrow><mi>w</mi></mtd></mtr><mtr><mtd><mi>y</mi><mrow class="MJX-TeXAtom-ORD"><mo>/</mo></mrow><mi>w</mi></mtd></mtr><mtr><mtd><mi>z</mi><mrow class="MJX-TeXAtom-ORD"><mo>/</mo></mrow><mi>w</mi></mtd></mtr></mtable><mo>)</mo></mrow></math></span></span></div><script type="math/mml" id="MathJax-Element-26"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><div class="MathJax_Display" style="text-align: center;"><span class="MathJax" id="MathJax-Element-702-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;u&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mrow&gt;&lt;mo&gt;(&lt;/mo&gt;&lt;mtable rowspacing=&quot;4pt&quot; columnspacing=&quot;1em&quot;&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;/&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;/&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;/&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;/mtable&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/math&gt;" role="presentation" style="text-align: center; position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-15937" style="width: 6.456em; display: inline-block;"><span style="display: inline-block; position: relative; width: 5.236em; height: 0px; font-size: 123%;"><span style="position: absolute; clip: rect(2.289em, 1005.185em, 6.507em, -999.947em); top: -4.571em; left: 0em;"><span class="mrow" id="MathJax-Span-15938"><span class="mi" id="MathJax-Span-15939" style="font-family: STIXGeneral-Italic;">o</span><span class="mi" id="MathJax-Span-15940" style="font-family: STIXGeneral-Italic;">u</span><span class="mi" id="MathJax-Span-15941" style="font-family: STIXGeneral-Italic;">t<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="mo" id="MathJax-Span-15942" style="font-family: STIXGeneral-Regular; padding-left: 0.307em;">=</span><span class="mrow" id="MathJax-Span-15943" style="padding-left: 0.307em;"><span class="mo" id="MathJax-Span-15944" style="vertical-align: 2.188em;"><span style="display: inline-block; position: relative; width: 0.46em; height: 0px;"><span style="position: absolute; font-family: STIXSizeOneSym; top: -3.249em; left: 0em;">⎛<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; font-family: STIXSizeOneSym; top: -0.353em; left: 0em;">⎝<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -2.284em; left: 0em;">⎜<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -1.319em; left: 0em;">⎜<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span></span></span><span class="mtable" id="MathJax-Span-15945" style="padding-right: 0.155em; padding-left: 0.155em;"><span style="display: inline-block; position: relative; width: 1.374em; height: 0px;"><span style="position: absolute; clip: rect(2.442em, 1001.374em, 6.405em, -999.947em); top: -4.621em; left: 0em;"><span style="display: inline-block; position: relative; width: 1.374em; height: 0px;"><span style="position: absolute; clip: rect(3.204em, 1001.374em, 4.169em, -999.947em); top: -5.384em; left: 50%; margin-left: -0.658em;"><span class="mtd" id="MathJax-Span-15946"><span class="mrow" id="MathJax-Span-15947"><span class="mi" id="MathJax-Span-15948" style="font-family: STIXGeneral-Italic;">x<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="texatom" id="MathJax-Span-15949"><span class="mrow" id="MathJax-Span-15950"><span class="mo" id="MathJax-Span-15951" style="font-family: STIXGeneral-Regular;">/</span></span></span><span class="mi" id="MathJax-Span-15952" style="font-family: STIXGeneral-Italic;">w</span></span></span><span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; clip: rect(3.204em, 1001.374em, 4.372em, -999.947em); top: -3.91em; left: 50%; margin-left: -0.658em;"><span class="mtd" id="MathJax-Span-15953"><span class="mrow" id="MathJax-Span-15954"><span class="mi" id="MathJax-Span-15955" style="font-family: STIXGeneral-Italic;">y</span><span class="texatom" id="MathJax-Span-15956"><span class="mrow" id="MathJax-Span-15957"><span class="mo" id="MathJax-Span-15958" style="font-family: STIXGeneral-Regular;">/</span></span></span><span class="mi" id="MathJax-Span-15959" style="font-family: STIXGeneral-Italic;">w</span></span></span><span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; clip: rect(3.204em, 1001.324em, 4.271em, -999.947em); top: -2.436em; left: 50%; margin-left: -0.607em;"><span class="mtd" id="MathJax-Span-15960"><span class="mrow" id="MathJax-Span-15961"><span class="mi" id="MathJax-Span-15962" style="font-family: STIXGeneral-Italic;">z</span><span class="texatom" id="MathJax-Span-15963"><span class="mrow" id="MathJax-Span-15964"><span class="mo" id="MathJax-Span-15965" style="font-family: STIXGeneral-Regular;">/</span></span></span><span class="mi" id="MathJax-Span-15966" style="font-family: STIXGeneral-Italic;">w</span></span></span><span style="display: inline-block; width: 0px; height: 4.017em;"></span></span></span><span style="display: inline-block; width: 0px; height: 4.677em;"></span></span></span></span><span class="mo" id="MathJax-Span-15967" style="vertical-align: 2.188em;"><span style="display: inline-block; position: relative; width: 0.46em; height: 0px;"><span style="position: absolute; font-family: STIXSizeOneSym; top: -3.249em; left: 0em;">⎞<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; font-family: STIXSizeOneSym; top: -0.353em; left: 0em;">⎠<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -2.284em; left: 0em;">⎟<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -1.319em; left: 0em;">⎟<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.627em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -2.122em; border-left-width: 0px; border-left-style: solid; width: 0px; height: 4.941em;"></span></span></nobr><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mi>o</mi><mi>u</mi><mi>t</mi><mo>=</mo><mrow><mo>(</mo><mtable rowspacing="4pt" columnspacing="1em"><mtr><mtd><mi>x</mi><mrow class="MJX-TeXAtom-ORD"><mo>/</mo></mrow><mi>w</mi></mtd></mtr><mtr><mtd><mi>y</mi><mrow class="MJX-TeXAtom-ORD"><mo>/</mo></mrow><mi>w</mi></mtd></mtr><mtr><mtd><mi>z</mi><mrow class="MJX-TeXAtom-ORD"><mo>/</mo></mrow><mi>w</mi></mtd></mtr></mtable><mo>)</mo></mrow></math></span></span></div><script type="math/mml" id="MathJax-Element-702"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
   <mi>o</mi>
   <mi>u</mi>
   <mi>t</mi>
@@ -161,6 +190,39 @@ OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间�
     <mo>)</mo>
   </mrow>
 </math></script>
+
+<h1 id="clipspace">Clip space</h1>
+
+<p>上面所有空间有，其它空间都好理解，这个空间其实也很好理解，变换就是将view space中的一个视锥体（frustum）映射到clip space的一个正方体上。但是，我们为什么要说一说这个空间呢？因为有两种映射的方式，一个是正交映射，一个是透视映射。</p>
+
+<h2 id="">正交映射</h2>
+
+<p>其实就是投影，像是光线从无限远的地方照射过来。没有考虑近大远小的影响。它的视锥体是一个长方体。
+<img src="https://learnopengl.com/img/getting-started/orthographic_frustum.png" alt="" title=""></p>
+
+<h2 id="">透视映射</h2>
+
+<p>这个就是模拟我们人眼看世界时的视角，近大远小，它的视锥体是一个平截头体。
+<img src="https://learnopengl.com/img/getting-started/perspective_frustum.png" alt="" title=""></p>
+
+<h1 id="3d">3D</h1>
+
+<p>根据上述知识，我们重新编写vertex shader即可绘制3D图形：</p>
+
+<pre><code>#version 300 es
+layout (location = 0) in vec3 aPos;
+...
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+void main()
+{
+    // note that we read the multiplication from right to left
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
+    ...
+}
+</code></pre>
 <!-- content end -->
 </div>
 <br>
