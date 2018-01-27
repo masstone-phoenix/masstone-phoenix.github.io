@@ -1,0 +1,290 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+这篇我们开始学习OpenGL中的纹理。纹理最通常的作用是装饰我们的物体模型，它就像是贴纸一样贴在物体表面，使得物体表面拥有图案。但实际上在OpenGL中，纹理的作用不仅限于此，它可以用来存储大量的数据，一个典型的例子就是利用纹理存储地形信息。总的来说，***纹理是一个用来保存信息的 OpenGL ES 缓存***。
+
+以下是使用纹理达到的效果：
+![](http://masstone-phoenix.github.io/image/opengl/texture_demo.png)
+
+我们先从简单的2D纹理开始，一步一步达到图中的效果。
+![](http://masstone-phoenix.github.io/image/opengl/texture_demo2.png)
+
+# 纹理坐标
+想要完成图片中的贴图效果，我们需要告诉每个顶点映射到纹理中的哪个点，这就是顶点数据中的*纹理坐标*的作用。纹理坐标的定义如下：原点在左下角，x,y轴的正方向是向左，向上的。
+![](https://learnopengl.com/img/getting-started/tex_coords.png)
+
+# 纹理环绕（Texture Wrapping）
+纹理坐标x和y的范围是0~1，如果定义的纹理坐标超出上面的值会怎么样？OpenGL的默认形为是重复，当然还可以自定义一些其它选项：
+<table>
+<thead>
+<tr>
+<th>环绕方式(Wrapping)</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>GL_REPEAT</var></td>
+<td>对纹理的默认行为。重复纹理图像。</td>
+</tr>
+<tr>
+<td><var>GL_MIRRORED_REPEAT</var></td>
+<td>和<var>GL_REPEAT</var>一样，但每次重复图片是镜像放置的。</td>
+</tr>
+<tr>
+<td><var>GL_CLAMP_TO_EDGE</var></td>
+<td>纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，产生一种边缘被拉伸的效果。</td>
+</tr>
+<tr>
+<td><var>GL_CLAMP_TO_BORDER</var></td>
+<td>超出的坐标为用户指定的边缘颜色。</td>
+</tr>
+</tbody>
+</table>
+
+图片解释的会更清楚：
+![](https://learnopengl.com/img/getting-started/texture_wrapping.png)
+
+使用下面的函数修改这个参数：
+```
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+```
+
+# 纹理过滤（Texture Filtering）
+OpenGL是如何从一个纹理坐标得到它所对应的颜色的？纹理坐标是一个精确的值，而图像的像素是一个范围，在点落在一个像素中时，如何得到这个点的颜色值？
+
+有两种办法，一是直接取包含该点的像素的颜色，这就是```GL_NEAREST```；还有，根据点到周围像素中心点的距离来加权出一个颜色值，这就是```GL_LINEAR```。它们的效果如下：
+![](https://learnopengl.com/img/getting-started/texture_filtering.png)
+
+我们使用下面的函数修改纹理过滤：
+```
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+```
+
+# Mipmaps
+想象一下，在我们的场景中有成千上万个物体，每个都需要纹理映射，如果处于远处的纹理使用与近处纹理相同的分辨率的话，我们将浪费许多内存；而且，如果一点的颜色值通过很大一个区域的颜色值来加权的话，可以产生可见的污点，这也是我们不想见到的。
+
+OpenGL提供了一种叫Mipmaps的概念来解决这个问题，当物体离镜头近时，使用高分辨率的纹理，当物体在远处时，使用低分辨率的纹理。```glGenerateMipmaps ```用来生成这样的Mipmaps纹理。
+
+当全用Mipmaps时，物体由远及近时，需要混合两个Mipmaps，此时，也产生了如同纹理过滤的选项，总结起来就有4种：
+<table>
+<thead>
+<tr>
+<th>过滤方式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>GL_NEAREST_MIPMAP_NEAREST</var></td>
+<td>使用最邻近的多级渐远纹理来匹配像素大小，并使用邻近插值进行纹理采样</td>
+</tr>
+<tr>
+<td><var>GL_LINEAR_MIPMAP_NEAREST</var></td>
+<td>使用最邻近的多级渐远纹理级别，并使用线性插值进行采样</td>
+</tr>
+<tr>
+<td><var>GL_NEAREST_MIPMAP_LINEAR</var></td>
+<td>在两个最匹配像素大小的多级渐远纹理之间进行线性插值，使用邻近插值进行采样</td>
+</tr>
+<tr>
+<td><var>GL_LINEAR_MIPMAP_LINEAR</var></td>
+<td>在两个邻近的多级渐远纹理之间使用线性插值，并使用线性插值进行采样</td>
+</tr>
+</tbody>
+</table>
+
+同样使用```glTexParameteri```函数来改变这个选项，但是要注意，Mipmaps只对缩小有作用，放大时是不使用Mipmaps的。
+
+# 创建一个纹理
+创建一个纹理的过程和创建其它OpenGL object一样，先生成一个id，然后绑定，传递数据，设置其属性等。
+
+```
+//先生成一个id
+unsigned int texture;
+glGenTextures(1, &texture); 
+
+//绑定
+glBindTexture(GL_TEXTURE_2D, texture); 
+
+//传递数据，假设数据存储在data指针所指的内存中
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+//生成mipmap
+glGenerateMipmap(GL_TEXTURE_2D);
+
+//设置其属性
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+```
+
+这里需要说明的是```glTexImage2D```这个函数的参数：
+
+1. 这个是要生成的纹理类型，有三个可选值，```GL_TEXTURE_1D```,```GL_TEXTURE_2D```,```GL_TEXTURE_3D```。
+1. 第二个参数是如果需要手动指定mipmap的级别，那么级别这个参数写在这里，我们这里后面会自动生成mipmap，所以级别为0。
+1. 第三个参数是纹理在显存中的格式，这里使用RGB。
+1. 第四、五个参数表示图片的宽和高的像素数。
+1. 第六个参数传入0，好像是由于历史原因。
+1. 第七、八个参数描述了输入图片的格式，这里是RGB图片，每个分量的类型是unsigned 类型。
+1. 最后一个是图像数据的来源。
+
+以上就生成了一个可以使用的纹理。
+
+## iOS中创建一个纹理
+在iOS中不用我们手动加载图片的数据，因为系统已经提供了一个便利的函数，使用如下：
+```
+//load texture
+    NSError *error;
+    GLKTextureInfo *appleTextureMetadata = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo_2017-10-26_19-39-39" ofType:@"jpg"] options:nil error:&error];
+    NSAssert( appleTextureMetadata != nil, @"Error loading texture: %@", error);
+    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+    glBindTexture(GL_TEXTURE_2D, appleTextureMetadata.name);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);
+```
+
+# 使用纹理
+使用纹理很简单，在绘制之前绑定需要使用的纹理，然后进行绘制即可：
+
+fragment shader中直接使用纹理的颜色:
+
+```
+out vec4 FragColor;
+  
+in vec3 ourColor;
+in vec2 TexCoord;
+
+uniform sampler2D ourTexture;
+
+void main()
+{
+    FragColor = texture(ourTexture, TexCoord);
+}
+```
+
+```
+glBindTexture(GL_TEXTURE_2D, texture);
+glBindVertexArray(VAO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+```
+
+如果要同时使用多个纹理就涉及到一个texture unit的概念。OpenGL中提供至少16个texture unit，我们可以在一个shader中使用它们：
+
+```
+glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+glBindTexture(GL_TEXTURE_2D, texture);
+```
+
+此时，需要使用下面的方式设置fragment shader中的纹理使用的是哪个texture unit。
+```
+glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); 
+```
+
+经过以上，我们就能画出开篇中的第二个图了，至于3D的，我们需要一些空间变换的知识以及cube纹理，就在下回了。
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "2018/learn_opengl_5.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
