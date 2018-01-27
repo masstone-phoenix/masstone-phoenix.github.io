@@ -123,6 +123,43 @@ OpenGL提供了一种叫Mipmaps的概念来解决这个问题，当物体离镜�
 同样使用```glTexParameteri```函数来改变这个选项，但是要注意，Mipmaps只对缩小有作用，放大时是不使用Mipmaps的。
 
 # 创建一个纹理
+创建一个纹理的过程和创建其它OpenGL object一样，先生成一个id，然后绑定，传递数据，设置其属性等。
+
+```
+//先生成一个id
+unsigned int texture;
+glGenTextures(1, &texture); 
+
+//绑定
+glBindTexture(GL_TEXTURE_2D, texture); 
+
+//传递数据，假设数据存储在data指针所指的内存中
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+//生成mipmap
+glGenerateMipmap(GL_TEXTURE_2D);
+
+//设置其属性
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+```
+
+这里需要说明的是```glTexImage2D```这个函数的参数：
+
+1. 这个是要生成的纹理类型，有三个可选值，```GL_TEXTURE_1D```,```GL_TEXTURE_2D```,```GL_TEXTURE_3D```。
+1. 第二个参数是如果需要手动指定mipmap的级别，那么级别这个参数写在这里，我们这里后面会自动生成mipmap，所以级别为0。
+1. 第三个参数是纹理在显存中的格式，这里使用RGB。
+1. 第四、五个参数表示图片的宽和高的像素数。
+1. 第六个参数传入0，好像是由于历史原因。
+1. 第七、八个参数描述了输入图片的格式，这里是RGB图片，每个分量的类型是unsigned 类型。
+1. 最后一个是图像数据的来源。
+
+以上就生成了一个可以使用的纹理。
+
+## iOS中创建一个纹理
+在iOS中不用我们手动加载图片的数据，因为系统已经提供了一个便利的函数，使用如下：
 ```
 //load texture
     NSError *error;
@@ -135,6 +172,27 @@ OpenGL提供了一种叫Mipmaps的概念来解决这个问题，当物体离镜�
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glGenerateMipmap(GL_TEXTURE_2D);
+```
+
+# 使用纹理
+使用纹理很简单，在绘制之前绑定需要使用的纹理，然后进行绘制即可：
+
+```
+glBindTexture(GL_TEXTURE_2D, texture);
+glBindVertexArray(VAO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+```
+
+如果要同时使用多个纹理就涉及到一个texture unit的概念。OpenGL中提供至少16个texture unit，我们可以在一个shader中使用它们：
+
+```
+glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+glBindTexture(GL_TEXTURE_2D, texture);
+```
+
+此时，需要使用下面的方式设置fragment shader中的纹理使用的是哪个texture unit。
+```
+glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); 
 ```
 <!-- markdown end -->
 </div>
@@ -245,6 +303,46 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 <h1 id="">创建一个纹理</h1>
 
+<p>创建一个纹理的过程和创建其它OpenGL object一样，先生成一个id，然后绑定，传递数据，设置其属性等。</p>
+
+<pre><code>//先生成一个id
+unsigned int texture;
+glGenTextures(1, &amp;texture); 
+
+//绑定
+glBindTexture(GL_TEXTURE_2D, texture); 
+
+//传递数据，假设数据存储在data指针所指的内存中
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+//生成mipmap
+glGenerateMipmap(GL_TEXTURE_2D);
+
+//设置其属性
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+</code></pre>
+
+<p>这里需要说明的是<code>glTexImage2D</code>这个函数的参数：</p>
+
+<ol>
+<li>这个是要生成的纹理类型，有三个可选值，<code>GL_TEXTURE_1D</code>,<code>GL_TEXTURE_2D</code>,<code>GL_TEXTURE_3D</code>。</li>
+<li>第二个参数是如果需要手动指定mipmap的级别，那么级别这个参数写在这里，我们这里后面会自动生成mipmap，所以级别为0。</li>
+<li>第三个参数是纹理在显存中的格式，这里使用RGB。</li>
+<li>第四、五个参数表示图片的宽和高的像素数。</li>
+<li>第六个参数传入0，好像是由于历史原因。</li>
+<li>第七、八个参数描述了输入图片的格式，这里是RGB图片，每个分量的类型是unsigned 类型。</li>
+<li>最后一个是图像数据的来源。</li>
+</ol>
+
+<p>以上就生成了一个可以使用的纹理。</p>
+
+<h2 id="ios">iOS中创建一个纹理</h2>
+
+<p>在iOS中不用我们手动加载图片的数据，因为系统已经提供了一个便利的函数，使用如下：</p>
+
 <pre><code>//load texture
     NSError *error;
     GLKTextureInfo *appleTextureMetadata = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo_2017-10-26_19-39-39" ofType:@"jpg"] options:nil error:&amp;error];
@@ -256,6 +354,26 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glGenerateMipmap(GL_TEXTURE_2D);
+</code></pre>
+
+<h1 id="">使用纹理</h1>
+
+<p>使用纹理很简单，在绘制之前绑定需要使用的纹理，然后进行绘制即可：</p>
+
+<pre><code>glBindTexture(GL_TEXTURE_2D, texture);
+glBindVertexArray(VAO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+</code></pre>
+
+<p>如果要同时使用多个纹理就涉及到一个texture unit的概念。OpenGL中提供至少16个texture unit，我们可以在一个shader中使用它们：</p>
+
+<pre><code>glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+glBindTexture(GL_TEXTURE_2D, texture);
+</code></pre>
+
+<p>此时，需要使用下面的方式设置fragment shader中的纹理使用的是哪个texture unit。</p>
+
+<pre><code>glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); 
 </code></pre>
 <!-- content end -->
 </div>
