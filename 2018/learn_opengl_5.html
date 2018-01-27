@@ -41,11 +41,11 @@ OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间�
 你可能有点晕，当时我看到这的时候也是这样，别急让我们一个一个的来看看这些变换以及它们都在做什么。
 ![](https://learnopengl.com/img/getting-started/coordinate_systems.png)
 
-1. Local coordinates are the coordinates of your object relative to its local origin; they're the coordinates your object begins in.
-2. The next step is to transform the local coordinates to world-space coordinates which are coordinates in respect of a larger world. These coordinates are relative to a global origin of the world, together with many other objects also placed relative to the world's origin.
-3. Next we transform the world coordinates to view-space coordinates in such a way that each coordinate is as seen from the camera or viewer's point of view.
-4. After the coordinates are in view space we want to project them to clip coordinates. Clip coordinates are processed to the -1.0 and 1.0 range and determine which vertices will end up on the screen.
-5. And lastly we transform the clip coordinates to screen coordinates in a process we call viewport transform that transforms the coordinates from -1.0 and 1.0 to the coordinate range defined by glViewport. The resulting coordinates are then sent to the rasterizer to turn them into fragments.
+1. Local coordinates 物体自身所在的坐标空间
+2. 下一步就是将local coordinates转换到world-space coordinates 中。世界空间是整个世界的抽象，所有要绘制的物体都出现在这个被单中并且有了相对位置关系。
+3. 这步是将 world coordinates 转换到view-space coordinates。在 view-space coordinates中，每个坐标是从镜头观察的。
+4. 然后将坐标从view-space coordinates转换到clip coordinates。裁剪坐标会被处理到-1.0 到 1.0 之间，从而决定了哪些是可见元素。
+5. 最后，我们从 clip coordinates 转换到screen coordinates，这一步的变换叫 viewport transform。这个变换是由函数 glViewport 定义的。screen coordinates会被输送给光栅化阶段，然后转换为片元。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -69,11 +69,11 @@ OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间�
 <img src="https://learnopengl.com/img/getting-started/coordinate_systems.png" alt="" title=""></p>
 
 <ol>
-<li>Local coordinates are the coordinates of your object relative to its local origin; they're the coordinates your object begins in.</li>
-<li>The next step is to transform the local coordinates to world-space coordinates which are coordinates in respect of a larger world. These coordinates are relative to a global origin of the world, together with many other objects also placed relative to the world's origin.</li>
-<li>Next we transform the world coordinates to view-space coordinates in such a way that each coordinate is as seen from the camera or viewer's point of view.</li>
-<li>After the coordinates are in view space we want to project them to clip coordinates. Clip coordinates are processed to the -1.0 and 1.0 range and determine which vertices will end up on the screen.</li>
-<li>And lastly we transform the clip coordinates to screen coordinates in a process we call viewport transform that transforms the coordinates from -1.0 and 1.0 to the coordinate range defined by glViewport. The resulting coordinates are then sent to the rasterizer to turn them into fragments.</li>
+<li>Local coordinates 物体自身所在的坐标空间</li>
+<li>下一步就是将local coordinates转换到world-space coordinates 中。世界空间是整个世界的抽象，所有要绘制的物体都出现在这个被单中并且有了相对位置关系。</li>
+<li>这步是将 world coordinates 转换到view-space coordinates。在 view-space coordinates中，每个坐标是从镜头观察的。</li>
+<li>然后将坐标从view-space coordinates转换到clip coordinates。裁剪坐标会被处理到-1.0 到 1.0 之间，从而决定了哪些是可见元素。</li>
+<li>最后，我们从 clip coordinates 转换到screen coordinates，这一步的变换叫 viewport transform。这个变换是由函数 glViewport 定义的。screen coordinates会被输送给光栅化阶段，然后转换为片元。</li>
 </ol>
 <!-- content end -->
 </div>
