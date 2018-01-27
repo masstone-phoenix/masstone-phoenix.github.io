@@ -48,7 +48,47 @@ OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间�
 5. 最后，我们从 clip coordinates 转换到screen coordinates，这一步的变换叫 viewport transform。这个变换是由函数 glViewport 定义的。screen coordinates会被输送给光栅化阶段，然后转换为片元。
 
 这里要强调一下，从vertex shader输出的gl_Position是一个4D向量，而NDC是一个3D空间，所以中间进行了一个叫perspective division的操作：
-$out = \begin{pmatrix} x /w \\ y / w \\ z / w \end{matrix}$
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mi>o</mi>
+  <mi>u</mi>
+  <mi>t</mi>
+  <mo>=</mo>
+  <mrow>
+    <mo>(</mo>
+    <mtable rowspacing="4pt" columnspacing="1em">
+      <mtr>
+        <mtd>
+          <mi>x</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>/</mo>
+          </mrow>
+          <mi>w</mi>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <mi>y</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>/</mo>
+          </mrow>
+          <mi>w</mi>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <mi>z</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>/</mo>
+          </mrow>
+          <mi>w</mi>
+        </mtd>
+      </mtr>
+    </mtable>
+    <mo>)</mo>
+  </mrow>
+</math>
+
+
 
 <!-- markdown end -->
 </div>
@@ -80,8 +120,47 @@ $out = \begin{pmatrix} x /w \\ y / w \\ z / w \end{matrix}$
 <li>最后，我们从 clip coordinates 转换到screen coordinates，这一步的变换叫 viewport transform。这个变换是由函数 glViewport 定义的。screen coordinates会被输送给光栅化阶段，然后转换为片元。</li>
 </ol>
 
-<p>这里要强调一下，从vertex shader输出的gl_Position是一个4D向量，而NDC是一个3D空间，所以中间进行了一个叫perspective division的操作：
-<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-21-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;merror&gt;&lt;mtext&gt;out&amp;#xA0;=&amp;#xA0;\begin{pmatrix}&amp;#xA0;x&amp;#xA0;/w&amp;#xA0;\&amp;#xA0;y&amp;#xA0;/&amp;#xA0;w&amp;#xA0;\&amp;#xA0;z&amp;#xA0;/&amp;#xA0;w&amp;#xA0;\end{matrix}&lt;/mtext&gt;&lt;/merror&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><span class="math" id="MathJax-Span-152" aria-hidden="true" style=""><span class="noError" id="MathJax-Span-153" style="display: inline-block;">out&nbsp;=&nbsp;\begin{pmatrix}&nbsp;x&nbsp;/w&nbsp;\&nbsp;y&nbsp;/&nbsp;w&nbsp;\&nbsp;z&nbsp;/&nbsp;w&nbsp;\end{matrix}</span></span><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><merror><mtext>out&nbsp;=&nbsp;\begin{pmatrix}&nbsp;x&nbsp;/w&nbsp;\&nbsp;y&nbsp;/&nbsp;w&nbsp;\&nbsp;z&nbsp;/&nbsp;w&nbsp;\end{matrix}</mtext></merror></math></span></span><script type="math/tex" id="MathJax-Element-21">out = \begin{pmatrix} x /w \ y / w \ z / w \end{matrix}</script></p>
+<p>这里要强调一下，从vertex shader输出的gl_Position是一个4D向量，而NDC是一个3D空间，所以中间进行了一个叫perspective division的操作：</p>
+
+<span class="MathJax_Preview" style="color: inherit; display: none;"></span><div class="MathJax_Display" style="text-align: center;"><span class="MathJax" id="MathJax-Element-26-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot; display=&quot;block&quot;&gt;&lt;mi&gt;o&lt;/mi&gt;&lt;mi&gt;u&lt;/mi&gt;&lt;mi&gt;t&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mrow&gt;&lt;mo&gt;(&lt;/mo&gt;&lt;mtable rowspacing=&quot;4pt&quot; columnspacing=&quot;1em&quot;&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;/&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;/&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;mtr&gt;&lt;mtd&gt;&lt;mi&gt;z&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo&gt;/&lt;/mo&gt;&lt;/mrow&gt;&lt;mi&gt;w&lt;/mi&gt;&lt;/mtd&gt;&lt;/mtr&gt;&lt;/mtable&gt;&lt;mo&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/math&gt;" role="presentation" style="text-align: center; position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-220" style="width: 6.456em; display: inline-block;"><span style="display: inline-block; position: relative; width: 5.236em; height: 0px; font-size: 123%;"><span style="position: absolute; clip: rect(2.289em, 1005.185em, 6.507em, -999.947em); top: -4.571em; left: 0em;"><span class="mrow" id="MathJax-Span-221"><span class="mi" id="MathJax-Span-222" style="font-family: STIXGeneral-Italic;">o</span><span class="mi" id="MathJax-Span-223" style="font-family: STIXGeneral-Italic;">u</span><span class="mi" id="MathJax-Span-224" style="font-family: STIXGeneral-Italic;">t<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="mo" id="MathJax-Span-225" style="font-family: STIXGeneral-Regular; padding-left: 0.307em;">=</span><span class="mrow" id="MathJax-Span-226" style="padding-left: 0.307em;"><span class="mo" id="MathJax-Span-227" style="vertical-align: 2.188em;"><span style="display: inline-block; position: relative; width: 0.46em; height: 0px;"><span style="position: absolute; font-family: STIXSizeOneSym; top: -3.249em; left: 0em;">⎛<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; font-family: STIXSizeOneSym; top: -0.353em; left: 0em;">⎝<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -2.284em; left: 0em;">⎜<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -1.319em; left: 0em;">⎜<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span></span></span><span class="mtable" id="MathJax-Span-228" style="padding-right: 0.155em; padding-left: 0.155em;"><span style="display: inline-block; position: relative; width: 1.374em; height: 0px;"><span style="position: absolute; clip: rect(2.442em, 1001.374em, 6.405em, -999.947em); top: -4.621em; left: 0em;"><span style="display: inline-block; position: relative; width: 1.374em; height: 0px;"><span style="position: absolute; clip: rect(3.204em, 1001.374em, 4.169em, -999.947em); top: -5.384em; left: 50%; margin-left: -0.658em;"><span class="mtd" id="MathJax-Span-229"><span class="mrow" id="MathJax-Span-230"><span class="mi" id="MathJax-Span-231" style="font-family: STIXGeneral-Italic;">x<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="texatom" id="MathJax-Span-232"><span class="mrow" id="MathJax-Span-233"><span class="mo" id="MathJax-Span-234" style="font-family: STIXGeneral-Regular;">/</span></span></span><span class="mi" id="MathJax-Span-235" style="font-family: STIXGeneral-Italic;">w</span></span></span><span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; clip: rect(3.204em, 1001.374em, 4.372em, -999.947em); top: -3.91em; left: 50%; margin-left: -0.658em;"><span class="mtd" id="MathJax-Span-236"><span class="mrow" id="MathJax-Span-237"><span class="mi" id="MathJax-Span-238" style="font-family: STIXGeneral-Italic;">y</span><span class="texatom" id="MathJax-Span-239"><span class="mrow" id="MathJax-Span-240"><span class="mo" id="MathJax-Span-241" style="font-family: STIXGeneral-Regular;">/</span></span></span><span class="mi" id="MathJax-Span-242" style="font-family: STIXGeneral-Italic;">w</span></span></span><span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; clip: rect(3.204em, 1001.324em, 4.271em, -999.947em); top: -2.436em; left: 50%; margin-left: -0.607em;"><span class="mtd" id="MathJax-Span-243"><span class="mrow" id="MathJax-Span-244"><span class="mi" id="MathJax-Span-245" style="font-family: STIXGeneral-Italic;">z</span><span class="texatom" id="MathJax-Span-246"><span class="mrow" id="MathJax-Span-247"><span class="mo" id="MathJax-Span-248" style="font-family: STIXGeneral-Regular;">/</span></span></span><span class="mi" id="MathJax-Span-249" style="font-family: STIXGeneral-Italic;">w</span></span></span><span style="display: inline-block; width: 0px; height: 4.017em;"></span></span></span><span style="display: inline-block; width: 0px; height: 4.677em;"></span></span></span></span><span class="mo" id="MathJax-Span-250" style="vertical-align: 2.188em;"><span style="display: inline-block; position: relative; width: 0.46em; height: 0px;"><span style="position: absolute; font-family: STIXSizeOneSym; top: -3.249em; left: 0em;">⎞<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="position: absolute; font-family: STIXSizeOneSym; top: -0.353em; left: 0em;">⎠<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -2.284em; left: 0em;">⎟<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span><span style="font-family: STIXSizeOneSym; position: absolute; top: -1.319em; left: 0em;">⎟<span style="display: inline-block; width: 0px; height: 4.017em;"></span></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.627em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -2.122em; border-left-width: 0px; border-left-style: solid; width: 0px; height: 4.941em;"></span></span></nobr><span class="MJX_Assistive_MathML MJX_Assistive_MathML_Block" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mi>o</mi><mi>u</mi><mi>t</mi><mo>=</mo><mrow><mo>(</mo><mtable rowspacing="4pt" columnspacing="1em"><mtr><mtd><mi>x</mi><mrow class="MJX-TeXAtom-ORD"><mo>/</mo></mrow><mi>w</mi></mtd></mtr><mtr><mtd><mi>y</mi><mrow class="MJX-TeXAtom-ORD"><mo>/</mo></mrow><mi>w</mi></mtd></mtr><mtr><mtd><mi>z</mi><mrow class="MJX-TeXAtom-ORD"><mo>/</mo></mrow><mi>w</mi></mtd></mtr></mtable><mo>)</mo></mrow></math></span></span></div><script type="math/mml" id="MathJax-Element-26"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+  <mi>o</mi>
+  <mi>u</mi>
+  <mi>t</mi>
+  <mo>=</mo>
+  <mrow>
+    <mo>(</mo>
+    <mtable rowspacing="4pt" columnspacing="1em">
+      <mtr>
+        <mtd>
+          <mi>x</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>/</mo>
+          </mrow>
+          <mi>w</mi>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <mi>y</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>/</mo>
+          </mrow>
+          <mi>w</mi>
+        </mtd>
+      </mtr>
+      <mtr>
+        <mtd>
+          <mi>z</mi>
+          <mrow class="MJX-TeXAtom-ORD">
+            <mo>/</mo>
+          </mrow>
+          <mi>w</mi>
+        </mtd>
+      </mtr>
+    </mtable>
+    <mo>)</mo>
+  </mrow>
+</math></script>
 <!-- content end -->
 </div>
 <br>
