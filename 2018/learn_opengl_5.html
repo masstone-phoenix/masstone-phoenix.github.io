@@ -25,10 +25,21 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-这篇我们开始学习OpenGL中的纹理。纹理最通常的作用是装饰我们的物体模型，它就像是贴纸一样贴在物体表面，使得物体表面拥有图案。但实际上在OpenGL中，纹理的作用不仅限于此，它可以用来存储大量的数据，一个典型的例子就是利用纹理存储地形信息。总的来说，***纹理是一个用来保存信息的 OpenGL ES 缓存***。
+OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间中进行绘制。这里需要用到一些[线性代数](http://open.163.com/special/opencourse/daishu.html)方面的知识，小伙伴们不熟悉的话可以点击学习一下。
 
-以下是使用纹理达到的效果：
-![](http://masstone-phoenix.github.io/image/opengl/texture_demo.png)
+在OpenGL中，如果希望顶点可见，那么在经过vertex shader后，顶点坐标应该在NDC（normalized device coordinates）中。什么是NDC呢？就是x,y,z的坐标都在-1.0到1.0之间；当坐标不在这个范围时，它们将不可见。
+
+将坐标转换到NDC是一个一步一步的过程，它会经过一些中间坐标系：
+
+- Local space (or Object space)
+- World space
+- View space (or Eye space)
+- Clip space
+
+然后从Clip space转换到NDC，从NDC转换到Screen space。这是坐标变换的大体节奏。
+
+你可能有点晕，当时我看到这的时候也是这样，别急让我们一个一个的来看看这些变换以及它们都在做什么。
+![](https://learnopengl.com/img/getting-started/coordinate_systems.png)
 
 我们先从简单的2D纹理开始，一步一步达到图中的效果。
 ![](http://masstone-phoenix.github.io/image/opengl/texture_demo2.png)
@@ -216,7 +227,213 @@ glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间中进行绘制。这里需要用到一些<a href="http://open.163.com/special/opencourse/daishu.html">线性代数</a>方面的知识，小伙伴们不熟悉的话可以点击学习一下。</p>
 
+<p>在OpenGL中，如果希望顶点可见，那么在经过vertex shader后，顶点坐标应该在NDC（normalized device coordinates）中。什么是NDC呢？就是x,y,z的坐标都在-1.0到1.0之间；当坐标不在这个范围时，它们将不可见。</p>
+
+<p>将坐标转换到NDC是一个一步一步的过程，它会经过一些中间坐标系：</p>
+
+<ul>
+<li>Local space (or Object space)</li>
+<li>World space</li>
+<li>View space (or Eye space)</li>
+<li>Clip space</li>
+</ul>
+
+<p>然后从Clip space转换到NDC，从NDC转换到Screen space。这是坐标变换的大体节奏。</p>
+
+<p>你可能有点晕，当时我看到这的时候也是这样，别急让我们一个一个的来看看这些变换以及它们都在做什么。
+<img src="https://learnopengl.com/img/getting-started/coordinate_systems.png" alt="" title=""></p>
+
+<p>我们先从简单的2D纹理开始，一步一步达到图中的效果。
+<img src="http://masstone-phoenix.github.io/image/opengl/texture_demo2.png" alt="" title=""></p>
+
+<h1 id="">纹理坐标</h1>
+
+<p>想要完成图片中的贴图效果，我们需要告诉每个顶点映射到纹理中的哪个点，这就是顶点数据中的<em>纹理坐标</em>的作用。纹理坐标的定义如下：原点在左下角，x,y轴的正方向是向左，向上的。
+<img src="https://learnopengl.com/img/getting-started/tex_coords.png" alt="" title=""></p>
+
+<h1 id="texturewrapping">纹理环绕（Texture Wrapping）</h1>
+
+<p>纹理坐标x和y的范围是0~1，如果定义的纹理坐标超出上面的值会怎么样？OpenGL的默认形为是重复，当然还可以自定义一些其它选项：</p>
+
+<table>
+<thead>
+<tr>
+<th>环绕方式(Wrapping)</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>GL_REPEAT</var></td>
+<td>对纹理的默认行为。重复纹理图像。</td>
+</tr>
+<tr>
+<td><var>GL_MIRRORED_REPEAT</var></td>
+<td>和<var>GL_REPEAT</var>一样，但每次重复图片是镜像放置的。</td>
+</tr>
+<tr>
+<td><var>GL_CLAMP_TO_EDGE</var></td>
+<td>纹理坐标会被约束在0到1之间，超出的部分会重复纹理坐标的边缘，产生一种边缘被拉伸的效果。</td>
+</tr>
+<tr>
+<td><var>GL_CLAMP_TO_BORDER</var></td>
+<td>超出的坐标为用户指定的边缘颜色。</td>
+</tr>
+</tbody>
+</table>
+
+<p>图片解释的会更清楚：
+<img src="https://learnopengl.com/img/getting-started/texture_wrapping.png" alt="" title=""></p>
+
+<p>使用下面的函数修改这个参数：</p>
+
+<pre><code>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+</code></pre>
+
+<h1 id="texturefiltering">纹理过滤（Texture Filtering）</h1>
+
+<p>OpenGL是如何从一个纹理坐标得到它所对应的颜色的？纹理坐标是一个精确的值，而图像的像素是一个范围，在点落在一个像素中时，如何得到这个点的颜色值？</p>
+
+<p>有两种办法，一是直接取包含该点的像素的颜色，这就是<code>GL_NEAREST</code>；还有，根据点到周围像素中心点的距离来加权出一个颜色值，这就是<code>GL_LINEAR</code>。它们的效果如下：
+<img src="https://learnopengl.com/img/getting-started/texture_filtering.png" alt="" title=""></p>
+
+<p>我们使用下面的函数修改纹理过滤：</p>
+
+<pre><code>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+</code></pre>
+
+<h1 id="mipmaps">Mipmaps</h1>
+
+<p>想象一下，在我们的场景中有成千上万个物体，每个都需要纹理映射，如果处于远处的纹理使用与近处纹理相同的分辨率的话，我们将浪费许多内存；而且，如果一点的颜色值通过很大一个区域的颜色值来加权的话，可以产生可见的污点，这也是我们不想见到的。</p>
+
+<p>OpenGL提供了一种叫Mipmaps的概念来解决这个问题，当物体离镜头近时，使用高分辨率的纹理，当物体在远处时，使用低分辨率的纹理。<code>glGenerateMipmaps</code>用来生成这样的Mipmaps纹理。</p>
+
+<p>当全用Mipmaps时，物体由远及近时，需要混合两个Mipmaps，此时，也产生了如同纹理过滤的选项，总结起来就有4种：</p>
+
+<table>
+<thead>
+<tr>
+<th>过滤方式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><var>GL_NEAREST_MIPMAP_NEAREST</var></td>
+<td>使用最邻近的多级渐远纹理来匹配像素大小，并使用邻近插值进行纹理采样</td>
+</tr>
+<tr>
+<td><var>GL_LINEAR_MIPMAP_NEAREST</var></td>
+<td>使用最邻近的多级渐远纹理级别，并使用线性插值进行采样</td>
+</tr>
+<tr>
+<td><var>GL_NEAREST_MIPMAP_LINEAR</var></td>
+<td>在两个最匹配像素大小的多级渐远纹理之间进行线性插值，使用邻近插值进行采样</td>
+</tr>
+<tr>
+<td><var>GL_LINEAR_MIPMAP_LINEAR</var></td>
+<td>在两个邻近的多级渐远纹理之间使用线性插值，并使用线性插值进行采样</td>
+</tr>
+</tbody>
+</table>
+
+<p>同样使用<code>glTexParameteri</code>函数来改变这个选项，但是要注意，Mipmaps只对缩小有作用，放大时是不使用Mipmaps的。</p>
+
+<h1 id="">创建一个纹理</h1>
+
+<p>创建一个纹理的过程和创建其它OpenGL object一样，先生成一个id，然后绑定，传递数据，设置其属性等。</p>
+
+<pre><code>//先生成一个id
+unsigned int texture;
+glGenTextures(1, &amp;texture); 
+
+//绑定
+glBindTexture(GL_TEXTURE_2D, texture); 
+
+//传递数据，假设数据存储在data指针所指的内存中
+glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+//生成mipmap
+glGenerateMipmap(GL_TEXTURE_2D);
+
+//设置其属性
+glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+</code></pre>
+
+<p>这里需要说明的是<code>glTexImage2D</code>这个函数的参数：</p>
+
+<ol>
+<li>这个是要生成的纹理类型，有三个可选值，<code>GL_TEXTURE_1D</code>,<code>GL_TEXTURE_2D</code>,<code>GL_TEXTURE_3D</code>。</li>
+<li>第二个参数是如果需要手动指定mipmap的级别，那么级别这个参数写在这里，我们这里后面会自动生成mipmap，所以级别为0。</li>
+<li>第三个参数是纹理在显存中的格式，这里使用RGB。</li>
+<li>第四、五个参数表示图片的宽和高的像素数。</li>
+<li>第六个参数传入0，好像是由于历史原因。</li>
+<li>第七、八个参数描述了输入图片的格式，这里是RGB图片，每个分量的类型是unsigned 类型。</li>
+<li>最后一个是图像数据的来源。</li>
+</ol>
+
+<p>以上就生成了一个可以使用的纹理。</p>
+
+<h2 id="ios">iOS中创建一个纹理</h2>
+
+<p>在iOS中不用我们手动加载图片的数据，因为系统已经提供了一个便利的函数，使用如下：</p>
+
+<pre><code>//load texture
+    NSError *error;
+    GLKTextureInfo *appleTextureMetadata = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"photo_2017-10-26_19-39-39" ofType:@"jpg"] options:nil error:&amp;error];
+    NSAssert( appleTextureMetadata != nil, @"Error loading texture: %@", error);
+    glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+    glBindTexture(GL_TEXTURE_2D, appleTextureMetadata.name);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_2D);
+</code></pre>
+
+<h1 id="">使用纹理</h1>
+
+<p>使用纹理很简单，在绘制之前绑定需要使用的纹理，然后进行绘制即可：</p>
+
+<p>fragment shader中直接使用纹理的颜色:</p>
+
+<pre><code>out vec4 FragColor;
+
+in vec3 ourColor;
+in vec2 TexCoord;
+
+uniform sampler2D ourTexture;
+
+void main()
+{
+    FragColor = texture(ourTexture, TexCoord);
+}
+</code></pre>
+
+<pre><code>glBindTexture(GL_TEXTURE_2D, texture);
+glBindVertexArray(VAO);
+glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+</code></pre>
+
+<p>如果要同时使用多个纹理就涉及到一个texture unit的概念。OpenGL中提供至少16个texture unit，我们可以在一个shader中使用它们：</p>
+
+<pre><code>glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
+glBindTexture(GL_TEXTURE_2D, texture);
+</code></pre>
+
+<p>此时，需要使用下面的方式设置fragment shader中的纹理使用的是哪个texture unit。</p>
+
+<pre><code>glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0); 
+</code></pre>
+
+<p>经过以上，我们就能画出开篇中的第二个图了，至于3D的，我们需要一些空间变换的知识以及cube纹理，就在下回了。</p>
 <!-- content end -->
 </div>
 <br>
