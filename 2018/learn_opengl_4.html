@@ -177,6 +177,22 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 # 使用纹理
 使用纹理很简单，在绘制之前绑定需要使用的纹理，然后进行绘制即可：
 
+fragment shader中直接使用纹理的颜色:
+
+```
+out vec4 FragColor;
+  
+in vec3 ourColor;
+in vec2 TexCoord;
+
+uniform sampler2D ourTexture;
+
+void main()
+{
+    FragColor = texture(ourTexture, TexCoord);
+}
+```
+
 ```
 glBindTexture(GL_TEXTURE_2D, texture);
 glBindVertexArray(VAO);
@@ -359,6 +375,21 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 <h1 id="">使用纹理</h1>
 
 <p>使用纹理很简单，在绘制之前绑定需要使用的纹理，然后进行绘制即可：</p>
+
+<p>fragment shader中直接使用纹理的颜色:</p>
+
+<pre><code>out vec4 FragColor;
+
+in vec3 ourColor;
+in vec2 TexCoord;
+
+uniform sampler2D ourTexture;
+
+void main()
+{
+    FragColor = texture(ourTexture, TexCoord);
+}
+</code></pre>
 
 <pre><code>glBindTexture(GL_TEXTURE_2D, texture);
 glBindVertexArray(VAO);
