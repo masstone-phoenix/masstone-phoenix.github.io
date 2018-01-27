@@ -180,6 +180,8 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 fragment shader中直接使用纹理的颜色:
 
 ```
+ #version 300 es
+precision mediump float;
 out vec4 FragColor;
   
 in vec3 ourColor;
@@ -380,7 +382,9 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 
 <p>fragment shader中直接使用纹理的颜色:</p>
 
-<pre><code>out vec4 FragColor;
+<pre><code> #version 300 es
+precision mediump float;
+out vec4 FragColor;
 
 in vec3 ourColor;
 in vec2 TexCoord;
