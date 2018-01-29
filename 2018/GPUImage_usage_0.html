@@ -33,8 +33,23 @@
 1. GPUImage的使用——其实这部分可有可无，网上大多都是这个，在这里只是简单写一下，为了以后忘记时可以随机查阅。
 
 # Core Image VS GPUImage
+对一个图片应用滤镜或其它算法（比如美白），直接想的到方法是使用OpenGL ES，但是直接上这个感觉“杀鸡用牛刀”，还有一个是其它不了解OpenGL的人没办法帮你review。于是就想到了iOS上现成的两个封装Core Image 和 GPUImage。以下对比一下它们各自的优势，共同点就不在描述了：
 
-我们的项目中有Android，也有iOS，这是我们选择GPUImage的一个主要原因。
+## Core Image
+- 官方框架，与Core Graphics，Core Animation等无缝结合
+- 能够根据设备不同选择最优的渲染器，依次为 Metal，OpenGL ES，Core Graphics。
+- 能够支持CPU渲染，其实也在就程序在进入后台时还能够处理图片
+- 滤镜链的性能比 GPUImage 高(没有验证过，[这里](https://stackoverflow.com/questions/24153103/key-differences-between-core-image-and-gpuimage/24173342#24173342)是这么说的)
+- 支持对大图进行处理，超过 GPU 纹理限制 (4096 * 4096)的时候，会自动拆分成几个小块处理(Automatic tiling)。GPUImage 当处理超过纹理限制的图像时候，会先做判断，压缩成最大纹理限制的图像，导致图像质量损失。
+
+
+## GPUImage
+- 作者说他最初的想法只是实现一个对OpenGL ES的封装，现在主攻方向是机器视觉
+- 支持的iOS版本比Core Image更多（也就是支持一些低版本）
+- 定制更加复杂的管线操作，可定制程度高
+- 最大的优势（我认为的）就是它是开源的
+
+其实如果光是考虑iOS，我还是选择Core Image，因为它的性能与GPUImage目前看是不相上下，也可以自定义滤镜算法，还是官方框架，目前我们的程序也不需要支持低版本的iOS，但是，我们的项目中有Android，也有iOS，这是我们选择GPUImage的一个主要原因——shader程序可以复用。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -50,7 +65,28 @@
 
 <h1 id="coreimagevsgpuimage">Core Image VS GPUImage</h1>
 
-<p>我们的项目中有Android，也有iOS，这是我们选择GPUImage的一个主要原因。</p>
+<p>对一个图片应用滤镜或其它算法（比如美白），直接想的到方法是使用OpenGL ES，但是直接上这个感觉“杀鸡用牛刀”，还有一个是其它不了解OpenGL的人没办法帮你review。于是就想到了iOS上现成的两个封装Core Image 和 GPUImage。以下对比一下它们各自的优势，共同点就不在描述了：</p>
+
+<h2 id="coreimage">Core Image</h2>
+
+<ul>
+<li>官方框架，与Core Graphics，Core Animation等无缝结合</li>
+<li>能够根据设备不同选择最优的渲染器，依次为 Metal，OpenGL ES，Core Graphics。</li>
+<li>能够支持CPU渲染，其实也在就程序在进入后台时还能够处理图片</li>
+<li>滤镜链的性能比 GPUImage 高(没有验证过，<a href="https://stackoverflow.com/questions/24153103/key-differences-between-core-image-and-gpuimage/24173342#24173342">这里</a>是这么说的)</li>
+<li>支持对大图进行处理，超过 GPU 纹理限制 (4096 * 4096)的时候，会自动拆分成几个小块处理(Automatic tiling)。GPUImage 当处理超过纹理限制的图像时候，会先做判断，压缩成最大纹理限制的图像，导致图像质量损失。</li>
+</ul>
+
+<h2 id="gpuimage">GPUImage</h2>
+
+<ul>
+<li>作者说他最初的想法只是实现一个对OpenGL ES的封装，现在主攻方向是机器视觉</li>
+<li>支持的iOS版本比Core Image更多（也就是支持一些低版本）</li>
+<li>定制更加复杂的管线操作，可定制程度高</li>
+<li>最大的优势（我认为的）就是它是开源的</li>
+</ul>
+
+<p>其实如果光是考虑iOS，我还是选择Core Image，因为它的性能与GPUImage目前看是不相上下，也可以自定义滤镜算法，还是官方框架，目前我们的程序也不需要支持低版本的iOS，但是，我们的项目中有Android，也有iOS，这是我们选择GPUImage的一个主要原因——shader程序可以复用。</p>
 <!-- content end -->
 </div>
 <br>
