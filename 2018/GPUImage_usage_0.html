@@ -25,123 +25,32 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-OpenGL是一个3D的图形引擎，这里我们就学习一下如何在3D空间中进行绘制。这里需要用到一些[线性代数](http://open.163.com/special/opencourse/daishu.html)方面的知识，小伙伴们不熟悉的话可以点击学习一下。当然，我假定你已经知道什么是四元数，不了解的可以去google一下，文章很多，这里就不重复写了。
+当在iOS中对图片应用滤镜时，一般有两个选择一个是Core Image， 一个是GPUImage。
+我这两天写了一个UIImage的Category，用于对图片应用一些类型的滤镜。本文总结了一下这个过程。大概分为三个阶段：
 
-在OpenGL中，如果希望顶点可见，那么在经过vertex shader后，顶点坐标应该在NDC（normalized device coordinates）中。什么是NDC呢？就是x,y,z的坐标都在-1.0到1.0之间；当坐标不在这个范围时，它们将不可见。
+1. 比较Core Image的GPUImage
+1. GPUImage的一些基本知识，其中会对GPUImage的一些基础类进行分析
+1. GPUImage的使用——其实这部分可有可无，网上大多都是这个，在这里只是简单写一下，为了以后忘记时可以随机查阅。
 
-将坐标转换到NDC是一个一步一步的过程，它会经过一些中间坐标系：
+# Core Image VS GPUImage
 
-- Local space (or Object space)
-- World space
-- View space (or Eye space)
-- Clip space
-
-然后从Clip space转换到NDC，从NDC转换到Screen space。这是坐标变换的大体节奏。
-
-你可能有点晕，当时我看到这的时候也是这样，别急让我们一个一个的来看看这些变换以及它们都在做什么。
-![](https://learnopengl.com/img/getting-started/coordinate_systems.png)
-
-1. Local coordinates 物体自身所在的坐标空间
-2. 下一步就是将local coordinates转换到world-space coordinates 中。世界空间是整个世界的抽象，所有要绘制的物体都出现在这个被单中并且有了相对位置关系。
-3. 这步是将 world coordinates 转换到view-space coordinates。在 view-space coordinates中，每个坐标是从镜头观察的。
-4. 然后将坐标从view-space coordinates转换到clip coordinates。裁剪坐标会被处理到-1.0 到 1.0 之间，从而决定了哪些是可见元素。
-5. 最后，我们从 clip coordinates 转换到screen coordinates，这一步的变换叫 viewport transform。这个变换是由函数 glViewport 定义的。screen coordinates会被输送给光栅化阶段，然后转换为片元。
-
-这里要强调一下，从vertex shader输出的gl_Position是一个4D向量，而NDC是一个3D空间，所以中间进行了一个叫perspective division的操作：
-<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-  <mi>o</mi>
-  <mi>u</mi>
-  <mi>t</mi>
-  <mo>=</mo>
-  <mrow>
-    <mo>(</mo>
-    <mtable rowspacing="4pt" columnspacing="1em">
-      <mtr>
-        <mtd>
-          <mi>x</mi>
-          <mrow class="MJX-TeXAtom-ORD">
-            <mo>/</mo>
-          </mrow>
-          <mi>w</mi>
-        </mtd>
-      </mtr>
-      <mtr>
-        <mtd>
-          <mi>y</mi>
-          <mrow class="MJX-TeXAtom-ORD">
-            <mo>/</mo>
-          </mrow>
-          <mi>w</mi>
-        </mtd>
-      </mtr>
-      <mtr>
-        <mtd>
-          <mi>z</mi>
-          <mrow class="MJX-TeXAtom-ORD">
-            <mo>/</mo>
-          </mrow>
-          <mi>w</mi>
-        </mtd>
-      </mtr>
-    </mtable>
-    <mo>)</mo>
-  </mrow>
-</math>
-
-
-# Clip space
-上面所有空间有，其它空间都好理解，这个空间其实也很好理解，变换就是将view space中的一个视锥体（frustum）映射到clip space的一个正方体上。但是，我们为什么要说一说这个空间呢？因为有两种映射的方式，一个是正交映射，一个是透视映射。
-
-## 正交映射
-其实就是投影，像是光线从无限远的地方照射过来。没有考虑近大远小的影响。它的视锥体是一个长方体。
-![](https://learnopengl.com/img/getting-started/orthographic_frustum.png)
-
-## 透视映射
-这个就是模拟我们人眼看世界时的视角，近大远小，它的视锥体是一个平截头体。
-![](https://learnopengl.com/img/getting-started/perspective_frustum.png)
-
-# Cube texture
-以前我们学习过2D纹理，其实除了它还有1D纹理，3D纹理和cube纹理。
-
-1D纹理就是一个特殊的2D纹理，特殊在纹理的高度为1，用来修饰一条线。
-
-3D纹理是一个立体的，形象的说，比如一个手机的3D纹理，当我们用平面切割这个纹理时，我们得到的是手机内部电路的一幅图像。
-
-Cube纹理也是修饰立体的，但是它只是修饰立体的6个面，简单的说一个cube纹理由6个2D纹理组合在一起生成的。它的采样也很简单，是根据一个向量的方向来进行采样的，如下图所示：
-
-![](https://learnopengl.com/img/advanced/cubemaps_sampling.png)
-
-生成一个cube纹理也同生成一个2D纹理一样简单，在iOS中甚至有一个方便调用的函数：
-
-```
-
-```
-
-# 3D
-根据上述知识，我们重新编写vertex shader即可绘制3D图形：
-
-```
-#version 300 es
-layout (location = 0) in vec3 aPos;
-...
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
-void main()
-{
-    // note that we read the multiplication from right to left
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-    ...
-}
-```
-
-然后，在程序中对三个uniform类型的矩阵进行赋值，就可以做出[上篇](https://masstone-phoenix.github.io/2018/learn_opengl_4.html)开头时的3D纹理了。
+我们的项目中有Android，也有iOS，这是我们选择GPUImage的一个主要原因。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>当在iOS中对图片应用滤镜时，一般有两个选择一个是Core Image， 一个是GPUImage。
+我这两天写了一个UIImage的Category，用于对图片应用一些类型的滤镜。本文总结了一下这个过程。大概分为三个阶段：</p>
 
+<ol>
+<li>比较Core Image的GPUImage</li>
+<li>GPUImage的一些基本知识，其中会对GPUImage的一些基础类进行分析</li>
+<li>GPUImage的使用——其实这部分可有可无，网上大多都是这个，在这里只是简单写一下，为了以后忘记时可以随机查阅。</li>
+</ol>
+
+<h1 id="coreimagevsgpuimage">Core Image VS GPUImage</h1>
+
+<p>我们的项目中有Android，也有iOS，这是我们选择GPUImage的一个主要原因。</p>
 <!-- content end -->
 </div>
 <br>
