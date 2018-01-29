@@ -50,6 +50,21 @@
 - 最大的优势（我认为的）就是它是开源的
 
 其实如果光是考虑iOS，我还是选择Core Image，因为它的性能与GPUImage目前看是不相上下，也可以自定义滤镜算法，还是官方框架，目前我们的程序也不需要支持低版本的iOS，但是，我们的项目中有Android，也有iOS，这是我们选择GPUImage的一个主要原因——shader程序可以复用。
+
+# GPUImage的一些基本知识
+## GLProgram
+GLProgram是对OpenGL中program和shader的封装，用户只需要提供vertex shader和fragment shader源代码的字符串就可以创建一个绘图时使用的program。同时提供了link，use等接口。
+
+## GPUImageContext
+GPUImageContext提供了对OpenGL中context的封装，由于这个OpenGL的context不是线程安全的，GPUImageContext同时还将所有的绘制操作都移动到一个自定义的队列中；同时，它提供了对于GLProgram和GPUImageFramebuffer的一些缓存机制。
+
+## GPUImageFramebuffer
+
+## GPUImageInput
+
+## GPUImageOutput
+
+## GPUImageFilter
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -87,6 +102,24 @@
 </ul>
 
 <p>其实如果光是考虑iOS，我还是选择Core Image，因为它的性能与GPUImage目前看是不相上下，也可以自定义滤镜算法，还是官方框架，目前我们的程序也不需要支持低版本的iOS，但是，我们的项目中有Android，也有iOS，这是我们选择GPUImage的一个主要原因——shader程序可以复用。</p>
+
+<h1 id="gpuimage">GPUImage的一些基本知识</h1>
+
+<h2 id="glprogram">GLProgram</h2>
+
+<p>GLProgram是对OpenGL中program和shader的封装，用户只需要提供vertex shader和fragment shader源代码的字符串就可以创建一个绘图时使用的program。同时提供了link，use等接口。</p>
+
+<h2 id="gpuimagecontext">GPUImageContext</h2>
+
+<p>GPUImageContext提供了对OpenGL中context的封装，由于这个OpenGL的context不是线程安全的，GPUImageContext同时还将所有的绘制操作都移动到一个自定义的队列中；同时，它提供了对于GLProgram和GPUImageFramebuffer的一些缓存机制。</p>
+
+<h2 id="gpuimageframebuffer">GPUImageFramebuffer</h2>
+
+<h2 id="gpuimageinput">GPUImageInput</h2>
+
+<h2 id="gpuimageoutput">GPUImageOutput</h2>
+
+<h2 id="gpuimagefilter">GPUImageFilter</h2>
 <!-- content end -->
 </div>
 <br>
