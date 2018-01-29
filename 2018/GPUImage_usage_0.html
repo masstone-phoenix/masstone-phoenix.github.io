@@ -52,6 +52,8 @@
 其实如果光是考虑iOS，我还是选择Core Image，因为它的性能与GPUImage目前看是不相上下，也可以自定义滤镜算法，还是官方框架，目前我们的程序也不需要支持低版本的iOS，但是，我们的项目中有Android，也有iOS，这是我们选择GPUImage的一个主要原因——shader程序可以复用。
 
 # GPUImage的一些基本知识
+GPUImage对图形数据的处理流程是这样的：Source -> filter1 -> filter2 .... -> Output。可以将它理解为一个链。
+
 ## GLProgram
 GLProgram是对OpenGL中program和shader的封装，用户只需要提供vertex shader和fragment shader源代码的字符串就可以创建一个绘图时使用的program。同时提供了link，use等接口。
 
@@ -59,8 +61,35 @@ GLProgram是对OpenGL中program和shader的封装，用户只需要提供vertex 
 GPUImageContext提供了对OpenGL中context的封装，由于这个OpenGL的context不是线程安全的，GPUImageContext同时还将所有的绘制操作都移动到一个自定义的队列中；同时，它提供了对于GLProgram和GPUImageFramebuffer的一些缓存机制。
 
 ## GPUImageFramebuffer
+这个封装了OpenGL中的framebuffer，同时提供了refernce count的管理，方便缓存的使用。
+
+值得注意的是，从GPU读取Image数据到CPU时，iOS有一个texture cache的概念，通过它比glReadPixels快速很多。
+
 
 ## GPUImageInput
+这个协议定义了如何为链条中的一个节点是如何接收输入数据，以及如何推动数据向下一级节点流动的函数。
+
+```
+- (void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex;
+```
+函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，其中textureIndex是指当前节点的第几个输入图像的framebuffer。
+
+```
+- (void)newFrameReadyAtTime:(CMTime)frameTime atIndex:(NSInteger)textureIndex;
+{
+    static const GLfloat imageVertices[] = {
+        -1.0f, -1.0f,
+        1.0f, -1.0f,
+        -1.0f,  1.0f,
+        1.0f,  1.0f,
+    };
+    
+    [self renderToTextureWithVertices:imageVertices textureCoordinates:[[self class] textureCoordinatesForRotation:inputRotation]];
+
+    [self informTargetsAboutNewFrameAtTime:frameTime];
+}
+```
+函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。其中的textureIndex是在调用addTarget:函数时计算并存储起来的。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。
 
 ## GPUImageOutput
 
@@ -105,6 +134,8 @@ GPUImageContext提供了对OpenGL中context的封装，由于这个OpenGL的cont
 
 <h1 id="gpuimage">GPUImage的一些基本知识</h1>
 
+<p>GPUImage对图形数据的处理流程是这样的：Source -&gt; filter1 -&gt; filter2 .... -&gt; Output。可以将它理解为一个链。</p>
+
 <h2 id="glprogram">GLProgram</h2>
 
 <p>GLProgram是对OpenGL中program和shader的封装，用户只需要提供vertex shader和fragment shader源代码的字符串就可以创建一个绘图时使用的program。同时提供了link，use等接口。</p>
@@ -115,7 +146,35 @@ GPUImageContext提供了对OpenGL中context的封装，由于这个OpenGL的cont
 
 <h2 id="gpuimageframebuffer">GPUImageFramebuffer</h2>
 
+<p>这个封装了OpenGL中的framebuffer，同时提供了refernce count的管理，方便缓存的使用。</p>
+
+<p>值得注意的是，从GPU读取Image数据到CPU时，iOS有一个texture cache的概念，通过它比glReadPixels快速很多。</p>
+
 <h2 id="gpuimageinput">GPUImageInput</h2>
+
+<p>这个协议定义了如何为链条中的一个节点是如何接收输入数据，以及如何推动数据向下一级节点流动的函数。</p>
+
+<pre><code>- (void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex;
+</code></pre>
+
+<p>函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，其中textureIndex是指当前节点的第几个输入图像的framebuffer。</p>
+
+<pre><code>- (void)newFrameReadyAtTime:(CMTime)frameTime atIndex:(NSInteger)textureIndex;
+{
+    static const GLfloat imageVertices[] = {
+        -1.0f, -1.0f,
+        1.0f, -1.0f,
+        -1.0f,  1.0f,
+        1.0f,  1.0f,
+    };
+
+    [self renderToTextureWithVertices:imageVertices textureCoordinates:[[self class] textureCoordinatesForRotation:inputRotation]];
+
+    [self informTargetsAboutNewFrameAtTime:frameTime];
+}
+</code></pre>
+
+<p>函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。其中的textureIndex是在调用addTarget:函数时计算并存储起来的。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。</p>
 
 <h2 id="gpuimageoutput">GPUImageOutput</h2>
 
