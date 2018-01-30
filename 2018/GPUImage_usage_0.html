@@ -107,7 +107,18 @@ GPUImageContext提供了对OpenGL中context的封装，由于这个OpenGL的cont
 
             //这里你就可以绘制你想绘制的任何事情了
 
+
+            //读取数据时使用下面的方法
+              if (kCVReturnSuccess == CVPixelBufferLockBaseAddress(renderTarget,
+      kCVPixelBufferLock_ReadOnly)) {
+                uint8_t* pixels=(uint8_t*)CVPixelBufferGetBaseAddress(renderTarget);
+                // process pixels how you like!
+                CVPixelBufferUnlockBaseAddress(m_rgb, kCVPixelBufferLock_ReadOnly);
+  }
+
 ```
+
+
 
 ```
 //这里补充一下，上面用到的coreVideoTextureCache是在GPUImageContext中使用如下函数创建的：
@@ -319,6 +330,15 @@ NSString *const kGPUImageColorMatrixFragmentShaderString = SHADER_STRING
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0);
 
             //这里你就可以绘制你想绘制的任何事情了
+
+
+            //读取数据时使用下面的方法
+              if (kCVReturnSuccess == CVPixelBufferLockBaseAddress(renderTarget,
+      kCVPixelBufferLock_ReadOnly)) {
+                uint8_t* pixels=(uint8_t*)CVPixelBufferGetBaseAddress(renderTarget);
+                // process pixels how you like!
+                CVPixelBufferUnlockBaseAddress(m_rgb, kCVPixelBufferLock_ReadOnly);
+  }
 </code></pre>
 
 <pre><code>//这里补充一下，上面用到的coreVideoTextureCache是在GPUImageContext中使用如下函数创建的：
