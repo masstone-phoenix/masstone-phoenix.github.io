@@ -63,8 +63,57 @@ GPUImageContext提供了对OpenGL中context的封装，由于这个OpenGL的cont
 ## GPUImageFramebuffer
 这个封装了OpenGL中的framebuffer，同时提供了refernce count的管理，方便缓存的使用。
 
-值得注意的是，从GPU读取Image数据到CPU时，iOS有一个texture cache的概念，通过它比glReadPixels快速很多。
+值得注意的是，从GPU读取Image数据到CPU时，iOS有一个[texture cache的概念](http://allmybrain.com/2011/12/08/rendering-to-a-texture-with-ios-5-texture-cache-api/)，通过它比glReadPixels快速很多。
 
+具体如下：
+```
+//先定义一个创建CVPixelBuffer的empty IOSurface properties dictionary
+CFDictionaryRef empty; // empty value for attr value.
+            CFMutableDictionaryRef attrs;
+            empty = CFDictionaryCreate(kCFAllocatorDefault, NULL, NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks); // our empty IOSurface properties dictionary
+            attrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+            CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
+
+//创建CVPixelBuffer，存在renderTarget变量中
+CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, kCVPixelFormatType_32BGRA, attrs, &renderTarget);
+            if (err)
+            {
+                NSLog(@"FBO size: %f, %f", _size.width, _size.height);
+                NSAssert(NO, @"Error at CVPixelBufferCreate %d", err);
+            }
+
+//利用 CVOpenGLESTextureCache从我们上面的renderTarget创建一个texture
+err = CVOpenGLESTextureCacheCreateTextureFromImage (kCFAllocatorDefault, coreVideoTextureCache, renderTarget,
+                                                                NULL, // texture attributes
+                                                                GL_TEXTURE_2D,
+                                                                _textureOptions.internalFormat, // opengl format
+                                                                (int)_size.width,
+                                                                (int)_size.height,
+                                                                _textureOptions.format, // native iOS format
+                                                                _textureOptions.type,
+                                                                0,
+                                                                &renderTexture);
+
+            CFRelease(attrs);
+            CFRelease(empty);
+//绑定texture并设置相应属性
+            glBindTexture(CVOpenGLESTextureGetTarget(renderTexture), CVOpenGLESTextureGetName(renderTexture));
+            _texture = CVOpenGLESTextureGetName(renderTexture);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _textureOptions.wrapS);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _textureOptions.wrapT);
+            
+//将texture绑定到要绘制的framebuffer上 
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0);
+
+//这里你就可以绘制你想绘制的任何事情了
+
+```
+
+```
+//这里补充一下，上面用到的coreVideoTextureCache是在GPUImageContext中使用如下函数创建的：
+
+CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge void *)[self context], NULL, &_coreVideoTextureCache);
+```
 
 ## GPUImageInput
 这个协议定义了如何为链条中的一个节点是如何接收输入数据，以及如何推动数据向下一级节点流动的函数。
@@ -227,7 +276,55 @@ NSString *const kGPUImageColorMatrixFragmentShaderString = SHADER_STRING
 
 <p>这个封装了OpenGL中的framebuffer，同时提供了refernce count的管理，方便缓存的使用。</p>
 
-<p>值得注意的是，从GPU读取Image数据到CPU时，iOS有一个texture cache的概念，通过它比glReadPixels快速很多。</p>
+<p>值得注意的是，从GPU读取Image数据到CPU时，iOS有一个<a href="http://allmybrain.com/2011/12/08/rendering-to-a-texture-with-ios-5-texture-cache-api/">texture cache的概念</a>，通过它比glReadPixels快速很多。</p>
+
+<p>具体如下：</p>
+
+<pre><code>//先定义一个创建CVPixelBuffer的empty IOSurface properties dictionary
+CFDictionaryRef empty; // empty value for attr value.
+            CFMutableDictionaryRef attrs;
+            empty = CFDictionaryCreate(kCFAllocatorDefault, NULL, NULL, 0, &amp;kCFTypeDictionaryKeyCallBacks, &amp;kCFTypeDictionaryValueCallBacks); // our empty IOSurface properties dictionary
+            attrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &amp;kCFTypeDictionaryKeyCallBacks, &amp;kCFTypeDictionaryValueCallBacks);
+            CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
+
+//创建CVPixelBuffer，存在renderTarget变量中
+CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, kCVPixelFormatType_32BGRA, attrs, &amp;renderTarget);
+            if (err)
+            {
+                NSLog(@"FBO size: %f, %f", _size.width, _size.height);
+                NSAssert(NO, @"Error at CVPixelBufferCreate %d", err);
+            }
+
+//利用 CVOpenGLESTextureCache从我们上面的renderTarget创建一个texture
+err = CVOpenGLESTextureCacheCreateTextureFromImage (kCFAllocatorDefault, coreVideoTextureCache, renderTarget,
+                                                                NULL, // texture attributes
+                                                                GL_TEXTURE_2D,
+                                                                _textureOptions.internalFormat, // opengl format
+                                                                (int)_size.width,
+                                                                (int)_size.height,
+                                                                _textureOptions.format, // native iOS format
+                                                                _textureOptions.type,
+                                                                0,
+                                                                &amp;renderTexture);
+
+            CFRelease(attrs);
+            CFRelease(empty);
+//绑定texture并设置相应属性
+            glBindTexture(CVOpenGLESTextureGetTarget(renderTexture), CVOpenGLESTextureGetName(renderTexture));
+            _texture = CVOpenGLESTextureGetName(renderTexture);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _textureOptions.wrapS);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _textureOptions.wrapT);
+
+//将texture绑定到要绘制的framebuffer上 
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, CVOpenGLESTextureGetName(renderTexture), 0);
+
+//这里你就可以绘制你想绘制的任何事情了
+</code></pre>
+
+<pre><code>//这里补充一下，上面用到的coreVideoTextureCache是在GPUImageContext中使用如下函数创建的：
+
+CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge void *)[self context], NULL, &amp;_coreVideoTextureCache);
+</code></pre>
 
 <h2 id="gpuimageinput">GPUImageInput</h2>
 
