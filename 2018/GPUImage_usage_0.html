@@ -89,7 +89,7 @@ GPUImageContext提供了对OpenGL中context的封装，由于这个OpenGL的cont
     [self informTargetsAboutNewFrameAtTime:frameTime];
 }
 ```
-函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。其中的textureIndex是在调用addTarget:函数时计算并存储起来的。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。
+函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。其中的textureIndex是在调用addTarget:函数时计算并存储起来的，就是下一级节点的索引。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。
 
 ## GPUImageOutput
 GPUImageOutput是所有输出的超类，提供了管理targets的一些方法，以及输入图像比如newCGImageFromCurrentlyProcessedOutput的接口，具体的实现在子类中可以自定义。
@@ -253,7 +253,7 @@ NSString *const kGPUImageColorMatrixFragmentShaderString = SHADER_STRING
 }
 </code></pre>
 
-<p>函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。其中的textureIndex是在调用addTarget:函数时计算并存储起来的。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。</p>
+<p>函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。其中的textureIndex是在调用addTarget:函数时计算并存储起来的，就是下一级节点的索引。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。</p>
 
 <h2 id="gpuimageoutput">GPUImageOutput</h2>
 
