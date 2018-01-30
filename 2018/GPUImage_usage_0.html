@@ -68,14 +68,14 @@ GPUImageContext提供了对OpenGL中context的封装，由于这个OpenGL的cont
 具体如下：
 ```
 //先定义一个创建CVPixelBuffer的empty IOSurface properties dictionary
-CFDictionaryRef empty; // empty value for attr value.
+            CFDictionaryRef empty; // empty value for attr value.
             CFMutableDictionaryRef attrs;
             empty = CFDictionaryCreate(kCFAllocatorDefault, NULL, NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks); // our empty IOSurface properties dictionary
             attrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
             CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
 
 //创建CVPixelBuffer，存在renderTarget变量中
-CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, kCVPixelFormatType_32BGRA, attrs, &renderTarget);
+            CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, kCVPixelFormatType_32BGRA, attrs, &renderTarget);
             if (err)
             {
                 NSLog(@"FBO size: %f, %f", _size.width, _size.height);
@@ -281,14 +281,14 @@ NSString *const kGPUImageColorMatrixFragmentShaderString = SHADER_STRING
 <p>具体如下：</p>
 
 <pre><code>//先定义一个创建CVPixelBuffer的empty IOSurface properties dictionary
-CFDictionaryRef empty; // empty value for attr value.
+            CFDictionaryRef empty; // empty value for attr value.
             CFMutableDictionaryRef attrs;
             empty = CFDictionaryCreate(kCFAllocatorDefault, NULL, NULL, 0, &amp;kCFTypeDictionaryKeyCallBacks, &amp;kCFTypeDictionaryValueCallBacks); // our empty IOSurface properties dictionary
             attrs = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &amp;kCFTypeDictionaryKeyCallBacks, &amp;kCFTypeDictionaryValueCallBacks);
             CFDictionarySetValue(attrs, kCVPixelBufferIOSurfacePropertiesKey, empty);
 
 //创建CVPixelBuffer，存在renderTarget变量中
-CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, kCVPixelFormatType_32BGRA, attrs, &amp;renderTarget);
+            CVReturn err = CVPixelBufferCreate(kCFAllocatorDefault, (int)_size.width, (int)_size.height, kCVPixelFormatType_32BGRA, attrs, &amp;renderTarget);
             if (err)
             {
                 NSLog(@"FBO size: %f, %f", _size.width, _size.height);
