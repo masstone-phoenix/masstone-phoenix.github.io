@@ -25,12 +25,35 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
+在OpenGL中，光照是一个不得不说的话题，但是当我学习完成光照后，它其它就是在fragmnet shader中的一些模拟光照的算法而矣，这表示我们现在就已经会在OpenGL中使用光照了，当然，我们还要学习其中模拟不同光照条件的各种算法，但是这些已经有前人帮我们创造好了，是不是很简单，来吧，开始学习吧。
+
+# 总体描述
+我们在OpenGL中使用一个叫做Phong lighting model的模型来模拟现实中的光照，这个模型将现实中的光照简化了（如果不简化，那是非常复杂的），分成了三个基本光照模型：Ambient lighting，Diffuse lighting和Specular lighting，最终的光照结果由这三个光照模型叠加而成。
+
+- Ambient lighting：环境光，用来模拟整体的光照效果
+- Diffuse lighting：模拟一束光打在物体上的效果，这个在视觉上最明显
+- Specular lighting：模拟一个光源反射在物体表面的效果，光源对它的颜色通常影响比物体本身的颜色要大
+
+
+# Ambient lighting
 
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>在OpenGL中，光照是一个不得不说的话题，但是当我学习完成光照后，它其它就是在fragmnet shader中的一些模拟光照的算法而矣，这表示我们现在就已经会在OpenGL中使用光照了，当然，我们还要学习其中模拟不同光照条件的各种算法，但是这些已经有前人帮我们创造好了，是不是很简单，来吧，开始学习吧。</p>
 
+<h1 id="">总体描述</h1>
+
+<p>我们在OpenGL中使用一个叫做Phong lighting model的模型来模拟现实中的光照，这个模型将现实中的光照简化了（如果不简化，那是非常复杂的），分成了三个基本光照模型：Ambient lighting，Diffuse lighting和Specular lighting，最终的光照结果由这三个光照模型叠加而成。</p>
+
+<ul>
+<li>Ambient lighting：环境光，用来模拟整体的光照效果</li>
+<li>Diffuse lighting：模拟一束光打在物体上的效果，这个在视觉上最明显</li>
+<li>Specular lighting：模拟一个光源反射在物体表面的效果，光源对它的颜色通常影响比物体本身的颜色要大</li>
+</ul>
+
+<h1 id="ambientlighting">Ambient lighting</h1>
 <!-- content end -->
 </div>
 <br>
