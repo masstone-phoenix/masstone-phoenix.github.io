@@ -51,6 +51,7 @@ void main()
 ```
 
 效果：
+
 ![](https://learnopengl.com/img/lighting/ambient_lighting.png)
 
 #  Diffuse lighting
@@ -94,6 +95,12 @@ vec3 lightDir = normalize(lightPos - FragPos);
 ## 法线方向
 由上面的代码可以看出，是通过vertex shader传递给fragment shader的。
 
+需要特别注意的是，光物体在不同方向上拉伸压缩的比不同时，法线方向是需要重新计算的：
+![](https://learnopengl.com/img/lighting/basic_lighting_normal_transformation.png)
+
+```
+Normal = mat3(transpose(inverse(model))) * aNormal;
+```
 ## 计算光照效果
 这里是使用入射角的余弦值做为系数，乘以光源的颜色，再乘上物体本身的颜色做为光照效果，下面的代码是叠加上Ambient lighting的例子。
 ```
@@ -103,6 +110,9 @@ vec3 diffuse = diff * lightColor;
 vec3 result = (ambient + diffuse) * objectColor;
 FragColor = vec4(result, 1.0);
 ```
+效果：
+
+![](https://learnopengl.com/img/lighting/basic_lighting_diffuse.png)
 
 # Specular lighting
 <!-- markdown end -->
@@ -136,8 +146,9 @@ FragColor = vec4(result, 1.0);
 }  
 </code></pre>
 
-<p>效果：
-<img src="https://learnopengl.com/img/lighting/ambient_lighting.png" alt="" title=""></p>
+<p>效果：</p>
+
+<p><img src="https://learnopengl.com/img/lighting/ambient_lighting.png" alt="" title=""></p>
 
 <h1 id="diffuselighting">Diffuse lighting</h1>
 
@@ -184,6 +195,12 @@ vec3 lightDir = normalize(lightPos - FragPos);
 
 <p>由上面的代码可以看出，是通过vertex shader传递给fragment shader的。</p>
 
+<p>需要特别注意的是，光物体在不同方向上拉伸压缩的比不同时，法线方向是需要重新计算的：
+<img src="https://learnopengl.com/img/lighting/basic_lighting_normal_transformation.png" alt="" title=""></p>
+
+<pre><code>Normal = mat3(transpose(inverse(model))) * aNormal;
+</code></pre>
+
 <h2 id="">计算光照效果</h2>
 
 <p>这里是使用入射角的余弦值做为系数，乘以光源的颜色，再乘上物体本身的颜色做为光照效果，下面的代码是叠加上Ambient lighting的例子。</p>
@@ -194,6 +211,10 @@ vec3 diffuse = diff * lightColor;
 vec3 result = (ambient + diffuse) * objectColor;
 FragColor = vec4(result, 1.0);
 </code></pre>
+
+<p>效果：</p>
+
+<p><img src="https://learnopengl.com/img/lighting/basic_lighting_diffuse.png" alt="" title=""></p>
 
 <h1 id="specularlighting">Specular lighting</h1>
 <!-- content end -->
