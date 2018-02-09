@@ -29,6 +29,7 @@
 
 # 总体描述
 我们在OpenGL中使用一个叫做Phong lighting model的模型来模拟现实中的光照，这个模型将现实中的光照简化了（如果不简化，那是非常复杂的），分成了三个基本光照模型：Ambient lighting，Diffuse lighting和Specular lighting，最终的光照结果由这三个光照模型叠加而成。
+![](https://learnopengl.com/img/lighting/basic_lighting_phong.png)
 
 - Ambient lighting：环境光，用来模拟整体的光照效果
 - Diffuse lighting：模拟一束光打在物体上的效果，这个在视觉上最明显
@@ -36,7 +37,25 @@
 
 
 # Ambient lighting
+对物体加上Ambient lighting的算法是非常简单的，我们知道光源的颜色，将它乘以一个叫做ambient factor的常数，然后乘以物体本身的颜色，得到的就是Ambient lighting的颜色，代码如下：
 
+```
+void main()
+{
+    float ambientStrength = 0.1;
+    vec3 ambient = ambientStrength * lightColor;
+
+    vec3 result = ambient * objectColor;
+    FragColor = vec4(result, 1.0);
+}  
+```
+
+效果：
+![](https://learnopengl.com/img/lighting/ambient_lighting.png)
+
+#  Diffuse lighting
+
+# Specular lighting
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -45,7 +64,8 @@
 
 <h1 id="">总体描述</h1>
 
-<p>我们在OpenGL中使用一个叫做Phong lighting model的模型来模拟现实中的光照，这个模型将现实中的光照简化了（如果不简化，那是非常复杂的），分成了三个基本光照模型：Ambient lighting，Diffuse lighting和Specular lighting，最终的光照结果由这三个光照模型叠加而成。</p>
+<p>我们在OpenGL中使用一个叫做Phong lighting model的模型来模拟现实中的光照，这个模型将现实中的光照简化了（如果不简化，那是非常复杂的），分成了三个基本光照模型：Ambient lighting，Diffuse lighting和Specular lighting，最终的光照结果由这三个光照模型叠加而成。
+<img src="https://learnopengl.com/img/lighting/basic_lighting_phong.png" alt="" title=""></p>
 
 <ul>
 <li>Ambient lighting：环境光，用来模拟整体的光照效果</li>
@@ -54,6 +74,25 @@
 </ul>
 
 <h1 id="ambientlighting">Ambient lighting</h1>
+
+<p>对物体加上Ambient lighting的算法是非常简单的，我们知道光源的颜色，将它乘以一个叫做ambient factor的常数，然后乘以物体本身的颜色，得到的就是Ambient lighting的颜色，代码如下：</p>
+
+<pre><code>void main()
+{
+    float ambientStrength = 0.1;
+    vec3 ambient = ambientStrength * lightColor;
+
+    vec3 result = ambient * objectColor;
+    FragColor = vec4(result, 1.0);
+}  
+</code></pre>
+
+<p>效果：
+<img src="https://learnopengl.com/img/lighting/ambient_lighting.png" alt="" title=""></p>
+
+<h1 id="diffuselighting">Diffuse lighting</h1>
+
+<h1 id="specularlighting">Specular lighting</h1>
 <!-- content end -->
 </div>
 <br>
