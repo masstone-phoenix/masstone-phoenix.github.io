@@ -115,6 +115,24 @@ FragColor = vec4(result, 1.0);
 ![](https://learnopengl.com/img/lighting/basic_lighting_diffuse.png)
 
 # Specular lighting
+这是考虑观察点所在位置对光照效果的影响，先计算反射光，然后计算反射光与人眼观察方向的夹角来计算一个系数，之后就后前面一样了。
+
+```
+//calc specular light in world coordinate
+float specularStrength = 0.5;
+vec3 viewDir = normalize(viewPos - FragPos);
+vec3 reflectDir = reflect(-lightDir, norm);
+float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.);
+vec3 specular = specularStrength * spec * lightColor;
+
+vec3 result = (ambient + diffuse + specular) * objectColor;
+FragColor =  vec4(result, 1.0);
+```
+这里，需要注意的是我们在world space coordinates完成的计算，还有一点，reflect函数的第一个参数的方向是由光源方向指向片元方向。
+
+还有一点```pow(max(dot(viewDir, reflectDir), 0.0), 32.);```中的32也是一个参数，它的作用是影响光束的“开散”范围。
+
+![](https://learnopengl.com/img/lighting/basic_lighting_specular_shininess.png)
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -217,6 +235,25 @@ FragColor = vec4(result, 1.0);
 <p><img src="https://learnopengl.com/img/lighting/basic_lighting_diffuse.png" alt="" title=""></p>
 
 <h1 id="specularlighting">Specular lighting</h1>
+
+<p>这是考虑观察点所在位置对光照效果的影响，先计算反射光，然后计算反射光与人眼观察方向的夹角来计算一个系数，之后就后前面一样了。</p>
+
+<pre><code>//calc specular light in world coordinate
+float specularStrength = 0.5;
+vec3 viewDir = normalize(viewPos - FragPos);
+vec3 reflectDir = reflect(-lightDir, norm);
+float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.);
+vec3 specular = specularStrength * spec * lightColor;
+
+vec3 result = (ambient + diffuse + specular) * objectColor;
+FragColor =  vec4(result, 1.0);
+</code></pre>
+
+<p>这里，需要注意的是我们在world space coordinates完成的计算，还有一点，reflect函数的第一个参数的方向是由光源方向指向片元方向。</p>
+
+<p>还有一点<code>pow(max(dot(viewDir, reflectDir), 0.0), 32.);</code>中的32也是一个参数，它的作用是影响光束的“开散”范围。</p>
+
+<p><img src="https://learnopengl.com/img/lighting/basic_lighting_specular_shininess.png" alt="" title=""></p>
 <!-- content end -->
 </div>
 <br>
