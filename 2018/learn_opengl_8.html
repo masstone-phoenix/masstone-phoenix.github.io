@@ -27,14 +27,38 @@
 <!-- markdown -->
 这里也就过年前就学习过的，但是年前也没有总结，在年后进行一下总结，防止以后忘记。本篇文章主要介绍下OpenGL的深度测试、模板测试、混合等特性。以下一个一个的进行总结。
 
-# 
+# 模板测试 Stencil testing
+按照绘制流水线，在fragment shader输出片元颜色信息后，将进入逐片元操作阶段，在这个阶段中，如果使能了模板测试，最先进入的就是模板测试。
+
+在OpenGL中使用下面函数使能模板测试：
+```
+glEnable(GL_STENCIL_TEST);
+```
+每次绘制时，最好清除缓冲区：
+```
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+```
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
 <p>这里也就过年前就学习过的，但是年前也没有总结，在年后进行一下总结，防止以后忘记。本篇文章主要介绍下OpenGL的深度测试、模板测试、混合等特性。以下一个一个的进行总结。</p>
 
-<h1 id=""> </h1>
+<h1 id="stenciltesting">模板测试 Stencil testing</h1>
+
+<p>按照绘制流水线，在fragment shader输出片元颜色信息后，将进入逐片元操作阶段，在这个阶段中，如果使能了模板测试，最先进入的就是模板测试。</p>
+
+<p>在OpenGL中使用下面函数使能模板测试：</p>
+
+<pre><code>glEnable(GL_STENCIL_TEST);
+</code></pre>
+
+<p>每次绘制时，最好清除缓冲区：</p>
+
+<pre><code>glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+</code></pre>
 <!-- content end -->
 </div>
 <br>
