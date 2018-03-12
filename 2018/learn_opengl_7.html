@@ -265,6 +265,8 @@ void main()
     FragColor = vec4(result, 1.0);
 }
 ```
+
+注：计算光照一般在world坐标系下进行
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -508,6 +510,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     FragColor = vec4(result, 1.0);
 }
 </code></pre>
+
+<p>注：计算光照一般在world坐标系下进行</p>
 <!-- content end -->
 </div>
 <br>
