@@ -70,13 +70,58 @@ void main()
 uniform Material dirLight;
 
 //light
-    glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.ambient"), 0.05f, 0.05f, 0.05f);
-    glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.diffuse"), 0.4f, 0.4f, 0.4f); // darken the light a bit to fit the scene
-    glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.specular"), 0.5f, 0.5f, 0.5f);
+glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.ambient"), 0.05f, 0.05f, 0.05f);
+glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.diffuse"), 0.4f, 0.4f, 0.4f); // darken the light a bit to fit the scene
+glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.specular"), 0.5f, 0.5f, 0.5f);
 ```
 
-# 多光源
 
+
+# 光照强度
+上面的光照太过强烈，是由于使用了光源的100%强度，我们还可以定义一个光源的模型来表示一个光源。
+
+```
+
+struct Light {
+    vec3 position;
+  
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+uniform Light light;   
+```
+
+然后，计算光的颜色：
+```
+vec3 ambient  = light.ambient * material.ambient;
+vec3 diffuse  = light.diffuse * (diff * material.diffuse);
+vec3 specular = light.specular * (spec * material.specular); 
+```
+
+这样就可以控制光照强度等效果了。
+
+# Lighting maps
+在现实中，不同物体表面可以由不同材质构成，即使是同一物体，比如汽车，也是由不同材质构成的，上面的材质就不太方便了。联想到texture，我们可以使用图片来提供上述材质的ambient，diffuse和specular三个属性，就是Lighting maps。
+
+```
+struct Material {
+    sampler2D diffuse;
+    sampler2D specular;
+    float     shininess;
+};  
+```
+使用时直接使用texture函数替换原来的数值即可：
+
+```
+vec3 ambient  = light.ambient  * vec3(texture(material.diffuse, TexCoords));
+vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuse, TexCoords));  
+vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
+FragColor = vec4(ambient + diffuse + specular, 1.0);   
+```
+
+#不同类型的光源以及其模型
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -125,12 +170,55 @@ void main()
 uniform Material dirLight;
 
 //light
-    glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.ambient"), 0.05f, 0.05f, 0.05f);
-    glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.diffuse"), 0.4f, 0.4f, 0.4f); // darken the light a bit to fit the scene
-    glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.specular"), 0.5f, 0.5f, 0.5f);
+glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.ambient"), 0.05f, 0.05f, 0.05f);
+glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.diffuse"), 0.4f, 0.4f, 0.4f); // darken the light a bit to fit the scene
+glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.specular"), 0.5f, 0.5f, 0.5f);
 </code></pre>
 
-<h1 id="">多光源</h1>
+<h1 id="">光照强度</h1>
+
+<p>上面的光照太过强烈，是由于使用了光源的100%强度，我们还可以定义一个光源的模型来表示一个光源。</p>
+
+<pre><code>struct Light {
+    vec3 position;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+uniform Light light;   
+</code></pre>
+
+<p>然后，计算光的颜色：</p>
+
+<pre><code>vec3 ambient  = light.ambient * material.ambient;
+vec3 diffuse  = light.diffuse * (diff * material.diffuse);
+vec3 specular = light.specular * (spec * material.specular); 
+</code></pre>
+
+<p>这样就可以控制光照强度等效果了。</p>
+
+<h1 id="lightingmaps">Lighting maps</h1>
+
+<p>在现实中，不同物体表面可以由不同材质构成，即使是同一物体，比如汽车，也是由不同材质构成的，上面的材质就不太方便了。联想到texture，我们可以使用图片来提供上述材质的ambient，diffuse和specular三个属性，就是Lighting maps。</p>
+
+<pre><code>struct Material {
+    sampler2D diffuse;
+    sampler2D specular;
+    float     shininess;
+};  
+</code></pre>
+
+<p>使用时直接使用texture函数替换原来的数值即可：</p>
+
+<pre><code>vec3 ambient  = light.ambient  * vec3(texture(material.diffuse, TexCoords));
+vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuse, TexCoords));  
+vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
+FragColor = vec4(ambient + diffuse + specular, 1.0);   
+</code></pre>
+
+<h1 id="">不同类型的光源以及其模型</h1>
 <!-- content end -->
 </div>
 <br>
