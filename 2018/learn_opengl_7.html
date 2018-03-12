@@ -244,6 +244,27 @@ vec3 CalcSpotLight(SpotLight spotLight, vec3 norm, vec3 FragPos, vec3 viewDir)
 }
 ```
 
+
+# 多光源
+就是使用上述各种光源形成综合效果，模板代码如下：
+```
+void main()
+{
+    // properties
+    vec3 norm = normalize(vNormal);
+    vec3 viewDir = normalize(viewPos - FragPos);
+    
+    // phase 1: Directional lighting
+    vec3 result = CalcDirLight(dirLight, norm, viewDir);
+    // phase 2: Point lights
+    for(int i = 0; i < NR_POINT_LIGHTS; i++)
+        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+    // phase 3: Spot light
+    //result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+    
+    FragColor = vec4(result, 1.0);
+}
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -463,6 +484,28 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     specular *= attenuation;
 
     return ambient + diffuse + specular;
+}
+</code></pre>
+
+<h1 id="">多光源</h1>
+
+<p>就是使用上述各种光源形成综合效果，模板代码如下：</p>
+
+<pre><code>void main()
+{
+    // properties
+    vec3 norm = normalize(vNormal);
+    vec3 viewDir = normalize(viewPos - FragPos);
+
+    // phase 1: Directional lighting
+    vec3 result = CalcDirLight(dirLight, norm, viewDir);
+    // phase 2: Point lights
+    for(int i = 0; i &lt; NR_POINT_LIGHTS; i++)
+        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+    // phase 3: Spot light
+    //result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+
+    FragColor = vec4(result, 1.0);
 }
 </code></pre>
 <!-- content end -->
