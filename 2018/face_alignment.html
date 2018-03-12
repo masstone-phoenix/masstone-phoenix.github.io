@@ -1,0 +1,343 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+这是过年后的第一篇，主要是总结年前已经学习了的OpenGL，今天主要讲一个材质以及多光源的处理。
+
+
+# 物体材质
+不同的物体反射光照的情况是不同的，所以我们需要通过这个材质来模拟这个现象，根据光照的计算模型，我们需要定义ambient，diffuse和specular这三个光照模型的参数，最后加上一个shininess参数，就形成了我们的物体材质。
+
+具体计算光照时，只需要将相应的ambient，diffuse和specular替换成材质定义的相应的颜色即可。如下面代码所示：
+
+```
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+
+
+void main()
+{    
+    // ambient
+    vec3 ambient = lightColor * material.ambient;
+  	
+    // diffuse 
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = lightColor * (diff * material.diffuse);
+    
+    // specular
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = lightColor * (spec * material.specular);  
+        
+    vec3 result = ambient + diffuse + specular;
+    FragColor = vec4(result, 1.0);
+}
+```
+
+使用如下进行struct中值的设置
+```
+//在fragment shader中定义
+uniform Material dirLight;
+
+//light
+glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.ambient"), 0.05f, 0.05f, 0.05f);
+glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.diffuse"), 0.4f, 0.4f, 0.4f); // darken the light a bit to fit the scene
+glUniform3f(glGetUniformLocation(_shaderProgram, "dirLight.specular"), 0.5f, 0.5f, 0.5f);
+```
+
+
+
+# 光照强度
+上面的光照太过强烈，是由于使用了光源的100%强度，我们还可以定义一个光源的模型来表示一个光源。
+
+```
+
+struct Light {
+    vec3 position;
+  
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+uniform Light light;   
+```
+
+然后，计算光的颜色：
+```
+vec3 ambient  = light.ambient * material.ambient;
+vec3 diffuse  = light.diffuse * (diff * material.diffuse);
+vec3 specular = light.specular * (spec * material.specular); 
+```
+
+这样就可以控制光照强度等效果了。
+
+# Lighting maps
+在现实中，不同物体表面可以由不同材质构成，即使是同一物体，比如汽车，也是由不同材质构成的，上面的材质就不太方便了。联想到texture，我们可以使用图片来提供上述材质的ambient，diffuse和specular三个属性，就是Lighting maps。
+
+```
+struct Material {
+    sampler2D diffuse;
+    sampler2D specular;
+    float     shininess;
+};  
+```
+使用时直接使用texture函数替换原来的数值即可：
+
+```
+vec3 ambient  = light.ambient  * vec3(texture(material.diffuse, TexCoords));
+vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuse, TexCoords));  
+vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
+FragColor = vec4(ambient + diffuse + specular, 1.0);   
+```
+
+# 不同类型的光源以及其模型
+
+## 平行光
+这个模拟一组平行光线照射到场景时，一个简单的例子就是太阳光，可以看做从无穷远的地主照射过来的，因此它主要的参数就是一个方向，如下：
+```
+struct DirLight {
+    vec3 direction;
+    
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+```
+计算时只需要将上面的lightDir使用下面方法进行计算就好：
+
+```
+
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
+{
+    vec3 lightDir = normalize(-light.direction);
+    // diffuse shading
+    float diff = max(dot(normal, lightDir), 0.0);
+    // specular shading
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    // combine results
+    vec3 ambient  = light.ambient  * vec3(texture(material.diffuse, vDiffuseTexCoords));
+    vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuse, vDiffuseTexCoords));
+    vec3 specular = light.specular * spec * vec3(texture(material.specular, vDiffuseTexCoords));
+    return (ambient + diffuse + specular);
+}
+```
+
+## 点光源
+这就是模拟一个电灯泡使用的光源模型，它有一个位置参数，除此之外，还有一个光源随距离衰减的模型。
+
+![](https://learnopengl.com/img/lighting/attenuation.png)
+
+具体请[参考](https://learnopengl.com/Lighting/Light-casters)。
+
+实现上就简单了：
+```
+struct PointLight {
+    vec3 position;
+    
+    float constant;
+    float linear;
+    float quadratic;
+    
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+{
+    vec3 lightDir = normalize(light.position - fragPos);
+    // diffuse shading
+    float diff = max(dot(normal, lightDir), 0.0);
+    // specular shading
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    // attenuation
+    float distance    = length(light.position - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance +
+                               light.quadratic * (distance * distance));
+    // combine results
+    vec3 ambient  = light.ambient  * vec3(texture(material.diffuse, vDiffuseTexCoords));
+    vec3 diffuse  = light.diffuse  * diff * vec3(texture(material.diffuse, vDiffuseTexCoords));
+    vec3 specular = light.specular * spec * vec3(texture(material.specular, vDiffuseTexCoords));
+    ambient  *= attenuation;
+    diffuse  *= attenuation;
+    specular *= attenuation;
+    return (ambient + diffuse + specular);
+}
+```
+
+## 聚光灯
+聚光灯是向特定方向散射的一种光源。其结果就是只在光源照射的一定角度内才能被光源照射到，其它方向是照射不到的。
+
+![](https://learnopengl.com/img/lighting/light_casters_spotlight_angles.png)
+
+- LightDir: 从片元指向光源的方向矢量
+- SpotDir: 光源指向的方向
+- Phi ϕ: 光源能够照射到的角度
+- Theta θ: 向量LightDir与向量SpotDir之间的夹角。 这个值需要小于ϕ才能被光源照射到。
+
+```
+vec3 CalcSpotLight(SpotLight spotLight, vec3 norm, vec3 FragPos, vec3 viewDir)
+{
+    vec3 lightDir = normalize(spotLight.position - FragPos);
+    
+    // ambient
+    vec3 ambient = spotLight.ambient * texture(material.diffuse, vDiffuseTexCoords).rgb;
+    
+    // diffuse
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = spotLight.diffuse * diff * texture(material.diffuse, vDiffuseTexCoords).rgb;
+    
+    // specular
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = spotLight.specular * spec * texture(material.specular, vDiffuseTexCoords).rgb;
+    
+    // spotlight (soft edges)
+    // cutOff,outerCutOff are value of cos
+    float theta = dot(lightDir, normalize(-spotLight.direction));
+    float epsilon = (spotLight.cutOff - spotLight.outerCutOff);
+    float intensity = clamp((theta - spotLight.outerCutOff) / epsilon, 0.0, 1.0);
+    diffuse  *= intensity;
+    specular *= intensity;
+    
+    // attenuation
+    float distance    = length(spotLight.position - FragPos);
+    float attenuation = 1.0 / (spotLight.constant + spotLight.linear * distance + spotLight.quadratic * (distance * distance));
+    ambient  *= attenuation;
+    diffuse   *= attenuation;
+    specular *= attenuation;
+    
+    return ambient + diffuse + specular;
+}
+```
+
+
+# 多光源
+就是使用上述各种光源形成综合效果，模板代码如下：
+```
+void main()
+{
+    // properties
+    vec3 norm = normalize(vNormal);
+    vec3 viewDir = normalize(viewPos - FragPos);
+    
+    // phase 1: Directional lighting
+    vec3 result = CalcDirLight(dirLight, norm, viewDir);
+    // phase 2: Point lights
+    for(int i = 0; i < NR_POINT_LIGHTS; i++)
+        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+    // phase 3: Spot light
+    //result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
+    
+    FragColor = vec4(result, 1.0);
+}
+```
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "2018/face_alignment.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
