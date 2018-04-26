@@ -121,7 +121,7 @@ if (kCVReturnSuccess == CVPixelBufferLockBaseAddress(renderTarget,
 
 
 ```
-//这里补充一下，上面用到的coreVideoTextureCache是在GPUImageContext中使用如下函数创建的：
+//这里补充一下，上面用到的coreVideoTextureCache是在GPUImageContext中使用如下函数创建的，它的作用是维护管理它所创建的CVOpenGLESTextureCache：
 
 CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge void *)[self context], NULL, &_coreVideoTextureCache);
 ```
@@ -341,7 +341,7 @@ if (kCVReturnSuccess == CVPixelBufferLockBaseAddress(renderTarget,
   }
 </code></pre>
 
-<pre><code>//这里补充一下，上面用到的coreVideoTextureCache是在GPUImageContext中使用如下函数创建的：
+<pre><code>//这里补充一下，上面用到的coreVideoTextureCache是在GPUImageContext中使用如下函数创建的，它的作用是维护管理它所创建的CVOpenGLESTextureCache：
 
 CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge void *)[self context], NULL, &amp;_coreVideoTextureCache);
 </code></pre>
