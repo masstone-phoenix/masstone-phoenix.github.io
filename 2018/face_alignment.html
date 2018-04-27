@@ -30,8 +30,13 @@
 # 人脸识别简介
 人脸识别有四大块：Face detection, alignment, verification and identification(recognization)。
 
-## Face detection
+顾名思义， Face detection实现人脸自动提取采集，从摄像机视野或图片内的复杂背景图像中自动提取人的面部图像。确认检测目标的人脸属性。 
 
+Face alignment是在上面检测出人脸的区域中，将五官等轮廓标记出来。
+
+Face Verification:将某人面像与指定人员面像进行一对一的比对，根据其相似程度(一般以是否达到或超过某一量化的可信度指标/阀值为依据)来判断二者是否是同一人。 
+
+Face Identification：将某人面像与数据库中的多人的人脸进行比对(有时也称“一对多”比对)，并根据比对结果来鉴定此人身份，或找到其中最相似的人脸，并按相似程度的大小输出检索结果。 
 
 # 需求
 
@@ -47,7 +52,13 @@
 
 <p>人脸识别有四大块：Face detection, alignment, verification and identification(recognization)。</p>
 
-<h2 id="facedetection">Face detection</h2>
+<p>顾名思义， Face detection实现人脸自动提取采集，从摄像机视野或图片内的复杂背景图像中自动提取人的面部图像。确认检测目标的人脸属性。 </p>
+
+<p>Face alignment是在上面检测出人脸的区域中，将五官等轮廓标记出来。</p>
+
+<p>Face Verification:将某人面像与指定人员面像进行一对一的比对，根据其相似程度(一般以是否达到或超过某一量化的可信度指标/阀值为依据)来判断二者是否是同一人。 </p>
+
+<p>Face Identification：将某人面像与数据库中的多人的人脸进行比对(有时也称“一对多”比对)，并根据比对结果来鉴定此人身份，或找到其中最相似的人脸，并按相似程度的大小输出检索结果。 </p>
 
 <h1 id="">需求</h1>
 
