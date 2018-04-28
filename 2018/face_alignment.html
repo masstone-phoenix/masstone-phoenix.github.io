@@ -39,9 +39,64 @@ Face Verification:将某人面像与指定人员面像进行一对一的比对�
 Face Identification：将某人面像与数据库中的多人的人脸进行比对(有时也称“一对多”比对)，并根据比对结果来鉴定此人身份，或找到其中最相似的人脸，并按相似程度的大小输出检索结果。 
 
 # 需求
-
+对人脸进行美化，可以对眼睛，嘴等部位单独美化。这就需要通过face alignment将人脸的五官都区分出来，然后对相应的区域进行处理。
 
 # 解决方案
+对于Face alignment，网上有大量的解决方案，有商业软件，也有开源软件，由于我们需要的特征点数需要在68点以上，5个特征点的方案就没怎么看。我们主要比较了[Face++](https://www.faceplusplus.com.cn/face-landmark-sdk/)以及[OpenFace](https://github.com/TadasBaltrusaitis/OpenFace)：
+
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:center">face++</th>
+<th style="text-align:center">Open face</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">动态处理</td>
+<td style="text-align:center">强</td>
+<td style="text-align:center">弱</td>
+</tr>
+<tr>
+<td style="text-align:left">识别脸个数</td>
+<td style="text-align:center">多个</td>
+<td style="text-align:center">一个</td>
+</tr>
+<tr>
+<td style="text-align:left">识别点数</td>
+<td style="text-align:center">106</td>
+<td style="text-align:center">68</td>
+</tr>
+<tr>
+<td style="text-align:left">价钱</td>
+<td style="text-align:center">30W/产品/平台/年</td>
+<td style="text-align:center">contact <a href="mailto:innovation@cmu.edu">innovation@cmu.edu</a></td>
+</tr>
+<tr>
+<td style="text-align:left">细节</td>
+<td style="text-align:center">鼻子有轮廓</td>
+<td style="text-align:center">鼻子无轮廓</td>
+</tr>
+<tr>
+<td style="text-align:left">时间成本</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:left">处理速度</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:left">增加包的大小</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+
+我们从中选择了一个进行使用。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -62,7 +117,65 @@ Face Identification：将某人面像与数据库中的多人的人脸进行比�
 
 <h1 id="">需求</h1>
 
+<p>对人脸进行美化，可以对眼睛，嘴等部位单独美化。这就需要通过face alignment将人脸的五官都区分出来，然后对相应的区域进行处理。</p>
+
 <h1 id="">解决方案</h1>
+
+<p>对于Face alignment，网上有大量的解决方案，有商业软件，也有开源软件，由于我们需要的特征点数需要在68点以上，5个特征点的方案就没怎么看。我们主要比较了<a href="https://www.faceplusplus.com.cn/face-landmark-sdk/">Face++</a>以及<a href="https://github.com/TadasBaltrusaitis/OpenFace">OpenFace</a>：</p>
+
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th style="text-align:left"></th>
+<th style="text-align:center">face++</th>
+<th style="text-align:center">Open face</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">动态处理</td>
+<td style="text-align:center">强</td>
+<td style="text-align:center">弱</td>
+</tr>
+<tr>
+<td style="text-align:left">识别脸个数</td>
+<td style="text-align:center">多个</td>
+<td style="text-align:center">一个</td>
+</tr>
+<tr>
+<td style="text-align:left">识别点数</td>
+<td style="text-align:center">106</td>
+<td style="text-align:center">68</td>
+</tr>
+<tr>
+<td style="text-align:left">价钱</td>
+<td style="text-align:center">30W/产品/平台/年</td>
+<td style="text-align:center">contact <a href="mailto:innovation@cmu.edu">innovation@cmu.edu</a></td>
+</tr>
+<tr>
+<td style="text-align:left">细节</td>
+<td style="text-align:center">鼻子有轮廓</td>
+<td style="text-align:center">鼻子无轮廓</td>
+</tr>
+<tr>
+<td style="text-align:left">时间成本</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:left">处理速度</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:left">增加包的大小</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+
+<p>我们从中选择了一个进行使用。</p>
 <!-- content end -->
 </div>
 <br>
