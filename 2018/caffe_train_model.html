@@ -52,6 +52,46 @@
 用来管理所有Layer和Blob的类，是整个模型的抽象。
 
 # 自己搭建一个模型
+Caffe定义模型使用如下的plain文本来定义，一个模型是由一个一个的层来定义的，如下：
+```
+layer: {
+  name: 'innerproduct1'
+  type: INNER_PRODUCT
+  inner_product_param {
+    num_output: 10
+    bias_term: false
+    weight_filler {
+      type: 'gaussian'
+      std: 10
+    }
+  }
+  param: 'sharedweights'
+  bottom: 'data'
+  top: 'innerproduct1'
+}
+layer: {
+  name: 'innerproduct2'
+  type: INNER_PRODUCT
+  inner_product_param {
+    num_output: 10
+    bias_term: false
+  }
+  param: 'sharedweights'
+  bottom: 'data'
+  top: 'innerproduct2'
+}
+
+```
+
+每个layer都有一些固定的选项，上面两个层的param参数的名字都是sharedweights，它们的参数是共享的（也就是Weight Sharing）。
+
+## 定义模型的checklist
+1. Convert the data to Caffe-format:lmdb, leveldb, hdf5 / .mat, list of images, etc.
+2. Define the Net
+3. Configure the Solver
+4. caffe train -solver solver.prototxt -gpu 0
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -90,6 +130,47 @@
 <p>用来管理所有Layer和Blob的类，是整个模型的抽象。</p>
 
 <h1 id="">自己搭建一个模型</h1>
+
+<p>Caffe定义模型使用如下的plain文本来定义，一个模型是由一个一个的层来定义的，如下：</p>
+
+<pre><code>layer: {
+  name: 'innerproduct1'
+  type: INNER_PRODUCT
+  inner_product_param {
+    num_output: 10
+    bias_term: false
+    weight_filler {
+      type: 'gaussian'
+      std: 10
+    }
+  }
+  param: 'sharedweights'
+  bottom: 'data'
+  top: 'innerproduct1'
+}
+layer: {
+  name: 'innerproduct2'
+  type: INNER_PRODUCT
+  inner_product_param {
+    num_output: 10
+    bias_term: false
+  }
+  param: 'sharedweights'
+  bottom: 'data'
+  top: 'innerproduct2'
+}
+</code></pre>
+
+<p>每个layer都有一些固定的选项，上面两个层的param参数的名字都是sharedweights，它们的参数是共享的（也就是Weight Sharing）。</p>
+
+<h2 id="checklist">定义模型的checklist</h2>
+
+<ol>
+<li>Convert the data to Caffe-format:lmdb, leveldb, hdf5 / .mat, list of images, etc.</li>
+<li>Define the Net</li>
+<li>Configure the Solver</li>
+<li>caffe train -solver solver.prototxt -gpu 0</li>
+</ol>
 <!-- content end -->
 </div>
 <br>
