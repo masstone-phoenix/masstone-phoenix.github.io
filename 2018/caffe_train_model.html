@@ -36,12 +36,22 @@
 ## Blob
 上面提到了，Blob是对数据的抽象，同时，它还隐藏了数据从CPU和GPU之间同步的细节。在数学上，一个blob是一个C语言中连接存储的N维数组，数组按行依次存放其中的各元素,即以行为主的顺序分配，比如在一个4D blob中，索引 (n, k, h, w) 处的元素的内存位置是 ((n * K + k) * H + h) * W + w。
 
+当然，Blob还可以表示参数等数据。
+
 在使用时，如果不需要改动数据，尽量使用const函数，这样可以避免CPU和GPU之间拷贝数据，提高性能。
 
 ## Layer
 
+### Layer Protocol
+- Setup: 初始化自身以及其网络连接，只运行一次。
+- Forward: 计算输出结果。
+- Backward: 计算参数的导数值。
+- Reshape: 设置dims。
+
+## Net
 
 
+# 自己搭建一个模型
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -60,9 +70,24 @@
 
 <p>上面提到了，Blob是对数据的抽象，同时，它还隐藏了数据从CPU和GPU之间同步的细节。在数学上，一个blob是一个C语言中连接存储的N维数组，数组按行依次存放其中的各元素,即以行为主的顺序分配，比如在一个4D blob中，索引 (n, k, h, w) 处的元素的内存位置是 ((n * K + k) * H + h) * W + w。</p>
 
+<p>当然，Blob还可以表示参数等数据。</p>
+
 <p>在使用时，如果不需要改动数据，尽量使用const函数，这样可以避免CPU和GPU之间拷贝数据，提高性能。</p>
 
 <h2 id="layer">Layer</h2>
+
+<h3 id="layerprotocol">Layer Protocol</h3>
+
+<ul>
+<li>Setup: 初始化自身以及其网络连接，只运行一次。</li>
+<li>Forward: 计算输出结果。</li>
+<li>Backward: 计算参数的导数值。</li>
+<li>Reshape: 设置dims。</li>
+</ul>
+
+<h2 id="net">Net</h2>
+
+<h1 id="">自己搭建一个模型</h1>
 <!-- content end -->
 </div>
 <br>
