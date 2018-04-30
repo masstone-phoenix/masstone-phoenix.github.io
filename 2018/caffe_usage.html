@@ -68,9 +68,29 @@ caffe的好处是，我们基本上可以用一个比较简单的语言（google
 
 我在和人聊的时候发现大家都比较喜欢fine tune的方法，所以我也简单介绍一下。基本上，fine tuning的想法就是说，我在imagenet那么大的数据集上train好一个很牛的网络了，那别的任务上肯定也不错。所以我可以把pretrain的网络拿过来，然后只重新train最后几层。重新train的意思是说，比如我以前需要分类imagenet的一千类，现在我只想识别是狗还是猫，或者是不是车牌。于是我就可以把最后一层softmax从一个4096*1000的分类器变成一个40962的分类器。这个策略在应用中非常好使，所以我们经常会先在imagenet上pretrain一个网络，因为我们知道imagenet上training的大概过程会怎么样。
 
-## 一些看法
+## 一些tips
 
 目前deep learning用在小数据集上有什么好的方法吗？在小数据集的问题上是不是可以通过减少网络的层数来减少过拟合？小数据集基本上需要通过小的模型来防止overfit，当然如果数据集是图像等等，也可以通过finetuning。另外一个可能是直接手标更多数据，有时候糙快猛但是还挺好使的。caffe对不同尺度的同一对象的分类和识别有哪些特殊的处理方法？这个倒也不单是caffe的问题，在图像识别上如果需要处理不同尺度，一般就是做multi-scale的detection，可以参考一下selective search，R-CNN等等的工作。
+
+# 部署在iOS上
+在iOS上使用caffe，已经有前人做了一些工作，我这里使用的是[这个](https://github.com/solrex/caffe-mobile)，在这里，也对作者[Wenbo Yang](https://yangwenbo.com)表示感谢。
+
+按照作者的步骤，我们先使用下面指令编译整个caffe库：
+
+```
+$ git clone --recursive https://github.com/solrex/caffe-mobile.git
+$ ./tools/build_ios.sh
+```
+我们就得到了一个.a的文件，将这个库加入到工程中，然后将caffe的模型.caffemodel文件加入工程中，在工程中使用下面代码调用这个模型得到结果：
+
+```
+```
+
+## 遇到的问题
+由于我们的模型用到了一些自定义的层，第一次运行时不出意料不足为奇的失败了，提示找不到层。于是将自定义的层加入scr中对应的文件夹中，并在caffe.proto中加入对应的参数定义，而后重新编译整个caffe库，问题解决，模型在iPhone中欢快的跑起了，时间也非常快。
+
+下一步的目标是将iPhone中的GPU利用起来。
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -124,9 +144,30 @@ caffe的好处是，我们基本上可以用一个比较简单的语言（google
 
 <p>我在和人聊的时候发现大家都比较喜欢fine tune的方法，所以我也简单介绍一下。基本上，fine tuning的想法就是说，我在imagenet那么大的数据集上train好一个很牛的网络了，那别的任务上肯定也不错。所以我可以把pretrain的网络拿过来，然后只重新train最后几层。重新train的意思是说，比如我以前需要分类imagenet的一千类，现在我只想识别是狗还是猫，或者是不是车牌。于是我就可以把最后一层softmax从一个4096*1000的分类器变成一个40962的分类器。这个策略在应用中非常好使，所以我们经常会先在imagenet上pretrain一个网络，因为我们知道imagenet上training的大概过程会怎么样。</p>
 
-<h2 id="">一些看法</h2>
+<h2 id="tips">一些tips</h2>
 
 <p>目前deep learning用在小数据集上有什么好的方法吗？在小数据集的问题上是不是可以通过减少网络的层数来减少过拟合？小数据集基本上需要通过小的模型来防止overfit，当然如果数据集是图像等等，也可以通过finetuning。另外一个可能是直接手标更多数据，有时候糙快猛但是还挺好使的。caffe对不同尺度的同一对象的分类和识别有哪些特殊的处理方法？这个倒也不单是caffe的问题，在图像识别上如果需要处理不同尺度，一般就是做multi-scale的detection，可以参考一下selective search，R-CNN等等的工作。</p>
+
+<h1 id="ios">部署在iOS上</h1>
+
+<p>在iOS上使用caffe，已经有前人做了一些工作，我这里使用的是<a href="https://github.com/solrex/caffe-mobile">这个</a>，在这里，也对作者<a href="https://yangwenbo.com">Wenbo Yang</a>表示感谢。</p>
+
+<p>按照作者的步骤，我们先使用下面指令编译整个caffe库：</p>
+
+<pre><code>$ git clone --recursive https://github.com/solrex/caffe-mobile.git
+$ ./tools/build_ios.sh
+</code></pre>
+
+<p>我们就得到了一个.a的文件，将这个库加入到工程中，然后将caffe的模型.caffemodel文件加入工程中，在工程中使用下面代码调用这个模型得到结果：</p>
+
+<p><code>
+</code></p>
+
+<h2 id="">遇到的问题</h2>
+
+<p>由于我们的模型用到了一些自定义的层，第一次运行时不出意料不足为奇的失败了，提示找不到层。于是将自定义的层加入scr中对应的文件夹中，并在caffe.proto中加入对应的参数定义，而后重新编译整个caffe库，问题解决，模型在iPhone中欢快的跑起了，时间也非常快。</p>
+
+<p>下一步的目标是将iPhone中的GPU利用起来。</p>
 <!-- content end -->
 </div>
 <br>
