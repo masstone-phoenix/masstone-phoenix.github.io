@@ -25,12 +25,20 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
-项目是用到一个模型是公司的模型，但是只有一个caffe的版本，正好学习一下caffe的使用。
+学习这个的目的是因为想使用机器学习的模型在手机（iOS，android）上使用一个模型进行预测，而且想要使模型尽可能的快，最好能做到实时，这样的话用上GPU就是必需的了，CPU基本上很难做到实时要求的，虽然这不是强需要，但是能满足的话为什么不呢？这样的话经过我们的调研，tensorflow可以通过tfcoreml工具直接转到苹果的Core ML上，而这个框架是支持GPU的；在android上，tensorflow通过调用的The Android Neural Networks API (NNAPI)的方式来支持GPU。
+
+但是，经过我们的实际使用，在iOS这边，tensorflow mobile的速度不容乐观。这里只是记录一下如何让其在iOS上跑起来的，里面的坑还是挺多的。
+
+# 
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
+<p>学习这个的目的是因为想使用机器学习的模型在手机（iOS，android）上使用一个模型进行预测，而且想要使模型尽可能的快，最好能做到实时，这样的话用上GPU就是必需的了，CPU基本上很难做到实时要求的，虽然这不是强需要，但是能满足的话为什么不呢？这样的话经过我们的调研，tensorflow可以通过tfcoreml工具直接转到苹果的Core ML上，而这个框架是支持GPU的；在android上，tensorflow通过调用的The Android Neural Networks API (NNAPI)的方式来支持GPU。</p>
 
+<p>但是，经过我们的实际使用，在iOS这边，tensorflow mobile的速度不容乐观。这里只是记录一下如何让其在iOS上跑起来的，里面的坑还是挺多的。</p>
+
+<h1 id=""> </h1>
 <!-- content end -->
 </div>
 <br>
