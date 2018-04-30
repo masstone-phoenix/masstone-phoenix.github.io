@@ -26,11 +26,99 @@
 <div id="md" style="display: none;">
 <!-- markdown -->
 项目是用到一个模型是公司的模型，但是只有一个caffe的版本，正好学习一下caffe的使用。
+
+# 简介
+这里主要是对caffe作者的一个[教程](http://on-demand.gputechconf.com/gtc/2014/webinar/gtc-express-deep-learning-caffee-evan-shelhamer.pdf)的总结，也参考了[这篇文章](http://www.datakit.cn/blog/2015/06/12/online_meet_up_with_yangqing_jia.html)。
+
+## caffe起源
+
+大家最近一段时间应该已经听到很多关于deep learning的八卦了，deep learning比较流行的一个原因，***主要是因为它能够自主地从数据上学到有用的feature***,特别是对于一些不知道如何设计feature的场合，比如说图像和speech deep learning可以学习到比以往比如说sift或者MFCC这样手工设计的feature更好的方法, 这些feature有很强的semantic的含义。所以很多时候在用到其他的一些任务的时候会很有效，这也是为什么我们可以用一个feature来实现很多比如说识别，检测，物体分割这样的不同任务的缘故。
+
+无论如何，深度学习其实说回来是个挺久的话题了，Yann Lecun在89年的时候就提出了convolutional Neural Net的想法，然后在手写数字上获得了很大的成功。最近深度学习重新受到关注，最大的原因是两个：
+
+- 一个是大规模的数据集使得我们可以学习到远比digit更加复杂的概念
+- 另外一个是大规模并行计算让我们可以做很快的优化，使得以前我们没法想象的计算量都变成很容易实现的了
+
+所以这些都很美好。但是问题是写code还挺麻烦的。所以大家肯定希望有个比较好用的框架来很快上手和试试这些深度学习的算法。 所以这就是Caffe了！Caffe是作者在Berkeley写论文的时候想学习C++和cuda写的，然后写完了觉得我自己用太亏了，所以想贡献给社区让大家来用。所以如果你看见一些写得很烂的code，不要骂作者。
+
+## caffe介绍
+caffe的好处是，我们基本上可以用一个比较简单的语言（google protobuffer）来定义许多网络结构，然后我们可以在CPU或者GPU上面执行这些代码，而且cpu和gpu在数学结果上是兼容的。然后，所有的模型和recipe我们都会公布出来，使得我们可以很容易地reproduce互相发布的结果。这也是我感到很幸运的一个地方，大家都很喜欢caffe，也很喜欢分享自己paper里的成果（比如说MIT的place net和VGG的模型）。
+
+无论如何，这就是Caffe的简单介绍了，最开始是一个hobby project，但是最近Berkeley和其他公司比如说NVidia，Yahoo在很认真地维护它，希望能够把整个架构做的更好用。
+
+然后我大概讲一下caffe的设计吧。
+
+基本上，caffe 遵循了神经网络的一个简单假设 - 所有的计算都是以layer的形式表示的layer做的事情就是拿到一些数据，然后输出一些计算以后的结果，比如说卷积，就是输入一个图像，然后和这一层的参数（filter）做卷积,然后输出卷积的结果。每一个layer需要做两个计算：forward是从输入计算输出，然后backward是从上面给的gradient来计算相对于输入的gradient。只要这两个函数实现了以后，我们就可以把很多层连接成一个网络，这个网络做的事情就是输入我们的数据（图像或者语音或者whatever），然后来计算我们需要的输出（比如说识别的label）。只要这两个函数实现了以后，我们就可以把很多层连接成一个网络，这个网络做的事情就是输入我们的数据（图像或者语音或者whatever），然后来计算我们需要的输出（比如说识别的label）。在训练的时候，我们可以根据已有的label来计算loss和gradient，然后用gradient来update网络的参数。这个就是Caffe的一个基本流程！
+
+如果大家需要自己实现一个layer的话，可以参考下图。比如说输入是x，我们可以想象一个layer的forward function就是y=f(x) 然后，我们会有一个loss function，记成L(.)。在做backward的时候，网络得到的是上层给出的gradient，dL/dy，然后网络需要做的计算是dL/dx = dL/dy * dy/dx，dy/dx也就是f’(x)。于是，这样我们就可以一层一层往后计算gradient。slide 31简单介绍了一下这个forward和backward的结构 anyway，Caffe里面实现的solver主要也是为了神经网络设计的。
+
+![](https://github.com/masstone-phoenix/masstone-phoenix.github.io/tree/master/image/caffe/caffe_layer.png)
+
+在做training的时候，我们一般都会做SGD，就是每次输入一个小batch，做计算，update参数，然后再输入下一个batch Caffe也实现了许多实际应用上比简单SGD要更有效的算法，比如说momentum 和Adagrad （顺便插一句，Ilya Sutskever有paper解释说，momemtum其实已经可以很好地实现quasi second order的优化，所以建议大家可以从momentum sgd开始尝试做training）.
+
+基本上，最简单地用caffe上手的方法就是：
+
+- Convert the data to a Caffe format
+- lmdb, leveldb, hdf5 / .mat, list of images, etc.
+- Define the Net
+- Configure the Solver
+- caffe train -solver solver.prototxt -gpu 0
+
+先把数据写成caffe的格式，然后设计一个网络，然后用caffe提供的solver来做优化看效果如何。如果你的数据是图像的话，可以从现有的网络，比如说alexnet或者googlenet开始，然后做fine tuning。如果你的数据稍有不同，比如说是直接的float vector，你可能需要做一些custom的configuration。caffe的logistic regression example（slide 36）兴许会很有帮助。
+
+我在和人聊的时候发现大家都比较喜欢fine tune的方法，所以我也简单介绍一下。基本上，finetuning的想法就是说，我在imagenet那么大的数据集上train好一个很牛的网络了，那别的task上肯定也不错。所以我可以把pretrain的网络拿过来，然后只重新train最后几层。重新train的意思是说，比如我以前需要classify imagenet的一千类，现在我只想识别是狗还是猫，或者是不是车牌。于是我就可以把最后一层softmax从一个40961000的分类器变成一个40962的分类器。这个strategy在应用中非常好使，所以我们经常会先在imagenet上pretrain一个网络，因为我们知道imagenet上training的大概过程会怎么样。
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
 <p>项目是用到一个模型是公司的模型，但是只有一个caffe的版本，正好学习一下caffe的使用。</p>
+
+<h1 id="">简介</h1>
+
+<p>这里主要是对caffe作者的一个<a href="http://on-demand.gputechconf.com/gtc/2014/webinar/gtc-express-deep-learning-caffee-evan-shelhamer.pdf">教程</a>的总结，也参考了<a href="http://www.datakit.cn/blog/2015/06/12/online_meet_up_with_yangqing_jia.html">这篇文章</a>。</p>
+
+<h2 id="caffe">caffe起源</h2>
+
+<p>大家最近一段时间应该已经听到很多关于deep learning的八卦了，deep learning比较流行的一个原因，<strong><em>主要是因为它能够自主地从数据上学到有用的feature</em></strong>,特别是对于一些不知道如何设计feature的场合，比如说图像和speech deep learning可以学习到比以往比如说sift或者MFCC这样手工设计的feature更好的方法, 这些feature有很强的semantic的含义。所以很多时候在用到其他的一些任务的时候会很有效，这也是为什么我们可以用一个feature来实现很多比如说识别，检测，物体分割这样的不同任务的缘故。</p>
+
+<p>无论如何，深度学习其实说回来是个挺久的话题了，Yann Lecun在89年的时候就提出了convolutional Neural Net的想法，然后在手写数字上获得了很大的成功。最近深度学习重新受到关注，最大的原因是两个：</p>
+
+<ul>
+<li>一个是大规模的数据集使得我们可以学习到远比digit更加复杂的概念</li>
+<li>另外一个是大规模并行计算让我们可以做很快的优化，使得以前我们没法想象的计算量都变成很容易实现的了</li>
+</ul>
+
+<p>所以这些都很美好。但是问题是写code还挺麻烦的。所以大家肯定希望有个比较好用的框架来很快上手和试试这些深度学习的算法。 所以这就是Caffe了！Caffe是作者在Berkeley写论文的时候想学习C++和cuda写的，然后写完了觉得我自己用太亏了，所以想贡献给社区让大家来用。所以如果你看见一些写得很烂的code，不要骂作者。</p>
+
+<h2 id="caffe">caffe介绍</h2>
+
+<p>caffe的好处是，我们基本上可以用一个比较简单的语言（google protobuffer）来定义许多网络结构，然后我们可以在CPU或者GPU上面执行这些代码，而且cpu和gpu在数学结果上是兼容的。然后，所有的模型和recipe我们都会公布出来，使得我们可以很容易地reproduce互相发布的结果。这也是我感到很幸运的一个地方，大家都很喜欢caffe，也很喜欢分享自己paper里的成果（比如说MIT的place net和VGG的模型）。</p>
+
+<p>无论如何，这就是Caffe的简单介绍了，最开始是一个hobby project，但是最近Berkeley和其他公司比如说NVidia，Yahoo在很认真地维护它，希望能够把整个架构做的更好用。</p>
+
+<p>然后我大概讲一下caffe的设计吧。</p>
+
+<p>基本上，caffe 遵循了神经网络的一个简单假设 - 所有的计算都是以layer的形式表示的layer做的事情就是拿到一些数据，然后输出一些计算以后的结果，比如说卷积，就是输入一个图像，然后和这一层的参数（filter）做卷积,然后输出卷积的结果。每一个layer需要做两个计算：forward是从输入计算输出，然后backward是从上面给的gradient来计算相对于输入的gradient。只要这两个函数实现了以后，我们就可以把很多层连接成一个网络，这个网络做的事情就是输入我们的数据（图像或者语音或者whatever），然后来计算我们需要的输出（比如说识别的label）。只要这两个函数实现了以后，我们就可以把很多层连接成一个网络，这个网络做的事情就是输入我们的数据（图像或者语音或者whatever），然后来计算我们需要的输出（比如说识别的label）。在训练的时候，我们可以根据已有的label来计算loss和gradient，然后用gradient来update网络的参数。这个就是Caffe的一个基本流程！</p>
+
+<p>如果大家需要自己实现一个layer的话，可以参考下图。比如说输入是x，我们可以想象一个layer的forward function就是y=f(x) 然后，我们会有一个loss function，记成L(.)。在做backward的时候，网络得到的是上层给出的gradient，dL/dy，然后网络需要做的计算是dL/dx = dL/dy * dy/dx，dy/dx也就是f’(x)。于是，这样我们就可以一层一层往后计算gradient。slide 31简单介绍了一下这个forward和backward的结构 anyway，Caffe里面实现的solver主要也是为了神经网络设计的。</p>
+
+<p><img src="https://github.com/masstone-phoenix/masstone-phoenix.github.io/tree/master/image/caffe/caffe_layer.png" alt="" title=""></p>
+
+<p>在做training的时候，我们一般都会做SGD，就是每次输入一个小batch，做计算，update参数，然后再输入下一个batch Caffe也实现了许多实际应用上比简单SGD要更有效的算法，比如说momentum 和Adagrad （顺便插一句，Ilya Sutskever有paper解释说，momemtum其实已经可以很好地实现quasi second order的优化，所以建议大家可以从momentum sgd开始尝试做training）.</p>
+
+<p>基本上，最简单地用caffe上手的方法就是：</p>
+
+<ul>
+<li>Convert the data to a Caffe format</li>
+<li>lmdb, leveldb, hdf5 / .mat, list of images, etc.</li>
+<li>Define the Net</li>
+<li>Configure the Solver</li>
+<li>caffe train -solver solver.prototxt -gpu 0</li>
+</ul>
+
+<p>先把数据写成caffe的格式，然后设计一个网络，然后用caffe提供的solver来做优化看效果如何。如果你的数据是图像的话，可以从现有的网络，比如说alexnet或者googlenet开始，然后做fine tuning。如果你的数据稍有不同，比如说是直接的float vector，你可能需要做一些custom的configuration。caffe的logistic regression example（slide 36）兴许会很有帮助。</p>
+
+<p>我在和人聊的时候发现大家都比较喜欢fine tune的方法，所以我也简单介绍一下。基本上，finetuning的想法就是说，我在imagenet那么大的数据集上train好一个很牛的网络了，那别的task上肯定也不错。所以我可以把pretrain的网络拿过来，然后只重新train最后几层。重新train的意思是说，比如我以前需要classify imagenet的一千类，现在我只想识别是狗还是猫，或者是不是车牌。于是我就可以把最后一层softmax从一个40961000的分类器变成一个40962的分类器。这个strategy在应用中非常好使，所以我们经常会先在imagenet上pretrain一个网络，因为我们知道imagenet上training的大概过程会怎么样。</p>
 <!-- content end -->
 </div>
 <br>
