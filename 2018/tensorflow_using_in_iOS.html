@@ -29,7 +29,62 @@
 
 但是，经过我们的实际使用，在iOS这边，tensorflow mobile的速度不容乐观。这里只是记录一下如何让其在iOS上跑起来的，里面的坑还是挺多的。
 
-# 
+# 搭建模型
+
+
+
+
+# 部署到iOS
+先按照[官方文档](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/ios#building-the-tensorflow-ios-libraries-from-source)编译tensorflow库，加入到Xcode工程中，调用如下：
+
+```
+//src
+
+```
+
+
+出现如下错误：
+```
+Could not create TensorFlow Graph: Invalid argument: No OpKernel was registered to support Op 'Range' with these attrs.  Registered devices: [CPU], Registered kernels:
+  device='CPU'; Tidx in [DT_FLOAT]
+  device='CPU'; Tidx in [DT_INT32]
+
+
+[[Node: bottle5_1_up/range_1 = Range[Tidx=DT_INT64](bottle5_1_up/range_1/start, bottle5_1_up/range_1/limit, bottle5_1_up/range_1/delta)]]
+```
+
+这个是因为使用的op在库里中没有，但是解决的过程中很奇怪，开始时使用selective op方法，但是还是提示不支持op;最后使用修改makefile文件，将所有op都加入才通过。
+
+## selective op
+使用下面的工具生成ops，然后将ops_to_register.h加入到tensorflow源文件中，但是编译过后，还是提示上面相似的错误，原因未知
+
+```
+bazel build tensorflow/python/tools:print_selective_registration_header 
+bazel-bin/tensorflow/python/tools/print_selective_registration_header \
+    --graphs=path/to/graph.pb > ops_to_register.h
+
+```
+
+## 全部编译
+在makefile中找到下面的片断，将```ANDROID_TYPES``` 设置为```D__ANDROID_TYPES_FULL__```。
+```
+# If ANDROID_TYPES is not set assume __ANDROID_TYPES_SLIM__
+# ifeq ($(ANDROID_TYPES),)
+# 	ANDROID_TYPES := -D__ANDROID_TYPES_SLIM__
+# endif
+ANDROID_TYPES := -D__ANDROID_TYPES_FULL__
+```
+在tf_op_files.txt中加入所少op的实现文件，以下以SparseTensorDenseAdd操作符为例：
+```
+...
+tensorflow/core/kernels/sparse_tensor_dense_add_op.cc
+```
+
+然后，编译，终于在iPhone运行起来了，但是速度太慢了，估计与自己实现的两个op有关，一个使用for循环遍历了整个数据。
+
+本来想使用tensorflow lite或core ml这两个支持GPU的框架，但是在模型转换过程中都遇到了问题，在[下篇](https://masstone-phoenix.github.io/2018/model_convert_to_coreml.html)文章中讨论记录一下。
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -38,7 +93,56 @@
 
 <p>但是，经过我们的实际使用，在iOS这边，tensorflow mobile的速度不容乐观。这里只是记录一下如何让其在iOS上跑起来的，里面的坑还是挺多的。</p>
 
-<h1 id=""> </h1>
+<h1 id="">搭建模型</h1>
+
+<h1 id="ios">部署到iOS</h1>
+
+<p>先按照<a href="https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/ios#building-the-tensorflow-ios-libraries-from-source">官方文档</a>编译tensorflow库，加入到Xcode工程中，调用如下：</p>
+
+<pre><code>//src
+</code></pre>
+
+<p>出现如下错误：</p>
+
+<pre><code>Could not create TensorFlow Graph: Invalid argument: No OpKernel was registered to support Op 'Range' with these attrs.&nbsp; Registered devices: [CPU], Registered kernels:
+&nbsp; device='CPU'; Tidx in [DT_FLOAT]
+&nbsp; device='CPU'; Tidx in [DT_INT32]
+
+
+[[Node: bottle5_1_up/range_1 = Range[Tidx=DT_INT64](bottle5_1_up/range_1/start, bottle5_1_up/range_1/limit, bottle5_1_up/range_1/delta)]]
+</code></pre>
+
+<p>这个是因为使用的op在库里中没有，但是解决的过程中很奇怪，开始时使用selective op方法，但是还是提示不支持op;最后使用修改makefile文件，将所有op都加入才通过。</p>
+
+<h2 id="selectiveop">selective op</h2>
+
+<p>使用下面的工具生成ops，然后将ops<em>to</em>register.h加入到tensorflow源文件中，但是编译过后，还是提示上面相似的错误，原因未知</p>
+
+<pre><code>bazel build tensorflow/python/tools:print_selective_registration_header 
+bazel-bin/tensorflow/python/tools/print_selective_registration_header \
+    --graphs=path/to/graph.pb &gt; ops_to_register.h
+</code></pre>
+
+<h2 id="">全部编译</h2>
+
+<p>在makefile中找到下面的片断，将<code>ANDROID_TYPES</code> 设置为<code>D__ANDROID_TYPES_FULL__</code>。</p>
+
+<pre><code># If ANDROID_TYPES is not set assume __ANDROID_TYPES_SLIM__
+# ifeq ($(ANDROID_TYPES),)
+#     ANDROID_TYPES := -D__ANDROID_TYPES_SLIM__
+# endif
+ANDROID_TYPES := -D__ANDROID_TYPES_FULL__
+</code></pre>
+
+<p>在tf<em>op</em>files.txt中加入所少op的实现文件，以下以SparseTensorDenseAdd操作符为例：</p>
+
+<pre><code>...
+tensorflow/core/kernels/sparse_tensor_dense_add_op.cc
+</code></pre>
+
+<p>然后，编译，终于在iPhone运行起来了，但是速度太慢了，估计与自己实现的两个op有关，一个使用for循环遍历了整个数据。</p>
+
+<p>本来想使用tensorflow lite或core ml这两个支持GPU的框架，但是在模型转换过程中都遇到了问题，在<a href="https://masstone-phoenix.github.io/2018/model_convert_to_coreml.html">下篇</a>文章中讨论记录一下。</p>
 <!-- content end -->
 </div>
 <br>
