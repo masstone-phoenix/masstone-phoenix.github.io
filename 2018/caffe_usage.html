@@ -50,7 +50,7 @@ caffe的好处是，我们基本上可以用一个比较简单的语言（google
 
 基本上，caffe 遵循了神经网络的一个简单假设 - 所有的计算都是以layer的形式表示的layer做的事情就是拿到一些数据，然后输出一些计算以后的结果，比如说卷积，就是输入一个图像，然后和这一层的参数（filter）做卷积,然后输出卷积的结果。每一个layer需要做两个计算：forward是从输入计算输出，然后backward是从上面给的gradient来计算相对于输入的gradient。只要这两个函数实现了以后，我们就可以把很多层连接成一个网络，这个网络做的事情就是输入我们的数据（图像或者语音或者whatever），然后来计算我们需要的输出（比如说识别的label）。只要这两个函数实现了以后，我们就可以把很多层连接成一个网络，这个网络做的事情就是输入我们的数据（图像或者语音或者whatever），然后来计算我们需要的输出（比如说识别的label）。在训练的时候，我们可以根据已有的label来计算loss和gradient，然后用gradient来update网络的参数。这个就是Caffe的一个基本流程！
 
-如果大家需要自己实现一个layer的话，可以参考下图。比如说输入是x，我们可以想象一个layer的forward function就是y=f(x) 然后，我们会有一个loss function，记成L(.)。在做backward的时候，网络得到的是上层给出的gradient，dL/dy，然后网络需要做的计算是dL/dx = dL/dy * dy/dx，dy/dx也就是f’(x)。于是，这样我们就可以一层一层往后计算gradient。slide 31简单介绍了一下这个forward和backward的结构 anyway，Caffe里面实现的solver主要也是为了神经网络设计的。
+如果大家需要自己实现一个layer的话，可以参考下图。比如说输入是x，我们可以想象一个layer的forward function就是y=f(x) 然后，我们会有一个loss function，记成L(.)。在做backward的时候，网络得到的是上层给出的gradient，dL/dy，然后网络需要做的计算是dL/dx = dL/dy * dy/dx，dy/dx也就是f’(x)。于是，这样我们就可以一层一层往后计算gradient。Caffe里面实现的solver主要也是为了神经网络设计的。
 
 ![](https://masstone-phoenix.github.io/image/caffe/caffe_layer.png)
 
@@ -124,7 +124,7 @@ $ ./tools/build_ios.sh
 
 <p>基本上，caffe 遵循了神经网络的一个简单假设 - 所有的计算都是以layer的形式表示的layer做的事情就是拿到一些数据，然后输出一些计算以后的结果，比如说卷积，就是输入一个图像，然后和这一层的参数（filter）做卷积,然后输出卷积的结果。每一个layer需要做两个计算：forward是从输入计算输出，然后backward是从上面给的gradient来计算相对于输入的gradient。只要这两个函数实现了以后，我们就可以把很多层连接成一个网络，这个网络做的事情就是输入我们的数据（图像或者语音或者whatever），然后来计算我们需要的输出（比如说识别的label）。只要这两个函数实现了以后，我们就可以把很多层连接成一个网络，这个网络做的事情就是输入我们的数据（图像或者语音或者whatever），然后来计算我们需要的输出（比如说识别的label）。在训练的时候，我们可以根据已有的label来计算loss和gradient，然后用gradient来update网络的参数。这个就是Caffe的一个基本流程！</p>
 
-<p>如果大家需要自己实现一个layer的话，可以参考下图。比如说输入是x，我们可以想象一个layer的forward function就是y=f(x) 然后，我们会有一个loss function，记成L(.)。在做backward的时候，网络得到的是上层给出的gradient，dL/dy，然后网络需要做的计算是dL/dx = dL/dy * dy/dx，dy/dx也就是f’(x)。于是，这样我们就可以一层一层往后计算gradient。slide 31简单介绍了一下这个forward和backward的结构 anyway，Caffe里面实现的solver主要也是为了神经网络设计的。</p>
+<p>如果大家需要自己实现一个layer的话，可以参考下图。比如说输入是x，我们可以想象一个layer的forward function就是y=f(x) 然后，我们会有一个loss function，记成L(.)。在做backward的时候，网络得到的是上层给出的gradient，dL/dy，然后网络需要做的计算是dL/dx = dL/dy * dy/dx，dy/dx也就是f’(x)。于是，这样我们就可以一层一层往后计算gradient。Caffe里面实现的solver主要也是为了神经网络设计的。</p>
 
 <p><img src="https://masstone-phoenix.github.io/image/caffe/caffe_layer.png" alt="" title=""></p>
 
