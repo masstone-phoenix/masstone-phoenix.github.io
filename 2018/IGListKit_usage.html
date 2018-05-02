@@ -25,12 +25,46 @@
 	</div>
 <div id="md" style="display: none;">
 <!-- markdown -->
+
+
+#使用
+与使用UICollectionView一样，需要创建一个实例，然后将这个实例加入到view层级中，这部分就不做介绍了，不同的是：对于UICollectionView，数据需要从一个实现UICollectionViewDataSource的代理中获得；而对于IGListKit，它使用一个叫做IGListAdapter的对象来控制collection view。
 ![](https://masstone-phoenix.github.io/image/IGListKit/IGListKit_data.jpg)
+
+## 创建一个IGListAdapter
+
+```
+lazy var adapter: IGListAdapter = {
+  return IGListAdapter(updater: IGListAdapterUpdater(), viewController: self, workingRangeSize: 0)
+}()
+```
+
+1. updater是一个遵守 IGListUpdatingDelegate的对象，它的作用是解决collection view中节和行的更新问题
+2. viewController是一个持有adapter的UIViewController实例，它用来push或present别的VC
+3. workingRangeSize：它的说明是这样的：A working range is a range of section controllers who aren’t yet visible, but are near the screen，就是说不在屏幕内，但可能快要进入屏幕的区域，而这个参数就是定义这个区域的大小
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
 <!-- content -->
-<p><img src="https://masstone-phoenix.github.io/image/IGListKit/IGListKit_data.jpg" alt="" title=""></p>
+<h1 id="">使用</h1>
+
+<p>与使用UICollectionView一样，需要创建一个实例，然后将这个实例加入到view层级中，这部分就不做介绍了，不同的是：对于UICollectionView，数据需要从一个实现UICollectionViewDataSource的代理中获得；而对于IGListKit，它使用一个叫做IGListAdapter的对象来控制collection view。
+<img src="https://masstone-phoenix.github.io/image/IGListKit/IGListKit_data.jpg" alt="" title=""></p>
+
+<h2 id="iglistadapter">创建一个IGListAdapter</h2>
+
+<pre><code>lazy var adapter: IGListAdapter = {
+  return IGListAdapter(updater: IGListAdapterUpdater(), viewController: self, workingRangeSize: 0)
+}()
+</code></pre>
+
+<ol>
+<li>updater是一个遵守 IGListUpdatingDelegate的对象，它的作用是解决collection view中节和行的更新问题</li>
+<li>viewController是一个持有adapter的UIViewController实例，它用来push或present别的VC</li>
+<li>workingRangeSize：它的说明是这样的：A working range is a range of section controllers who aren’t yet visible, but are near the screen，就是说不在屏幕内，但可能快要进入屏幕的区域，而这个参数就是定义这个区域的大小</li>
+</ol>
 <!-- content end -->
 </div>
 <br>
