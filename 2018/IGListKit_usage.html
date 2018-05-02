@@ -100,6 +100,10 @@ extension JournalSectionController: IGListSectionType {
 
 didUpdate(to:)用来向section controller传递数据，它总是比其它协议的方法先被调用。其它方法从字面上就可以看出它们是干什么的，比如numberOfItems返回本section的cell数量。
 
+didSelectItem(at:)与collectionView(_:didSelectItemAt:)函数功能类似。
+
+当实现了section controller，在adapter的listAdapter(_:sectionControllerFor:)函数中返回所要用的section controller就可以了。
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -178,6 +182,10 @@ adapter.dataSource = self
 </code></pre>
 
 <p>didUpdate(to:)用来向section controller传递数据，它总是比其它协议的方法先被调用。其它方法从字面上就可以看出它们是干什么的，比如numberOfItems返回本section的cell数量。</p>
+
+<p>didSelectItem(at:)与collectionView(_:didSelectItemAt:)函数功能类似。</p>
+
+<p>当实现了section controller，在adapter的listAdapter(_:sectionControllerFor:)函数中返回所要用的section controller就可以了。</p>
 <!-- content end -->
 </div>
 <br>
