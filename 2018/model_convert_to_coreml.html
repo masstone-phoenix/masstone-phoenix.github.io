@@ -28,8 +28,37 @@
 我看到苹果自己的CoreML能够使用GPU加速，而我们的模型计算量很大，这样就可以加快运行速度了，如果能转化成CoreML并在iOS上调用，那该有多好啊？于是我就进入了模型转换这个大坑里，这里记录一下。
 
 # caffe模型转化成CoreML
+直接根据苹果的[coremltools](https://github.com/apple/coremltools)的使用说明，转换如下：
+
+```
+import coremltools
+
+# Convert a caffe model to a classifier in Core ML
+coreml_model = coremltools.converters.caffe.convert('xxx.caffemodel')
 
 
+# Now save the model
+coreml_model.save('xxx.mlmodel')
+```
+
+需要注意的是，coremltools只支持python 2.7，最好在一个虚拟环境中只用它，加入更多的库有时会冲突，比如six库。
+
+运行上述转换命令，对于我们这个模型，会出现如下错误：
+```
+Layer 14: Type: 'Pooling', Name: 'bottle1_1_mp'. Input(s): 'init_bn_init_PRelu_0_split_1'. Output(s): 'bottle1_1_mp', 'bottle1_1_mp_mask'.
+Traceback (most recent call last):
+File "convert_caffe.py", line 4, in 
+coreml_model = coremltools.converters.caffe.convert('merge.caffemodel')
+File "/Volumes/MacintoshHD/Users/xxxxxxxxx/mlvirtualenv/tfcoreml/lib/python2.7/site-packages/coremltools/converters/caffe/_caffe_converter.py", line 191, in convert
+predicted_feature_name)
+File "/Volumes/MacintoshHD/Users/xxxxxxxxx/mlvirtualenv/tfcoreml/lib/python2.7/site-packages/coremltools/converters/caffe/_caffe_converter.py", line 255, in _export
+predicted_feature_name)
+RuntimeError: Caffe model error in layer 'bottle1_1_mp' of type 'Pooling': Must have 1 input and 1 output.
+
+bottle1_1_mp is a max pooling, which output the max value and the index, but the convert tool only support 1 input and 1 output, can anyone help?
+```
+
+我在github上开了一个[issue](https://github.com/apple/coremltools/issues/175)，目前还没有解决方法。
 
 
 # TensorFlow模型转化成CoreML
@@ -41,6 +70,37 @@
 <p>我看到苹果自己的CoreML能够使用GPU加速，而我们的模型计算量很大，这样就可以加快运行速度了，如果能转化成CoreML并在iOS上调用，那该有多好啊？于是我就进入了模型转换这个大坑里，这里记录一下。</p>
 
 <h1 id="caffecoreml">caffe模型转化成CoreML</h1>
+
+<p>直接根据苹果的<a href="https://github.com/apple/coremltools">coremltools</a>的使用说明，转换如下：</p>
+
+<pre><code>import coremltools
+
+# Convert a caffe model to a classifier in Core ML
+coreml_model = coremltools.converters.caffe.convert('xxx.caffemodel')
+
+
+# Now save the model
+coreml_model.save('xxx.mlmodel')
+</code></pre>
+
+<p>需要注意的是，coremltools只支持python 2.7，最好在一个虚拟环境中只用它，加入更多的库有时会冲突，比如six库。</p>
+
+<p>运行上述转换命令，对于我们这个模型，会出现如下错误：</p>
+
+<pre><code>Layer 14: Type: 'Pooling', Name: 'bottle1_1_mp'. Input(s): 'init_bn_init_PRelu_0_split_1'. Output(s): 'bottle1_1_mp', 'bottle1_1_mp_mask'.
+Traceback (most recent call last):
+File "convert_caffe.py", line 4, in 
+coreml_model = coremltools.converters.caffe.convert('merge.caffemodel')
+File "/Volumes/MacintoshHD/Users/xxxxxxxxx/mlvirtualenv/tfcoreml/lib/python2.7/site-packages/coremltools/converters/caffe/_caffe_converter.py", line 191, in convert
+predicted_feature_name)
+File "/Volumes/MacintoshHD/Users/xxxxxxxxx/mlvirtualenv/tfcoreml/lib/python2.7/site-packages/coremltools/converters/caffe/_caffe_converter.py", line 255, in _export
+predicted_feature_name)
+RuntimeError: Caffe model error in layer 'bottle1_1_mp' of type 'Pooling': Must have 1 input and 1 output.
+
+bottle1_1_mp is a max pooling, which output the max value and the index, but the convert tool only support 1 input and 1 output, can anyone help?
+</code></pre>
+
+<p>我在github上开了一个<a href="https://github.com/apple/coremltools/issues/175">issue</a>，目前还没有解决方法。</p>
 
 <h1 id="tensorflowcoreml">TensorFlow模型转化成CoreML</h1>
 <!-- content end -->
