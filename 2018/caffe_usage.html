@@ -162,6 +162,13 @@ for(int u = 0; u < a->num(); u++)
 ## 遇到的问题
 由于我们的模型用到了一些自定义的层，第一次运行时不出意料不足为奇的失败了，提示找不到层。于是将自定义的层加入scr中对应的文件夹中，并在caffe.proto中加入对应的参数定义，而后重新编译整个caffe库，问题解决，模型在iPhone中欢快的跑起了，时间也非常快。
 
+具体路径记录如下：
+```
+在/caffe-mobile/include/caffe/layers这个文件夹中加入自定义layer的头文件(.hpp)
+在/caffe-mobile/src/caffe/layers这个文件夹中加入自定义layer的实现文件
+更改/caffe-mobile/src/caffe/proto这个文件夹中的caffe.proto文件
+```
+
 下一步的目标是将iPhone中的GPU利用起来。
 
 <!-- markdown end -->
@@ -312,6 +319,13 @@ for(int u = 0; u &lt; a-&gt;num(); u++)
 <h2 id="">遇到的问题</h2>
 
 <p>由于我们的模型用到了一些自定义的层，第一次运行时不出意料不足为奇的失败了，提示找不到层。于是将自定义的层加入scr中对应的文件夹中，并在caffe.proto中加入对应的参数定义，而后重新编译整个caffe库，问题解决，模型在iPhone中欢快的跑起了，时间也非常快。</p>
+
+<p>具体路径记录如下：</p>
+
+<pre><code>在/caffe-mobile/include/caffe/layers这个文件夹中加入自定义layer的头文件(.hpp)
+在/caffe-mobile/src/caffe/layers这个文件夹中加入自定义layer的实现文件
+更改/caffe-mobile/src/caffe/proto这个文件夹中的caffe.proto文件
+</code></pre>
 
 <p>下一步的目标是将iPhone中的GPU利用起来。</p>
 <!-- content end -->
