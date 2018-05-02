@@ -38,8 +38,138 @@
 先按照[官方文档](https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/ios#building-the-tensorflow-ios-libraries-from-source)编译tensorflow库，加入到Xcode工程中，调用如下：
 
 ```
-//src
++ (std::vector<float>)detectHair:(std::vector<tensorflow::uint8>)imageData {
+    tensorflow::SessionOptions options;
+    
+    tensorflow::Session* session_pointer = nullptr;
+    tensorflow::Status session_status = tensorflow::NewSession(options, &session_pointer);
+    if (!session_status.ok()) {
+        std::string status_string = session_status.ToString();
+        return std::vector<float>();
+    }
+    std::unique_ptr<tensorflow::Session> session(session_pointer);
+    LOG(INFO) << "Session created.";
+    
+    tensorflow::GraphDef tensorflow_graph;
+    LOG(INFO) << "Graph created.";
+    
+    NSString* network_path = FilePathForResourceName(@"xxx", @"pb");
+    PortableReadFileToProto([network_path UTF8String], &tensorflow_graph);
+    
+    LOG(INFO) << "Creating session.";
+    tensorflow::Status s = session->Create(tensorflow_graph);
+    if (!s.ok()) {
+        LOG(ERROR) << "Could not create TensorFlow Graph: " << s;
+        return std::vector<float>();
+    }
+    
+    // Read the image.
+    NSString* image_path = FilePathForResourceName(@"2", @"jpg");
+    int image_width;
+    int image_height;
+    int image_channels;
+    std::vector<tensorflow::uint8> image_data = LoadImageFromFile(
+                                                                  [image_path UTF8String], &image_width, &image_height, &image_channels);
+    const int wanted_width = 480;
+    const int wanted_height = 480;
+    const int wanted_channels = 3;
+    assert(image_channels >= wanted_channels);
+    tensorflow::Tensor image_tensor(
+                                    tensorflow::DT_FLOAT,
+                                    tensorflow::TensorShape({
+        1, wanted_height, wanted_width, wanted_channels}));
+    auto image_tensor_mapped = image_tensor.tensor<float, 4>();
+    tensorflow::uint8* in = image_data.data();
+    // tensorflow::uint8* in_end = (in + (image_height * image_width * image_channels));
+    float* out = image_tensor_mapped.data();
+    for (int y = 0; y < wanted_height; ++y) {
+        const int in_y = (y * image_height) / wanted_height;
+        tensorflow::uint8* in_row = in + (in_y * image_width * image_channels);
+        float* out_row = out + (y * wanted_width * wanted_channels);
+        for (int x = 0; x < wanted_width; ++x) {
+            const int in_x = (x * image_width) / wanted_width;
+            tensorflow::uint8* in_pixel = in_row + (in_x * image_channels);
+            float* out_pixel = out_row + (x * wanted_channels);
+            for (int c = 0; c < wanted_channels; ++c) {
+                out_pixel[c] = in_pixel[c];
+            }
+        }
+    }
+    
+    NSString* result = [network_path stringByAppendingString: @" - loaded!"];
+    
+    std::string input_layer = "data";
+    std::string output_layer = "prob";
+    std::vector<tensorflow::Tensor> outputs;
+    tensorflow::Status run_status = session->Run({{input_layer, image_tensor}},
+                                                 {output_layer}, {}, &outputs);
+    if (!run_status.ok()) {
+        LOG(ERROR) << "Running model failed: " << run_status;
+        tensorflow::LogAllRegisteredKernels();
+        result = @"Error running model";
+        return std::vector<float>();
+    }
+    tensorflow::string status_string = run_status.ToString();
+    result = [NSString stringWithFormat: @"%@ - %s", result,
+              status_string.c_str()];
+    
+    tensorflow::Tensor* output = &outputs[0];
+    std::vector<float> res(480*480*2);
+    LOG(INFO) << "Output tensor shape:" <<output->shape();
+    LOG(INFO) << "Output tensor data:" <<(*output).tensor<float, (4)>();
+//    for(int i=0; i<output->NumElements(); i++) {
+//        LOG(INFO) << "Output tensor data:" <<i<<" "<<output->vec<float>()(i);
+//        res.push_back(output->vec<float>()(i));
+//    }
+    
+    return res;
+}
 
+//辅助函数
+namespace {
+    class IfstreamInputStream : public ::google::protobuf::io::CopyingInputStream {
+    public:
+        explicit IfstreamInputStream(const std::string& file_name)
+        : ifs_(file_name.c_str(), std::ios::in | std::ios::binary) {}
+        ~IfstreamInputStream() { ifs_.close(); }
+        
+        int Read(void* buffer, int size) {
+            if (!ifs_) {
+                return -1;
+            }
+            ifs_.read(static_cast<char*>(buffer), size);
+            return (int)ifs_.gcount();
+        }
+        
+    private:
+        std::ifstream ifs_;
+    };
+}  // namespace
+
+bool PortableReadFileToProto(const std::string& file_name,
+                             ::google::protobuf::MessageLite* proto) {
+    ::google::protobuf::io::CopyingInputStreamAdaptor stream(
+                                                             new IfstreamInputStream(file_name));
+    stream.SetOwnsCopyingStream(true);
+    // TODO(jiayq): the following coded stream is for debugging purposes to allow
+    // one to parse arbitrarily large messages for MessageLite. One most likely
+    // doesn't want to put protobufs larger than 64MB on Android, so we should
+    // eventually remove this and quit loud when a large protobuf is passed in.
+    ::google::protobuf::io::CodedInputStream coded_stream(&stream);
+    // Total bytes hard limit / warning limit are set to 1GB and 512MB
+    // respectively.
+    coded_stream.SetTotalBytesLimit(1024LL << 20, 512LL << 20);
+    return proto->ParseFromCodedStream(&coded_stream);
+}
+
+NSString* FilePathForResourceName(NSString* name, NSString* extension) {
+    NSString* file_path = [[NSBundle mainBundle] pathForResource:name ofType:extension];
+    if (file_path == NULL) {
+        LOG(FATAL) << "Couldn't find '" << [name UTF8String] << "."
+        << [extension UTF8String] << "' in bundle.";
+    }
+    return file_path;
+}
 ```
 
 
@@ -99,7 +229,138 @@ tensorflow/core/kernels/sparse_tensor_dense_add_op.cc
 
 <p>先按照<a href="https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/ios#building-the-tensorflow-ios-libraries-from-source">官方文档</a>编译tensorflow库，加入到Xcode工程中，调用如下：</p>
 
-<pre><code>//src
+<pre><code>+ (std::vector&lt;float&gt;)detectHair:(std::vector&lt;tensorflow::uint8&gt;)imageData {
+    tensorflow::SessionOptions options;
+
+    tensorflow::Session* session_pointer = nullptr;
+    tensorflow::Status session_status = tensorflow::NewSession(options, &amp;session_pointer);
+    if (!session_status.ok()) {
+        std::string status_string = session_status.ToString();
+        return std::vector&lt;float&gt;();
+    }
+    std::unique_ptr&lt;tensorflow::Session&gt; session(session_pointer);
+    LOG(INFO) &lt;&lt; "Session created.";
+
+    tensorflow::GraphDef tensorflow_graph;
+    LOG(INFO) &lt;&lt; "Graph created.";
+
+    NSString* network_path = FilePathForResourceName(@"xxx", @"pb");
+    PortableReadFileToProto([network_path UTF8String], &amp;tensorflow_graph);
+
+    LOG(INFO) &lt;&lt; "Creating session.";
+    tensorflow::Status s = session-&gt;Create(tensorflow_graph);
+    if (!s.ok()) {
+        LOG(ERROR) &lt;&lt; "Could not create TensorFlow Graph: " &lt;&lt; s;
+        return std::vector&lt;float&gt;();
+    }
+
+    // Read the image.
+    NSString* image_path = FilePathForResourceName(@"2", @"jpg");
+    int image_width;
+    int image_height;
+    int image_channels;
+    std::vector&lt;tensorflow::uint8&gt; image_data = LoadImageFromFile(
+                                                                  [image_path UTF8String], &amp;image_width, &amp;image_height, &amp;image_channels);
+    const int wanted_width = 480;
+    const int wanted_height = 480;
+    const int wanted_channels = 3;
+    assert(image_channels &gt;= wanted_channels);
+    tensorflow::Tensor image_tensor(
+                                    tensorflow::DT_FLOAT,
+                                    tensorflow::TensorShape({
+        1, wanted_height, wanted_width, wanted_channels}));
+    auto image_tensor_mapped = image_tensor.tensor&lt;float, 4&gt;();
+    tensorflow::uint8* in = image_data.data();
+    // tensorflow::uint8* in_end = (in + (image_height * image_width * image_channels));
+    float* out = image_tensor_mapped.data();
+    for (int y = 0; y &lt; wanted_height; ++y) {
+        const int in_y = (y * image_height) / wanted_height;
+        tensorflow::uint8* in_row = in + (in_y * image_width * image_channels);
+        float* out_row = out + (y * wanted_width * wanted_channels);
+        for (int x = 0; x &lt; wanted_width; ++x) {
+            const int in_x = (x * image_width) / wanted_width;
+            tensorflow::uint8* in_pixel = in_row + (in_x * image_channels);
+            float* out_pixel = out_row + (x * wanted_channels);
+            for (int c = 0; c &lt; wanted_channels; ++c) {
+                out_pixel[c] = in_pixel[c];
+            }
+        }
+    }
+
+    NSString* result = [network_path stringByAppendingString: @" - loaded!"];
+
+    std::string input_layer = "data";
+    std::string output_layer = "prob";
+    std::vector&lt;tensorflow::Tensor&gt; outputs;
+    tensorflow::Status run_status = session-&gt;Run({{input_layer, image_tensor}},
+                                                 {output_layer}, {}, &amp;outputs);
+    if (!run_status.ok()) {
+        LOG(ERROR) &lt;&lt; "Running model failed: " &lt;&lt; run_status;
+        tensorflow::LogAllRegisteredKernels();
+        result = @"Error running model";
+        return std::vector&lt;float&gt;();
+    }
+    tensorflow::string status_string = run_status.ToString();
+    result = [NSString stringWithFormat: @"%@ - %s", result,
+              status_string.c_str()];
+
+    tensorflow::Tensor* output = &amp;outputs[0];
+    std::vector&lt;float&gt; res(480*480*2);
+    LOG(INFO) &lt;&lt; "Output tensor shape:" &lt;&lt;output-&gt;shape();
+    LOG(INFO) &lt;&lt; "Output tensor data:" &lt;&lt;(*output).tensor&lt;float, (4)&gt;();
+//    for(int i=0; i&lt;output-&gt;NumElements(); i++) {
+//        LOG(INFO) &lt;&lt; "Output tensor data:" &lt;&lt;i&lt;&lt;" "&lt;&lt;output-&gt;vec&lt;float&gt;()(i);
+//        res.push_back(output-&gt;vec&lt;float&gt;()(i));
+//    }
+
+    return res;
+}
+
+//辅助函数
+namespace {
+    class IfstreamInputStream : public ::google::protobuf::io::CopyingInputStream {
+    public:
+        explicit IfstreamInputStream(const std::string&amp; file_name)
+        : ifs_(file_name.c_str(), std::ios::in | std::ios::binary) {}
+        ~IfstreamInputStream() { ifs_.close(); }
+
+        int Read(void* buffer, int size) {
+            if (!ifs_) {
+                return -1;
+            }
+            ifs_.read(static_cast&lt;char*&gt;(buffer), size);
+            return (int)ifs_.gcount();
+        }
+
+    private:
+        std::ifstream ifs_;
+    };
+}  // namespace
+
+bool PortableReadFileToProto(const std::string&amp; file_name,
+                             ::google::protobuf::MessageLite* proto) {
+    ::google::protobuf::io::CopyingInputStreamAdaptor stream(
+                                                             new IfstreamInputStream(file_name));
+    stream.SetOwnsCopyingStream(true);
+    // TODO(jiayq): the following coded stream is for debugging purposes to allow
+    // one to parse arbitrarily large messages for MessageLite. One most likely
+    // doesn't want to put protobufs larger than 64MB on Android, so we should
+    // eventually remove this and quit loud when a large protobuf is passed in.
+    ::google::protobuf::io::CodedInputStream coded_stream(&amp;stream);
+    // Total bytes hard limit / warning limit are set to 1GB and 512MB
+    // respectively.
+    coded_stream.SetTotalBytesLimit(1024LL &lt;&lt; 20, 512LL &lt;&lt; 20);
+    return proto-&gt;ParseFromCodedStream(&amp;coded_stream);
+}
+
+NSString* FilePathForResourceName(NSString* name, NSString* extension) {
+    NSString* file_path = [[NSBundle mainBundle] pathForResource:name ofType:extension];
+    if (file_path == NULL) {
+        LOG(FATAL) &lt;&lt; "Couldn't find '" &lt;&lt; [name UTF8String] &lt;&lt; "."
+        &lt;&lt; [extension UTF8String] &lt;&lt; "' in bundle.";
+    }
+    return file_path;
+}
 </code></pre>
 
 <p>出现如下错误：</p>
