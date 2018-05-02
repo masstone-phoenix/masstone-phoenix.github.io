@@ -73,6 +73,32 @@ extension FeedViewController: IGListAdapterDataSource {
 
 
 ## Section Controller
+Section Controller是用来配置collection view中的section的。类似于MVVM，数据是view-model，cells是view，section controller将它们联合起来一起工作。在IGListKit中，我们为每种数据类型创建一个新的section controller。
+
+Section Controller需要遵守IGListSectionType协议。
+
+```
+extension JournalSectionController: IGListSectionType {
+  func numberOfItems() -> Int {
+    return 2
+  }
+  
+  func sizeForItem(at index: Int) -> CGSize {
+    return .zero
+  }
+  
+  func cellForItem(at index: Int) -> UICollectionViewCell {
+    return UICollectionViewCell()
+  }
+  
+  func didUpdate(to object: Any) {
+  }
+  
+  func didSelectItem(at index: Int) {}
+}
+```
+
+didUpdate(to:)用来向section controller传递数据，它总是比其它协议的方法先被调用。其它方法从字面上就可以看出它们是干什么的，比如numberOfItems返回本section的cell数量。
 
 <!-- markdown end -->
 </div>
@@ -126,6 +152,32 @@ adapter.dataSource = self
 </ul>
 
 <h2 id="sectioncontroller">Section Controller</h2>
+
+<p>Section Controller是用来配置collection view中的section的。类似于MVVM，数据是view-model，cells是view，section controller将它们联合起来一起工作。在IGListKit中，我们为每种数据类型创建一个新的section controller。</p>
+
+<p>Section Controller需要遵守IGListSectionType协议。</p>
+
+<pre><code>extension JournalSectionController: IGListSectionType {
+  func numberOfItems() -&gt; Int {
+    return 2
+  }
+
+  func sizeForItem(at index: Int) -&gt; CGSize {
+    return .zero
+  }
+
+  func cellForItem(at index: Int) -&gt; UICollectionViewCell {
+    return UICollectionViewCell()
+  }
+
+  func didUpdate(to object: Any) {
+  }
+
+  func didSelectItem(at index: Int) {}
+}
+</code></pre>
+
+<p>didUpdate(to:)用来向section controller传递数据，它总是比其它协议的方法先被调用。其它方法从字面上就可以看出它们是干什么的，比如numberOfItems返回本section的cell数量。</p>
 <!-- content end -->
 </div>
 <br>
