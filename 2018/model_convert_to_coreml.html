@@ -62,7 +62,25 @@ bottle1_1_mp is a max pooling, which output the max value and the index, but the
 
 
 # TensorFlow模型转化成CoreML
+这里使用的是一个叫做[tf-coreml](https://github.com/tf-coreml/tf-coreml)的开源项目，它是在coremltools的基础上，将tensorflow模型转换成Core ML模型。用法也大致类似：
 
+```
+import tfcoreml as tf_converter
+tf_converter.convert(tf_model_path = 'xxx_optimized_quantized.pb',
+                     mlmodel_path = 'xxx.mlmodel',
+                     output_feature_names = ['prob:0'],
+                     input_name_shape_dict = {'data:0' : [1, 480, 480, 3]})
+```
+
+但是这个转换工具的错误是由自定义操作引起的，如下：
+```
+NotImplementedError: Unsupported Ops of type: GatherNd,FloorDiv,SparseTensorDenseAdd,AddN,ScatterNd
+```
+
+同样，[这个issue](https://github.com/tf-coreml/tf-coreml/issues/163)描述了这个问题，我正在积极录找解决办法。
+
+# 总结
+总结一下，目前无论是官方转换到Core ML的工具，还是第三方的工具，它们有一些操作是不能够自动转换的，而这在搭建机器学习模型时是不可知的，只有搭建完模型后才能知道用到哪些操作，所以感觉截止目前（2018.04.18），最好的办法是先试下转换工具是否好用，这个试验很简单，几分钟就试验出来了，如果能够转化就很好了；如果不能转化，只能考虑使用BNNS（CPU）或 Metal CNN（GPU）自己动手写一个了！！
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -103,6 +121,26 @@ bottle1_1_mp is a max pooling, which output the max value and the index, but the
 <p>我在github上开了一个<a href="https://github.com/apple/coremltools/issues/175">issue</a>，目前还没有解决方法。</p>
 
 <h1 id="tensorflowcoreml">TensorFlow模型转化成CoreML</h1>
+
+<p>这里使用的是一个叫做<a href="https://github.com/tf-coreml/tf-coreml">tf-coreml</a>的开源项目，它是在coremltools的基础上，将tensorflow模型转换成Core ML模型。用法也大致类似：</p>
+
+<pre><code>import tfcoreml as tf_converter
+tf_converter.convert(tf_model_path = 'xxx_optimized_quantized.pb',
+                     mlmodel_path = 'xxx.mlmodel',
+                     output_feature_names = ['prob:0'],
+                     input_name_shape_dict = {'data:0' : [1, 480, 480, 3]})
+</code></pre>
+
+<p>但是这个转换工具的错误是由自定义操作引起的，如下：</p>
+
+<pre><code>NotImplementedError: Unsupported Ops of type: GatherNd,FloorDiv,SparseTensorDenseAdd,AddN,ScatterNd
+</code></pre>
+
+<p>同样，<a href="https://github.com/tf-coreml/tf-coreml/issues/163">这个issue</a>描述了这个问题，我正在积极录找解决办法。</p>
+
+<h1 id="">总结</h1>
+
+<p>总结一下，目前无论是官方转换到Core ML的工具，还是第三方的工具，它们有一些操作是不能够自动转换的，而这在搭建机器学习模型时是不可知的，只有搭建完模型后才能知道用到哪些操作，所以感觉截止目前（2018.04.18），最好的办法是先试下转换工具是否好用，这个试验很简单，几分钟就试验出来了，如果能够转化就很好了；如果不能转化，只能考虑使用BNNS（CPU）或 Metal CNN（GPU）自己动手写一个了！！</p>
 <!-- content end -->
 </div>
 <br>
