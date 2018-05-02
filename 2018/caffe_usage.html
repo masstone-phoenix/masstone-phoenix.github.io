@@ -83,7 +83,48 @@ $ ./tools/build_ios.sh
 ```
 我们就得到了一个.a的文件，将这个库加入到工程中，然后将caffe的模型.caffemodel文件加入工程中，在工程中使用下面代码调用这个模型得到结果：
 
+初始化网络：
 ```
+Caffe::set_mode(Caffe::CPU);
+NetParameter netParam;
+LOG(INFO) << "load mode 1";
+int fileSize = -1;
+const void* fileData = (const void*)ReadAllBytes([FilePathForResourceName(@"xxx", @"caffemodel") UTF8String],&fileSize);
+ReadProtoFromArray(fileData,fileSize, &netParam);
+delete((char *)fileData);
+shared_ptr<Net<float> > net(new Net<float>(netParam));
+_net = net;
+```
+
+使用网络预测和读取结果：
+```
+caffe::Blob<float> *input_layer = _net->input_blobs()[0];
+//    NSString *test_file_path = FilePathForResourceName(@"2", @"jpg");
+timer.Start();
+if(! ReadImageToBlob(test_file_path, input_layer)) {
+    LOG(INFO) << "ReadImageToBlob failed";
+    return;
+}
+_net->Forward();
+timer.Stop();
+LOG(INFO) << "total time:" << timer.MilliSeconds();
+
+//read result
+shared_ptr<Blob<float> > a= _net->blob_by_name("prob");
+for(int u = 0; u < a->num(); u++)
+{
+    for(int v = 0; v < a->channels(); v++)
+        // for(int v = 1; v < 2; v++)
+    {
+        for(int w = 0; w < a->height(); w++)
+        {
+            for(int x = 0; x < a->width(); x++)
+            {
+                LOG(INFO)<<a->data_at(u, v, w, x);
+            }
+        }
+    }
+}
 ```
 
 ## 遇到的问题
@@ -160,8 +201,49 @@ $ ./tools/build_ios.sh
 
 <p>我们就得到了一个.a的文件，将这个库加入到工程中，然后将caffe的模型.caffemodel文件加入工程中，在工程中使用下面代码调用这个模型得到结果：</p>
 
-<p><code>
-</code></p>
+<p>初始化网络：</p>
+
+<pre><code>Caffe::set_mode(Caffe::CPU);
+NetParameter netParam;
+LOG(INFO) &lt;&lt; "load mode 1";
+int fileSize = -1;
+const void* fileData = (const void*)ReadAllBytes([FilePathForResourceName(@"xxx", @"caffemodel") UTF8String],&amp;fileSize);
+ReadProtoFromArray(fileData,fileSize, &amp;netParam);
+delete((char *)fileData);
+shared_ptr&lt;Net&lt;float&gt; &gt; net(new Net&lt;float&gt;(netParam));
+_net = net;
+</code></pre>
+
+<p>使用网络预测和读取结果：</p>
+
+<pre><code>caffe::Blob&lt;float&gt; *input_layer = _net-&gt;input_blobs()[0];
+//    NSString *test_file_path = FilePathForResourceName(@"2", @"jpg");
+timer.Start();
+if(! ReadImageToBlob(test_file_path, input_layer)) {
+    LOG(INFO) &lt;&lt; "ReadImageToBlob failed";
+    return;
+}
+_net-&gt;Forward();
+timer.Stop();
+LOG(INFO) &lt;&lt; "total time:" &lt;&lt; timer.MilliSeconds();
+
+//read result
+shared_ptr&lt;Blob&lt;float&gt; &gt; a= _net-&gt;blob_by_name("prob");
+for(int u = 0; u &lt; a-&gt;num(); u++)
+{
+    for(int v = 0; v &lt; a-&gt;channels(); v++)
+        // for(int v = 1; v &lt; 2; v++)
+    {
+        for(int w = 0; w &lt; a-&gt;height(); w++)
+        {
+            for(int x = 0; x &lt; a-&gt;width(); x++)
+            {
+                LOG(INFO)&lt;&lt;a-&gt;data_at(u, v, w, x);
+            }
+        }
+    }
+}
+</code></pre>
 
 <h2 id="">遇到的问题</h2>
 
