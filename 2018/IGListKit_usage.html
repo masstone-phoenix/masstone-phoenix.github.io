@@ -43,6 +43,36 @@ lazy var adapter: IGListAdapter = {
 2. viewController是一个持有adapter的UIViewController实例，它用来push或present别的VC
 3. workingRangeSize：它的说明是这样的：A working range is a range of section controllers who aren’t yet visible, but are near the screen，就是说不在屏幕内，但可能快要进入屏幕的区域，而这个参数就是定义这个区域的大小
 
+接下来将它与IGListCollectionView以及数据源相连接：
+
+```
+//IGListCollectionView
+adapter.collectionView = collectionView
+// IGListAdapterDataSource
+adapter.dataSource = self
+```
+
+以下是实现IGListAdapterDataSource：
+```
+extension FeedViewController: IGListAdapterDataSource {
+    func objects(for listAdapter: IGListAdapter) -> [IGListDiffable] {
+        return loader.entries
+    }
+    
+    func listAdapter(_ listAdapter: IGListAdapter, sectionControllerFor object: Any) -> IGListSectionController {
+        return IGListSectionController()
+    }
+    
+    func emptyView(for listAdapter: IGListAdapter) -> UIView? { return nil }
+}
+
+```
+- objects(for:)返回显示在collection view的数据数组
+- 对于每项数据，listAdapter(_:sectionControllerFor:) 需要返回一个新的section controller的实例；这里返回一个普通的IGListSectionController，以后我们将对它进行自定义
+- emptyView(for:)：当数据为空时，将显示这个函数所返回的view
+
+
+## Section Controller
 
 <!-- markdown end -->
 </div>
@@ -65,6 +95,37 @@ lazy var adapter: IGListAdapter = {
 <li>viewController是一个持有adapter的UIViewController实例，它用来push或present别的VC</li>
 <li>workingRangeSize：它的说明是这样的：A working range is a range of section controllers who aren’t yet visible, but are near the screen，就是说不在屏幕内，但可能快要进入屏幕的区域，而这个参数就是定义这个区域的大小</li>
 </ol>
+
+<p>接下来将它与IGListCollectionView以及数据源相连接：</p>
+
+<pre><code>//IGListCollectionView
+adapter.collectionView = collectionView
+// IGListAdapterDataSource
+adapter.dataSource = self
+</code></pre>
+
+<p>以下是实现IGListAdapterDataSource：</p>
+
+<pre><code>extension FeedViewController: IGListAdapterDataSource {
+    func objects(for listAdapter: IGListAdapter) -&gt; [IGListDiffable] {
+        return loader.entries
+    }
+
+    func listAdapter(_ listAdapter: IGListAdapter, sectionControllerFor object: Any) -&gt; IGListSectionController {
+        return IGListSectionController()
+    }
+
+    func emptyView(for listAdapter: IGListAdapter) -&gt; UIView? { return nil }
+}
+</code></pre>
+
+<ul>
+<li>objects(for:)返回显示在collection view的数据数组</li>
+<li>对于每项数据，listAdapter(_:sectionControllerFor:) 需要返回一个新的section controller的实例；这里返回一个普通的IGListSectionController，以后我们将对它进行自定义</li>
+<li>emptyView(for:)：当数据为空时，将显示这个函数所返回的view</li>
+</ul>
+
+<h2 id="sectioncontroller">Section Controller</h2>
 <!-- content end -->
 </div>
 <br>
