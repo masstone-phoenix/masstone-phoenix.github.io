@@ -96,6 +96,38 @@ shared_ptr<Net<float> > net(new Net<float>(netParam));
 _net = net;
 ```
 
+使用到的函数：
+```
+inline static char * ReadAllBytes(const char * filename, int * read)
+{
+    ifstream ifs(filename, ios::binary|ios::ate);
+    ifstream::pos_type pos = ifs.tellg();
+    
+    // What happens if the OS supports really big files.
+    // It may be larger than 32 bits?
+    // This will silently truncate the value/
+    int length = (int)pos;
+    
+    // Manuall memory management.
+    // Not a good idea use a container/.
+    char *pChars = new char[length];
+    ifs.seekg(0, ios::beg);
+    ifs.read(pChars, length);
+    
+    // No need to manually close.
+    // When the stream goes out of scope it will close the file
+    // automatically. Unless you are checking the close for errors
+    // let the destructor do it.
+    ifs.close();
+    *read = length;
+    return pChars;
+}
+
+inline static void ReadProtoFromArray(const void* inputData,int length, NetParameter* netParam) {
+    netParam->ParseFromArray(inputData,length);
+}
+```
+
 使用网络预测和读取结果：
 ```
 caffe::Blob<float> *input_layer = _net->input_blobs()[0];
@@ -212,6 +244,38 @@ ReadProtoFromArray(fileData,fileSize, &amp;netParam);
 delete((char *)fileData);
 shared_ptr&lt;Net&lt;float&gt; &gt; net(new Net&lt;float&gt;(netParam));
 _net = net;
+</code></pre>
+
+<p>使用到的函数：</p>
+
+<pre><code>inline static char * ReadAllBytes(const char * filename, int * read)
+{
+    ifstream ifs(filename, ios::binary|ios::ate);
+    ifstream::pos_type pos = ifs.tellg();
+
+    // What happens if the OS supports really big files.
+    // It may be larger than 32 bits?
+    // This will silently truncate the value/
+    int length = (int)pos;
+
+    // Manuall memory management.
+    // Not a good idea use a container/.
+    char *pChars = new char[length];
+    ifs.seekg(0, ios::beg);
+    ifs.read(pChars, length);
+
+    // No need to manually close.
+    // When the stream goes out of scope it will close the file
+    // automatically. Unless you are checking the close for errors
+    // let the destructor do it.
+    ifs.close();
+    *read = length;
+    return pChars;
+}
+
+inline static void ReadProtoFromArray(const void* inputData,int length, NetParameter* netParam) {
+    netParam-&gt;ParseFromArray(inputData,length);
+}
 </code></pre>
 
 <p>使用网络预测和读取结果：</p>
