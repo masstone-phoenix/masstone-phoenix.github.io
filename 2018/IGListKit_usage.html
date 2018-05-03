@@ -119,6 +119,15 @@ collectionContext?.reload(self)
 adapter.performUpdates(animated: true)
 ```
 它将向adapter的数据源索取新的数据，然后更新UI。
+
+# 优点
+- 支持多种数据类型
+- update时没有crash，线性时间
+- 可重用的组件（比如secton controller）
+- 不需要调用reloadData或performBatchUpdates
+
+# 组成
+## IGListSectionController
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -219,6 +228,19 @@ adapter.dataSource = self
 </code></pre>
 
 <p>它将向adapter的数据源索取新的数据，然后更新UI。</p>
+
+<h1 id="">优点</h1>
+
+<ul>
+<li>支持多种数据类型</li>
+<li>update时没有crash，线性时间</li>
+<li>可重用的组件（比如secton controller）</li>
+<li>不需要调用reloadData或performBatchUpdates</li>
+</ul>
+
+<h1 id="">组成</h1>
+
+<h2 id="iglistsectioncontroller">IGListSectionController</h2>
 <!-- content end -->
 </div>
 <br>
