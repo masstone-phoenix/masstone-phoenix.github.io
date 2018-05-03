@@ -126,10 +126,15 @@ adapter.performUpdates(animated: true)
 - 可重用的组件（比如secton controller）
 - 不需要调用reloadData或performBatchUpdates
 
-# diff 算法
+个人感觉这个东西主要解决两个痛点：一是更新数据时的时间复杂度降低到了线性复杂度，并解决更新数据时的crash问题；二是使加入新类型的cell变得简单，不需要定义数据类型等，只需要在数据中加入其model并实现展示它的section controller并调用即可。
+
+#附录： diff 算法
+其中线性复杂度的算法也可以直接使用，如下：
 ```
 let result = ListDiff(oldArray: oldUsers, newArray: newUsers, .equality)
 ```
+
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -240,7 +245,11 @@ adapter.dataSource = self
 <li>不需要调用reloadData或performBatchUpdates</li>
 </ul>
 
-<h1 id="diff">diff 算法</h1>
+<p>个人感觉这个东西主要解决两个痛点：一是更新数据时的时间复杂度降低到了线性复杂度，并解决更新数据时的crash问题；二是使加入新类型的cell变得简单，不需要定义数据类型等，只需要在数据中加入其model并实现展示它的section controller并调用即可。</p>
+
+<h1 id="diff">附录： diff 算法</h1>
+
+<p>其中线性复杂度的算法也可以直接使用，如下：</p>
 
 <pre><code>let result = ListDiff(oldArray: oldUsers, newArray: newUsers, .equality)
 </code></pre>
