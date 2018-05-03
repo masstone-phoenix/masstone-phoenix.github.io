@@ -67,7 +67,7 @@ extension FeedViewController: IGListAdapterDataSource {
 }
 
 ```
-- objects(for:)返回显示在collection view的数据数组
+- objects(for:)返回显示在collection view的数据数组，这个数据应该是immutable的
 - 对于每项数据，listAdapter(_:sectionControllerFor:) 需要返回一个新的section controller的实例；这里返回一个普通的IGListSectionController，以后我们将对它进行自定义
 - emptyView(for:)：当数据为空时，将显示这个函数所返回的view
 
@@ -174,7 +174,7 @@ adapter.dataSource = self
 </code></pre>
 
 <ul>
-<li>objects(for:)返回显示在collection view的数据数组</li>
+<li>objects(for:)返回显示在collection view的数据数组，这个数据应该是immutable的</li>
 <li>对于每项数据，listAdapter(_:sectionControllerFor:) 需要返回一个新的section controller的实例；这里返回一个普通的IGListSectionController，以后我们将对它进行自定义</li>
 <li>emptyView(for:)：当数据为空时，将显示这个函数所返回的view</li>
 </ul>
