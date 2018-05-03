@@ -126,8 +126,10 @@ adapter.performUpdates(animated: true)
 - 可重用的组件（比如secton controller）
 - 不需要调用reloadData或performBatchUpdates
 
-# 组成
-## IGListSectionController
+# diff 算法
+```
+let result = ListDiff(oldArray: oldUsers, newArray: newUsers, .equality)
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -238,9 +240,10 @@ adapter.dataSource = self
 <li>不需要调用reloadData或performBatchUpdates</li>
 </ul>
 
-<h1 id="">组成</h1>
+<h1 id="diff">diff 算法</h1>
 
-<h2 id="iglistsectioncontroller">IGListSectionController</h2>
+<pre><code>let result = ListDiff(oldArray: oldUsers, newArray: newUsers, .equality)
+</code></pre>
 <!-- content end -->
 </div>
 <br>
