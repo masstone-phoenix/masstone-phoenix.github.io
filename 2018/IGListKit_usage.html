@@ -104,6 +104,21 @@ didSelectItem(at:)与collectionView(_:didSelectItemAt:)函数功能类似。
 
 当实现了section controller，在adapter的listAdapter(_:sectionControllerFor:)函数中返回所要用的section controller就可以了。
 
+## 更新
+
+### Section Controller
+当用户点击或数据更新时，需要更新某个section controller，可以使用下面的语句：
+
+```
+collectionContext?.reload(self)
+```
+
+### 整个数据源的更新
+当整个数据源发生变化时，需要调用IGListAdapter的performUpdates函数来更新：
+```
+adapter.performUpdates(animated: true)
+```
+
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -186,6 +201,22 @@ adapter.dataSource = self
 <p>didSelectItem(at:)与collectionView(_:didSelectItemAt:)函数功能类似。</p>
 
 <p>当实现了section controller，在adapter的listAdapter(_:sectionControllerFor:)函数中返回所要用的section controller就可以了。</p>
+
+<h2 id="">更新</h2>
+
+<h3 id="sectioncontroller">Section Controller</h3>
+
+<p>当用户点击或数据更新时，需要更新某个section controller，可以使用下面的语句：</p>
+
+<pre><code>collectionContext?.reload(self)
+</code></pre>
+
+<h3 id="">整个数据源的更新</h3>
+
+<p>当整个数据源发生变化时，需要调用IGListAdapter的performUpdates函数来更新：</p>
+
+<pre><code>adapter.performUpdates(animated: true)
+</code></pre>
 <!-- content end -->
 </div>
 <br>
