@@ -39,6 +39,23 @@
 # 理解Spine的结构
 Spine的结构是 Skeleton(骨架)-->Bone（骨头）-->Slot（插槽）-->Attachment(附件)。 一个插槽可以有多个附件，但一次只能看到一个，即一个Slot当前状态只能有一个Attachment存在。一个插槽的多个附件不能同时可见的原因是如果同时可见的话，附件的绘制顺序就无法明确。
 
+<center>
+![](http://masstone-phoenix.github.io/image/spine/SkeletonAnimation.png)
+</center>
+
+自己画完图后发现[这个图](http://www.cocos2d-x.org/reference/native-cpp/V3.5/dd/d7d/classspine_1_1_skeleton_animation.html)已经有了。。。。
+
+## Node
+它是cocos2d的基类，scene上的对象基本都是继承它，比如：Scene, Layer, Sprite, Menu, Label。
+
+它提供以下功能：
+
+- 管理整个场景树，提供`addChild`, `getChildByTag`, `removeChild`等功能。
+- 调用周期性执行的函数 (`schedule`, `unschedule`, etc)
+- 执行动作(`runAction`, `stopAction`, etc)
+
+## SkeletonRenderer
+提供了Skeleton的绘制功能。同时提供了`setSkin`，`setAttachment`等设置接口，以及`findBone`，`findSlot`等get接口
 
 # 更改Spine源代码
 <!-- markdown end -->
@@ -56,6 +73,28 @@ Spine的结构是 Skeleton(骨架)-->Bone（骨头）-->Slot（插槽）-->Attac
 <h1 id="spine">理解Spine的结构</h1>
 
 <p>Spine的结构是 Skeleton(骨架)--&gt;Bone（骨头）--&gt;Slot（插槽）--&gt;Attachment(附件)。 一个插槽可以有多个附件，但一次只能看到一个，即一个Slot当前状态只能有一个Attachment存在。一个插槽的多个附件不能同时可见的原因是如果同时可见的话，附件的绘制顺序就无法明确。</p>
+
+<p></p><center>
+<img src="http://masstone-phoenix.github.io/image/spine/SkeletonAnimation.png" alt="" title="">
+</center><p></p>
+
+<p>自己画完图后发现<a href="http://www.cocos2d-x.org/reference/native-cpp/V3.5/dd/d7d/classspine_1_1_skeleton_animation.html">这个图</a>已经有了。。。。</p>
+
+<h2 id="node">Node</h2>
+
+<p>它是cocos2d的基类，scene上的对象基本都是继承它，比如：Scene, Layer, Sprite, Menu, Label。</p>
+
+<p>它提供以下功能：</p>
+
+<ul>
+<li>管理整个场景树，提供<code>addChild</code>, <code>getChildByTag</code>, <code>removeChild</code>等功能。</li>
+<li>调用周期性执行的函数 (<code>schedule</code>, <code>unschedule</code>, etc)</li>
+<li>执行动作(<code>runAction</code>, <code>stopAction</code>, etc)</li>
+</ul>
+
+<h2 id="skeletonrenderer">SkeletonRenderer</h2>
+
+<p>提供了Skeleton的绘制功能。同时提供了<code>setSkin</code>，<code>setAttachment</code>等设置接口，以及<code>findBone</code>，<code>findSlot</code>等get接口</p>
 
 <h1 id="spine">更改Spine源代码</h1>
 <!-- content end -->
