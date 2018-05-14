@@ -134,6 +134,7 @@ JSValue是我们需要处理的主要数据类型：它可以表示任何可能�
 
 
 ```
+//1
 import JavaScriptCore
  
 @objc protocol MovieJSExports: JSExport {
@@ -144,7 +145,56 @@ import JavaScriptCore
   static func movieWithTitle(title: String, price: String, imageUrl: String) -> Movie
 }
 
+//2
+class Movie: NSObject, MovieJSExports {
+  
+  dynamic var title: String
+  dynamic var price: String
+  dynamic var imageUrl: String
+  
+  init(title: String, price: String, imageUrl: String) {
+    self.title = title
+    self.price = price
+    self.imageUrl = imageUrl
+  }
+  
+  class func movieWith(title: String, price: String, imageUrl: String) -> Movie {
+    return Movie(title: title, price: price, imageUrl: imageUrl)
+  }
+}
 
+//3    注意函数签名的变化，这是由于在JS中没有参数标签的原因
+var mapToNative = function(movies) {
+  return movies.map(function (movie) {
+    return Movie.movieWithTitlePriceImageUrl(movie.title, movie.price, movie.imageUrl);
+  });
+};
+
+//4 下面要注意setObject这句，这句使得swift中的Movie类在JS中可用
+lazy var context: JSContext? = {
+
+  let context = JSContext()
+  
+  guard let
+    commonJSPath = Bundle.main.path(forResource: "common", ofType: "js"),
+    let additionsJSPath = Bundle.main.path(forResource: "additions", ofType: "js") else {
+      print("Unable to read resource files.")
+      return nil
+  }
+  
+  do {
+    let common = try String(contentsOfFile: commonJSPath, encoding: String.Encoding.utf8)
+    let additions = try String(contentsOfFile: additionsJSPath, encoding: String.Encoding.utf8)
+    
+    context?.setObject(Movie.self, forKeyedSubscript: "Movie" as (NSCopying & NSObjectProtocol)!)
+    _ = context?.evaluateScript(common)
+    _ = context?.evaluateScript(additions)
+  } catch (let error) {
+    print("Error while processing script file: \(error)")
+  }
+  
+  return context
+}()
 
 
 ```
@@ -266,7 +316,8 @@ import JavaScriptCore
 <li>与上面调用JS函数一样，调用上述函数</li>
 </ol>
 
-<pre><code>import JavaScriptCore
+<pre><code>//1
+import JavaScriptCore
 
 @objc protocol MovieJSExports: JSExport {
   var title: String { get set }
@@ -275,6 +326,57 @@ import JavaScriptCore
 
   static func movieWithTitle(title: String, price: String, imageUrl: String) -&gt; Movie
 }
+
+//2
+class Movie: NSObject, MovieJSExports {
+
+  dynamic var title: String
+  dynamic var price: String
+  dynamic var imageUrl: String
+
+  init(title: String, price: String, imageUrl: String) {
+    self.title = title
+    self.price = price
+    self.imageUrl = imageUrl
+  }
+
+  class func movieWith(title: String, price: String, imageUrl: String) -&gt; Movie {
+    return Movie(title: title, price: price, imageUrl: imageUrl)
+  }
+}
+
+//3    注意函数签名的变化，这是由于在JS中没有参数标签的原因
+var mapToNative = function(movies) {
+  return movies.map(function (movie) {
+    return Movie.movieWithTitlePriceImageUrl(movie.title, movie.price, movie.imageUrl);
+  });
+};
+
+//4 下面要注意setObject这句，这句使得swift中的Movie类在JS中可用
+lazy var context: JSContext? = {
+
+  let context = JSContext()
+
+  guard let
+    commonJSPath = Bundle.main.path(forResource: "common", ofType: "js"),
+    let additionsJSPath = Bundle.main.path(forResource: "additions", ofType: "js") else {
+      print("Unable to read resource files.")
+      return nil
+  }
+
+  do {
+    let common = try String(contentsOfFile: commonJSPath, encoding: String.Encoding.utf8)
+    let additions = try String(contentsOfFile: additionsJSPath, encoding: String.Encoding.utf8)
+
+    context?.setObject(Movie.self, forKeyedSubscript: "Movie" as (NSCopying &amp; NSObjectProtocol)!)
+    _ = context?.evaluateScript(common)
+    _ = context?.evaluateScript(additions)
+  } catch (let error) {
+    print("Error while processing script file: \(error)")
+  }
+
+  return context
+}()
 </code></pre>
 
 <p>原文：<a href="https://www.raywenderlich.com/124075/javascriptcore-tutorial">https://www.raywenderlich.com/124075/javascriptcore-tutorial</a>
