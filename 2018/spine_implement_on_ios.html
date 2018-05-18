@@ -80,6 +80,7 @@ bool SkeletonAnimation::replacementParts(const std::string& skinName, const std:
         spSlot_setAttachment(slot, attachment);
         // 在当前皮肤中添加贴图
         spAttachment *newAttactment = this->copyAttachment(attachment);
+        spSkin_removeAttachment(_skeleton->skin, slot->data->index, attachmentName.c_str());
         spSkin_addAttachment(_skeleton->skin, slot->data->index, attachmentName.c_str(), newAttactment);
     }
     return true;
@@ -223,6 +224,32 @@ spAttachment *SkeletonAnimation::copyAttachment(spAttachment *att) {
         return 0;
 }
 ```
+
+
+在skin.c文件中加入下面函数
+```
+void spSkin_removeAttachment (spSkin* self, int slotIndex, const char* name) {
+    _Entry* entry = SUB_CAST(_spSkin, self)->entries;
+    _Entry* pre = NULL;
+    while (entry) {
+        if ( (entry->slotIndex == slotIndex) &&
+            (strcmp(entry->name, name) == 0) ) {
+            if (pre) {
+                //不是头结点
+                pre->next = entry->next;
+            }
+            if (entry == SUB_CAST(_spSkin, self)->entries) {
+                SUB_CAST(_spSkin, self)->entries = entry->next;
+            }
+            
+            _Entry_dispose(entry);
+        }
+        
+        pre = entry;
+        entry = entry->next;
+    }
+}
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -284,6 +311,7 @@ bool SkeletonAnimation::replacementParts(const std::string&amp; skinName, const 
         spSlot_setAttachment(slot, attachment);
         // 在当前皮肤中添加贴图
         spAttachment *newAttactment = this-&gt;copyAttachment(attachment);
+        spSkin_removeAttachment(_skeleton-&gt;skin, slot-&gt;data-&gt;index, attachmentName.c_str());
         spSkin_addAttachment(_skeleton-&gt;skin, slot-&gt;data-&gt;index, attachmentName.c_str(), newAttactment);
     }
     return true;
@@ -425,6 +453,31 @@ spAttachment *SkeletonAnimation::copyAttachment(spAttachment *att) {
             }
         }
         return 0;
+}
+</code></pre>
+
+<p>在skin.c文件中加入下面函数</p>
+
+<pre><code>void spSkin_removeAttachment (spSkin* self, int slotIndex, const char* name) {
+    _Entry* entry = SUB_CAST(_spSkin, self)-&gt;entries;
+    _Entry* pre = NULL;
+    while (entry) {
+        if ( (entry-&gt;slotIndex == slotIndex) &amp;&amp;
+            (strcmp(entry-&gt;name, name) == 0) ) {
+            if (pre) {
+                //不是头结点
+                pre-&gt;next = entry-&gt;next;
+            }
+            if (entry == SUB_CAST(_spSkin, self)-&gt;entries) {
+                SUB_CAST(_spSkin, self)-&gt;entries = entry-&gt;next;
+            }
+
+            _Entry_dispose(entry);
+        }
+
+        pre = entry;
+        entry = entry-&gt;next;
+    }
 }
 </code></pre>
 <!-- content end -->
