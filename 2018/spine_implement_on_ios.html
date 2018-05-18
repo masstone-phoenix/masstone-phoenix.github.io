@@ -61,6 +61,9 @@ Spine的结构是 Skeleton(骨架)-->Bone（骨头）-->Slot（插槽）-->Attac
 绘制Skeleton和使Skeleton完成动画的一个类，提供了AnimationState，在加入多个动画时使用。
 
 # 更改Spine源代码
+我们部分换装的思路是动态的更换skin内slot中的attachment，如果spine使用了改变attachment的方法来做动画的话，需要将skin中的对应slot中的所有attachment都换掉，这就需要定一个和设计方面的规则，用来换装。
+
+基础功能实现如下，在SkeletonAnimation.c中加入如下函数：
 
 ```
 //根据slot和attachment的名字来换装
@@ -294,6 +297,10 @@ void spSkin_removeAttachment (spSkin* self, int slotIndex, const char* name) {
 <p>绘制Skeleton和使Skeleton完成动画的一个类，提供了AnimationState，在加入多个动画时使用。</p>
 
 <h1 id="spine">更改Spine源代码</h1>
+
+<p>我们部分换装的思路是动态的更换skin内slot中的attachment，如果spine使用了改变attachment的方法来做动画的话，需要将skin中的对应slot中的所有attachment都换掉，这就需要定一个和设计方面的规则，用来换装。</p>
+
+<p>基础功能实现如下，在SkeletonAnimation.c中加入如下函数：</p>
 
 <pre><code>//根据slot和attachment的名字来换装
 bool SkeletonAnimation::replacementParts(const std::string&amp; skinName, const std::string&amp; slotName, const std::string&amp; attachmentName) {
