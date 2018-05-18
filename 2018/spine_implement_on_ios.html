@@ -30,10 +30,62 @@
 由于需要在iOS和Android两个平台上使用，所以需要一个支持C或C++的运行库，在官方上找到只有两个：[SFML](http://esotericsoftware.com/git/spine-runtimes/tree/spine-sfml)和[cocos2d-x](http://esotericsoftware.com/git/spine-runtimes/tree/spine-cocos2dx)，本着支持国产（。。）先使用cocos2d-x先试验一下。
 
 #了解cocos2d-x 
+一个简单的游戏界面(这里是官方教程的摘要)：
+![](http://www.cocos2d-x.org/docs/cocos2d-x/en/basic_concepts/basic_concepts-img/2n_annotated_scaled.png)
+
+## 导演(Director)
+Cocos2d-x 使用导演的概念，这个导演和电影制作过程中的导演一样！导演控制电影制作流程，指导团队完成各项任务。在使用 Cocos2d-x 开发游戏的过程中，你可以认为自己是执行制片人，告诉 导演(Director) 该怎么办！一个常见的 Director 任务是控制场景替换和转换。 Director是一个共享的单例对象，可以在代码中的任何地方调用。
+
+##场景(Scene)
+上面的画面就可以看做一个场景，一个游戏由很多场景组成，一个场景可以代表一个关卡、一声战斗等等。
+
+###场景图(Scene Graph)
+场景图(Scene Graph)是一种安排场景内对象的数据结构，它把场景内所有的 节点(Node) 都包含在一个 树(tree) 上。(场景图虽然叫做"图"，但实际使用一个树结构来表示)。
+
+![](http://www.cocos2d-x.org/docs/cocos2d-x/en/basic_concepts/basic_concepts-img/2n_mainScene-sceneGraph.png)
+
+这个树决定了场景的绘制顺序——树的中序遍历顺序就是场景中事物的绘制顺序。
+
+我们使用```Scene```的```addChild()```方法构建场景图：
+
+```
+// Adds a child with the z-order of -2, that means
+// it goes to the "left" side of the tree (because it is negative)
+scene->addChild(title_node, -2);
+
+// When you don't specify the z-order, it will use 0
+scene->addChild(label_node);
+
+// Adds a child with the z-order of 1, that means
+// it goes to the "right" side of the tree (because it is positive)
+scene->addChild(sprite_node, 1);
+```
+
+渲染时 z-order 值大的节点对象会后绘制，值小的节点对象先绘制。如果两个节点对象的绘制范围有重叠，z-order 值大的可能会覆盖 z-order 值小的。
+
+##精灵(Sprite)
+所有的游戏都有 精灵(Sprite) 对象，精灵是您在屏幕上移动的对象，它能被控制。你喜欢玩的游戏中主角可能就是一个精灵，我知道你在想是不是每个图形对象都是一个精灵，不是的，为什么? 如果你能控制它，它才是一个精灵，如果无法控制，那就只是一个节点(Node)。
+
+### 动作(Action)
+创建一个场景，在场景里面增加精灵只是完成一个游戏的第一步，接下来我们要解决的问题就是，怎么让精灵动起来。动作(Action) 就是用来解决这个问题的，它可以让精灵在场景中移动，如从一个点移动到另外一个点。你还可以创建一个动作 序列(Sequence) ，让精灵按照这个序列做连续的动作，在动作过程中你可以改变精灵的位置，旋转角度，缩放比例等等。
+
+总结起来，一个游戏主要由上述模块构成，它们的对应关系以及类图如下：
+![](http://masstone-phoenix.github.io/image/spine/cocos2dx_class1.jpg)
+![](http://masstone-phoenix.github.io/image/spine/cocos2dx_class2.jpg)
 
 
 ## 运行官方Demo
+1. Install [Xcode](https://developer.apple.com/xcode/)
+2. Install [Homebrew](http://brew.sh/)
+3. Open a terminal and install CMake via `brew install cmake`
+3. Download the Spine Runtimes repository using git (`git clone https://github.com/esotericsoftware/spine-runtimes`) or download it as a zip via the download button above.
+4. Open a terminal, and `cd` into the `spine-runtimes/spine-cocos2dx` folder
+5. Type `mkdir build && cd build && cmake ../..`. This will download the cocos2d-x dependency and wire it up with the example source code in `spine-runtimes/spine-cocos2dx/example`. The download is 400mb, so get yourself a cup of tea.
+6. Open the Xcode project in `spine-runtimes/spine-cocos2dx/example/proj.ios_mac`
+7. Expand the `cocos2d_libs.xcodeproj` sub project, delete the group `editor-support/spine`. This will remove the outdated Spine cocos2d-x runtime shipped by cocos2d-x.
+8. Click the `Run` button or type `CMD+R` to run the example
 
+以上是官方指导，开始里没按这个来，结果没有cocos2dx的环境，这个指导的位置在文档的中部，不是很容易引起注意。
 
 
 # 理解Spine的结构
@@ -264,7 +316,68 @@ void spSkin_removeAttachment (spSkin* self, int slotIndex, const char* name) {
 
 <h1 id="cocos2dx">了解cocos2d-x</h1>
 
+<p>一个简单的游戏界面(这里是官方教程的摘要)：
+<img src="http://www.cocos2d-x.org/docs/cocos2d-x/en/basic_concepts/basic_concepts-img/2n_annotated_scaled.png" alt="" title=""></p>
+
+<h2 id="director">导演(Director)</h2>
+
+<p>Cocos2d-x 使用导演的概念，这个导演和电影制作过程中的导演一样！导演控制电影制作流程，指导团队完成各项任务。在使用 Cocos2d-x 开发游戏的过程中，你可以认为自己是执行制片人，告诉 导演(Director) 该怎么办！一个常见的 Director 任务是控制场景替换和转换。 Director是一个共享的单例对象，可以在代码中的任何地方调用。</p>
+
+<h2 id="scene">场景(Scene)</h2>
+
+<p>上面的画面就可以看做一个场景，一个游戏由很多场景组成，一个场景可以代表一个关卡、一声战斗等等。</p>
+
+<h3 id="scenegraph">场景图(Scene Graph)</h3>
+
+<p>场景图(Scene Graph)是一种安排场景内对象的数据结构，它把场景内所有的 节点(Node) 都包含在一个 树(tree) 上。(场景图虽然叫做"图"，但实际使用一个树结构来表示)。</p>
+
+<p><img src="http://www.cocos2d-x.org/docs/cocos2d-x/en/basic_concepts/basic_concepts-img/2n_mainScene-sceneGraph.png" alt="" title=""></p>
+
+<p>这个树决定了场景的绘制顺序——树的中序遍历顺序就是场景中事物的绘制顺序。</p>
+
+<p>我们使用<code>Scene</code>的<code>addChild()</code>方法构建场景图：</p>
+
+<pre><code>// Adds a child with the z-order of -2, that means
+// it goes to the "left" side of the tree (because it is negative)
+scene-&gt;addChild(title_node, -2);
+
+// When you don't specify the z-order, it will use 0
+scene-&gt;addChild(label_node);
+
+// Adds a child with the z-order of 1, that means
+// it goes to the "right" side of the tree (because it is positive)
+scene-&gt;addChild(sprite_node, 1);
+</code></pre>
+
+<p>渲染时 z-order 值大的节点对象会后绘制，值小的节点对象先绘制。如果两个节点对象的绘制范围有重叠，z-order 值大的可能会覆盖 z-order 值小的。</p>
+
+<h2 id="sprite">精灵(Sprite)</h2>
+
+<p>所有的游戏都有 精灵(Sprite) 对象，精灵是您在屏幕上移动的对象，它能被控制。你喜欢玩的游戏中主角可能就是一个精灵，我知道你在想是不是每个图形对象都是一个精灵，不是的，为什么? 如果你能控制它，它才是一个精灵，如果无法控制，那就只是一个节点(Node)。</p>
+
+<h3 id="action">动作(Action)</h3>
+
+<p>创建一个场景，在场景里面增加精灵只是完成一个游戏的第一步，接下来我们要解决的问题就是，怎么让精灵动起来。动作(Action) 就是用来解决这个问题的，它可以让精灵在场景中移动，如从一个点移动到另外一个点。你还可以创建一个动作 序列(Sequence) ，让精灵按照这个序列做连续的动作，在动作过程中你可以改变精灵的位置，旋转角度，缩放比例等等。</p>
+
+<p>总结起来，一个游戏主要由上述模块构成，它们的对应关系以及类图如下：
+<img src="http://masstone-phoenix.github.io/image/spine/cocos2dx_class1.jpg" alt="" title="">
+<img src="http://masstone-phoenix.github.io/image/spine/cocos2dx_class2.jpg" alt="" title=""></p>
+
 <h2 id="demo">运行官方Demo</h2>
+
+<ol>
+<li>Install <a href="https://developer.apple.com/xcode/">Xcode</a></li>
+<li>Install <a href="http://brew.sh/">Homebrew</a></li>
+<li>Open a terminal and install CMake via <code>brew install cmake</code></li>
+<li>Download the Spine Runtimes repository using git (<code>git clone https://github.com/esotericsoftware/spine-runtimes</code>) or download it as a zip via the download button above.</li>
+<li>Open a terminal, and <code>cd</code> into the <code>spine-runtimes/spine-cocos2dx</code> folder</li>
+<li>Type <code>mkdir build &amp;&amp; cd build &amp;&amp; cmake ../..</code>. This will download the cocos2d-x dependency and wire it up with the example source code in <code>spine-runtimes/spine-cocos2dx/example</code>. The download is 400mb, so get yourself a cup of tea.</li>
+<li>Open the Xcode project in <code>spine-runtimes/spine-cocos2dx/example/proj.ios_mac</code></li>
+<li>Expand the <code>cocos2d_libs.xcodeproj</code> sub project, delete the group <code>editor-support/spine</code>. This will remove the outdated Spine cocos2d-x runtime shipped by cocos2d-x.</li>
+<li>Click the <code>Run</code> button or type <code>CMD+R</code> to run the example</li>
+</ol>
+
+<p>以上是官方指导，开始里没按这个来，结果没有cocos2dx的环境，这个指导的位置在文档的中部，不是很容易引起注意。</p>
 
 <h1 id="spine">理解Spine的结构</h1>
 
