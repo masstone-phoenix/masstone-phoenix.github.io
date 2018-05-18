@@ -243,6 +243,7 @@ void spSkin_removeAttachment (spSkin* self, int slotIndex, const char* name) {
             }
             
             _Entry_dispose(entry);
+            break;
         }
         
         pre = entry;
@@ -473,6 +474,7 @@ spAttachment *SkeletonAnimation::copyAttachment(spAttachment *att) {
             }
 
             _Entry_dispose(entry);
+            break;
         }
 
         pre = entry;
