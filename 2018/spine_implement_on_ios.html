@@ -61,6 +61,168 @@ Spine的结构是 Skeleton(骨架)-->Bone（骨头）-->Slot（插槽）-->Attac
 绘制Skeleton和使Skeleton完成动画的一个类，提供了AnimationState，在加入多个动画时使用。
 
 # 更改Spine源代码
+
+```
+//根据slot和attachment的名字来换装
+bool SkeletonAnimation::replacementParts(const std::string& skinName, const std::string& slotName, const std::string& attachmentName) {
+    if (skinName.empty())
+    {
+        return false;
+    }
+    
+    spSkin *skin = spSkeletonData_findSkin(_skeleton->data, skinName.c_str());
+    if (!skin) return false;
+    spSlot *slot = spSkeleton_findSlot(_skeleton, slotName.c_str());
+    if (!slot) return false;
+    spAttachment *attachment = spSkin_getAttachment(skin, slot->data->index, attachmentName.c_str());
+    if (attachment)
+    {
+        spSlot_setAttachment(slot, attachment);
+        // 在当前皮肤中添加贴图
+        spAttachment *newAttactment = this->copyAttachment(attachment);
+        spSkin_addAttachment(_skeleton->skin, slot->data->index, attachmentName.c_str(), newAttactment);
+    }
+    return true;
+}
+
+/*只适用于attachment的loader为Cocos2dAttachmentLoader*/
+/*目前只实现了SP_ATTACHMENT_REGION和SP_ATTACHMENT_MESH这两种，由于时间原因，其它的类型暂未用到，就没有实现，有时间时再实现*/
+spAttachment *SkeletonAnimation::copyAttachment(spAttachment *att) {
+        spAttachmentType type = att->type;
+        const char* name = att->name;
+    spAttachmentLoader *attachmentLoader = SUB_CAST(spAttachmentLoader, Cocos2dAttachmentLoader_create(this->_atlas));
+    
+        switch (type) {
+            case SP_ATTACHMENT_REGION: {
+                spRegionAttachment *oldRegion = SUB_CAST(spRegionAttachment, att);
+                const char* path = oldRegion->path;
+                spAttachment* attachment;
+                attachment = spAttachmentLoader_createAttachment(attachmentLoader, _skeleton->skin, type, name, path);
+                spRegionAttachment *region = SUB_CAST(spRegionAttachment, attachment);
+//                const void *const vtable = att->vtable;
+                memcpy(&region->x, &oldRegion->x, sizeof(float)*7);
+                memcpy(&region->color, &oldRegion->color, sizeof(spColor));
+                memcpy(&region->regionOffsetX, &oldRegion->regionOffsetX, sizeof(float)*16 + sizeof(int)*6);
+                attachment->attachmentLoader = attachmentLoader;
+//                FREE(region->path);
+//                MALLOC_STR(region->path, path);
+                spRegionAttachment_updateOffset(region);
+                spAttachmentLoader_configureAttachment(attachmentLoader, attachment);
+                return attachment;
+            }
+            case SP_ATTACHMENT_BOUNDING_BOX: {
+                spAttachment* attachment = spAttachmentLoader_createAttachment(attachmentLoader, _skeleton->skin, type, name, 0);
+                spVertexAttachment *vertexAtt = SUB_CAST(spVertexAttachment, attachment);
+                spVertexAttachment *oldVertexAtt = SUB_CAST(spVertexAttachment, att);
+                memcpy(vertexAtt, oldVertexAtt, sizeof(spVertexAttachment));
+                vertexAtt->bones =  (int *)MALLOC(int, oldVertexAtt->bonesCount);
+                memcpy(vertexAtt->bones, oldVertexAtt->bones, sizeof(int) * oldVertexAtt->bonesCount);
+                vertexAtt->vertices =  (float *)MALLOC(float, oldVertexAtt->verticesCount);
+                memcpy(vertexAtt->vertices, oldVertexAtt->vertices, sizeof(float) * oldVertexAtt->verticesCount);
+                spAttachmentLoader_configureAttachment(attachmentLoader, attachment);
+                return attachment;
+            }
+            case SP_ATTACHMENT_MESH: {
+                spMeshAttachment *oldMesh = SUB_CAST(spMeshAttachment, att);
+                const char* path = oldMesh->path;
+                int vertexCount;
+                spAttachment* attachment;
+                spMeshAttachment* mesh;
+                attachment = spAttachmentLoader_createAttachment(attachmentLoader, _skeleton->skin, type, name, path);
+                mesh = SUB_CAST(spMeshAttachment, attachment);
+                MALLOC_STR(mesh->path, path);
+                memcpy(&mesh->color, &oldMesh->color, sizeof(spColor));
+                vertexCount = SUPER(oldMesh)->worldVerticesLength;
+                mesh->regionUVs =  (float *)MALLOC(float, vertexCount);
+                memcpy(mesh->regionUVs, oldMesh->regionUVs, sizeof(float) * (vertexCount << 1));
+                mesh->triangles =  (unsigned short *)MALLOC(unsigned short, oldMesh->trianglesCount);
+                memcpy(mesh->triangles, oldMesh->triangles, sizeof(unsigned short) * (oldMesh->trianglesCount));
+                spVertexAttachment* vertexAtt = SUPER(mesh);
+                spVertexAttachment* oldVertexAtt = SUPER(oldMesh);
+                vertexAtt->verticesCount = oldVertexAtt->verticesCount;
+                vertexAtt->bonesCount = oldVertexAtt->bonesCount;
+                vertexAtt->bones = (int *)MALLOC(int, oldVertexAtt->bonesCount);
+                memcpy(vertexAtt->bones, oldVertexAtt->bones, sizeof(int) * oldVertexAtt->bonesCount);
+                vertexAtt->vertices =  (float *)MALLOC(float, oldVertexAtt->verticesCount);
+                memcpy(vertexAtt->vertices, oldVertexAtt->vertices, sizeof(float) * oldVertexAtt->verticesCount);
+                spMeshAttachment_updateUVs(mesh);
+                mesh->hullLength = oldMesh->hullLength;
+                
+                mesh->edgesCount = oldMesh->edgesCount;
+                mesh->edges = (int *)MALLOC(int, oldMesh->edgesCount);
+                memcpy(mesh->edges, oldMesh->edges, sizeof(int) * oldMesh->edgesCount);
+                mesh->width = oldMesh->width;
+                mesh->height = oldMesh->width;
+                spAttachmentLoader_configureAttachment(attachmentLoader, attachment);
+                return attachment;
+            }
+            case SP_ATTACHMENT_LINKED_MESH: {
+//                const char* skinName;
+//                const char* parent;
+//                spAttachment* attachment;
+//                spMeshAttachment* mesh;
+//                const char* path = readString(input);
+//                if (!path) MALLOC_STR(path, name);
+//                attachment = spAttachmentLoader_createAttachment(self->attachmentLoader, skin, type, name, path);
+//                mesh = SUB_CAST(spMeshAttachment, attachment);
+//                mesh->path = path;
+//                readColor(input, &mesh->color.r, &mesh->color.g, &mesh->color.b, &mesh->color.a);
+//                skinName = readString(input);
+//                parent = readString(input);
+//                mesh->inheritDeform = readBoolean(input);
+//                if (nonessential) {
+//                    mesh->width = readFloat(input) * self->scale;
+//                    mesh->height = readFloat(input) * self->scale;
+//                }
+//                _spSkeletonBinary_addLinkedMesh(self, mesh, skinName, slotIndex, parent);
+//                if (freeName) FREE(name);
+//                return attachment;
+            }
+            case SP_ATTACHMENT_PATH: {
+//                spAttachment* attachment = spAttachmentLoader_createAttachment(self->attachmentLoader, skin, type, name, 0);
+//                spPathAttachment* path = SUB_CAST(spPathAttachment, attachment);
+//                int vertexCount = 0;
+//                path->closed = readBoolean(input);
+//                path->constantSpeed = readBoolean(input);
+//                vertexCount = readVarint(input, 1);
+//                _readVertices(self, input, SUPER(path), vertexCount);
+//                path->lengthsLength = vertexCount / 3;
+//                path->lengths = MALLOC(float, path->lengthsLength);
+//                for (i = 0; i < path->lengthsLength; ++i) {
+//                    path->lengths[i] = readFloat(input) * self->scale;
+//                }
+//                if (nonessential) readInt(input); /* Skip color. */
+//                if (freeName) FREE(name);
+//                return attachment;
+            }
+            case SP_ATTACHMENT_POINT: {
+//                spAttachment* attachment = spAttachmentLoader_createAttachment(self->attachmentLoader, skin, type, name, 0);
+//                spPointAttachment* point = SUB_CAST(spPointAttachment, attachment);
+//                point->rotation = readFloat(input);
+//                point->x = readFloat(input) * self->scale;
+//                point->y = readFloat(input) * self->scale;
+//
+//                if (nonessential) {
+//                    readColor(input, &point->color.r, &point->color.g, &point->color.b, &point->color.a);
+//                }
+//                return attachment;
+            }
+            case SP_ATTACHMENT_CLIPPING: {
+//                int endSlotIndex = readVarint(input, 1);
+//                int vertexCount = readVarint(input, 1);
+//                spAttachment* attachment = spAttachmentLoader_createAttachment(self->attachmentLoader, skin, type, name, 0);
+//                spClippingAttachment* clip = SUB_CAST(spClippingAttachment, attachment);
+//                _readVertices(self, input, SUB_CAST(spVertexAttachment, attachment), vertexCount);
+//                if (nonessential) readInt(input); /* Skip color. */
+//                clip->endSlot = skeletonData->slots[endSlotIndex];
+//                spAttachmentLoader_configureAttachment(self->attachmentLoader, attachment);
+//                if (freeName) FREE(name);
+//                return attachment;
+            }
+        }
+        return 0;
+}
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -104,6 +266,167 @@ Spine的结构是 Skeleton(骨架)-->Bone（骨头）-->Slot（插槽）-->Attac
 <p>绘制Skeleton和使Skeleton完成动画的一个类，提供了AnimationState，在加入多个动画时使用。</p>
 
 <h1 id="spine">更改Spine源代码</h1>
+
+<pre><code>//根据slot和attachment的名字来换装
+bool SkeletonAnimation::replacementParts(const std::string&amp; skinName, const std::string&amp; slotName, const std::string&amp; attachmentName) {
+    if (skinName.empty())
+    {
+        return false;
+    }
+
+    spSkin *skin = spSkeletonData_findSkin(_skeleton-&gt;data, skinName.c_str());
+    if (!skin) return false;
+    spSlot *slot = spSkeleton_findSlot(_skeleton, slotName.c_str());
+    if (!slot) return false;
+    spAttachment *attachment = spSkin_getAttachment(skin, slot-&gt;data-&gt;index, attachmentName.c_str());
+    if (attachment)
+    {
+        spSlot_setAttachment(slot, attachment);
+        // 在当前皮肤中添加贴图
+        spAttachment *newAttactment = this-&gt;copyAttachment(attachment);
+        spSkin_addAttachment(_skeleton-&gt;skin, slot-&gt;data-&gt;index, attachmentName.c_str(), newAttactment);
+    }
+    return true;
+}
+
+/*只适用于attachment的loader为Cocos2dAttachmentLoader*/
+/*目前只实现了SP_ATTACHMENT_REGION和SP_ATTACHMENT_MESH这两种，由于时间原因，其它的类型暂未用到，就没有实现，有时间时再实现*/
+spAttachment *SkeletonAnimation::copyAttachment(spAttachment *att) {
+        spAttachmentType type = att-&gt;type;
+        const char* name = att-&gt;name;
+    spAttachmentLoader *attachmentLoader = SUB_CAST(spAttachmentLoader, Cocos2dAttachmentLoader_create(this-&gt;_atlas));
+
+        switch (type) {
+            case SP_ATTACHMENT_REGION: {
+                spRegionAttachment *oldRegion = SUB_CAST(spRegionAttachment, att);
+                const char* path = oldRegion-&gt;path;
+                spAttachment* attachment;
+                attachment = spAttachmentLoader_createAttachment(attachmentLoader, _skeleton-&gt;skin, type, name, path);
+                spRegionAttachment *region = SUB_CAST(spRegionAttachment, attachment);
+//                const void *const vtable = att-&gt;vtable;
+                memcpy(&amp;region-&gt;x, &amp;oldRegion-&gt;x, sizeof(float)*7);
+                memcpy(&amp;region-&gt;color, &amp;oldRegion-&gt;color, sizeof(spColor));
+                memcpy(&amp;region-&gt;regionOffsetX, &amp;oldRegion-&gt;regionOffsetX, sizeof(float)*16 + sizeof(int)*6);
+                attachment-&gt;attachmentLoader = attachmentLoader;
+//                FREE(region-&gt;path);
+//                MALLOC_STR(region-&gt;path, path);
+                spRegionAttachment_updateOffset(region);
+                spAttachmentLoader_configureAttachment(attachmentLoader, attachment);
+                return attachment;
+            }
+            case SP_ATTACHMENT_BOUNDING_BOX: {
+                spAttachment* attachment = spAttachmentLoader_createAttachment(attachmentLoader, _skeleton-&gt;skin, type, name, 0);
+                spVertexAttachment *vertexAtt = SUB_CAST(spVertexAttachment, attachment);
+                spVertexAttachment *oldVertexAtt = SUB_CAST(spVertexAttachment, att);
+                memcpy(vertexAtt, oldVertexAtt, sizeof(spVertexAttachment));
+                vertexAtt-&gt;bones =  (int *)MALLOC(int, oldVertexAtt-&gt;bonesCount);
+                memcpy(vertexAtt-&gt;bones, oldVertexAtt-&gt;bones, sizeof(int) * oldVertexAtt-&gt;bonesCount);
+                vertexAtt-&gt;vertices =  (float *)MALLOC(float, oldVertexAtt-&gt;verticesCount);
+                memcpy(vertexAtt-&gt;vertices, oldVertexAtt-&gt;vertices, sizeof(float) * oldVertexAtt-&gt;verticesCount);
+                spAttachmentLoader_configureAttachment(attachmentLoader, attachment);
+                return attachment;
+            }
+            case SP_ATTACHMENT_MESH: {
+                spMeshAttachment *oldMesh = SUB_CAST(spMeshAttachment, att);
+                const char* path = oldMesh-&gt;path;
+                int vertexCount;
+                spAttachment* attachment;
+                spMeshAttachment* mesh;
+                attachment = spAttachmentLoader_createAttachment(attachmentLoader, _skeleton-&gt;skin, type, name, path);
+                mesh = SUB_CAST(spMeshAttachment, attachment);
+                MALLOC_STR(mesh-&gt;path, path);
+                memcpy(&amp;mesh-&gt;color, &amp;oldMesh-&gt;color, sizeof(spColor));
+                vertexCount = SUPER(oldMesh)-&gt;worldVerticesLength;
+                mesh-&gt;regionUVs =  (float *)MALLOC(float, vertexCount);
+                memcpy(mesh-&gt;regionUVs, oldMesh-&gt;regionUVs, sizeof(float) * (vertexCount &lt;&lt; 1));
+                mesh-&gt;triangles =  (unsigned short *)MALLOC(unsigned short, oldMesh-&gt;trianglesCount);
+                memcpy(mesh-&gt;triangles, oldMesh-&gt;triangles, sizeof(unsigned short) * (oldMesh-&gt;trianglesCount));
+                spVertexAttachment* vertexAtt = SUPER(mesh);
+                spVertexAttachment* oldVertexAtt = SUPER(oldMesh);
+                vertexAtt-&gt;verticesCount = oldVertexAtt-&gt;verticesCount;
+                vertexAtt-&gt;bonesCount = oldVertexAtt-&gt;bonesCount;
+                vertexAtt-&gt;bones = (int *)MALLOC(int, oldVertexAtt-&gt;bonesCount);
+                memcpy(vertexAtt-&gt;bones, oldVertexAtt-&gt;bones, sizeof(int) * oldVertexAtt-&gt;bonesCount);
+                vertexAtt-&gt;vertices =  (float *)MALLOC(float, oldVertexAtt-&gt;verticesCount);
+                memcpy(vertexAtt-&gt;vertices, oldVertexAtt-&gt;vertices, sizeof(float) * oldVertexAtt-&gt;verticesCount);
+                spMeshAttachment_updateUVs(mesh);
+                mesh-&gt;hullLength = oldMesh-&gt;hullLength;
+
+                mesh-&gt;edgesCount = oldMesh-&gt;edgesCount;
+                mesh-&gt;edges = (int *)MALLOC(int, oldMesh-&gt;edgesCount);
+                memcpy(mesh-&gt;edges, oldMesh-&gt;edges, sizeof(int) * oldMesh-&gt;edgesCount);
+                mesh-&gt;width = oldMesh-&gt;width;
+                mesh-&gt;height = oldMesh-&gt;width;
+                spAttachmentLoader_configureAttachment(attachmentLoader, attachment);
+                return attachment;
+            }
+            case SP_ATTACHMENT_LINKED_MESH: {
+//                const char* skinName;
+//                const char* parent;
+//                spAttachment* attachment;
+//                spMeshAttachment* mesh;
+//                const char* path = readString(input);
+//                if (!path) MALLOC_STR(path, name);
+//                attachment = spAttachmentLoader_createAttachment(self-&gt;attachmentLoader, skin, type, name, path);
+//                mesh = SUB_CAST(spMeshAttachment, attachment);
+//                mesh-&gt;path = path;
+//                readColor(input, &amp;mesh-&gt;color.r, &amp;mesh-&gt;color.g, &amp;mesh-&gt;color.b, &amp;mesh-&gt;color.a);
+//                skinName = readString(input);
+//                parent = readString(input);
+//                mesh-&gt;inheritDeform = readBoolean(input);
+//                if (nonessential) {
+//                    mesh-&gt;width = readFloat(input) * self-&gt;scale;
+//                    mesh-&gt;height = readFloat(input) * self-&gt;scale;
+//                }
+//                _spSkeletonBinary_addLinkedMesh(self, mesh, skinName, slotIndex, parent);
+//                if (freeName) FREE(name);
+//                return attachment;
+            }
+            case SP_ATTACHMENT_PATH: {
+//                spAttachment* attachment = spAttachmentLoader_createAttachment(self-&gt;attachmentLoader, skin, type, name, 0);
+//                spPathAttachment* path = SUB_CAST(spPathAttachment, attachment);
+//                int vertexCount = 0;
+//                path-&gt;closed = readBoolean(input);
+//                path-&gt;constantSpeed = readBoolean(input);
+//                vertexCount = readVarint(input, 1);
+//                _readVertices(self, input, SUPER(path), vertexCount);
+//                path-&gt;lengthsLength = vertexCount / 3;
+//                path-&gt;lengths = MALLOC(float, path-&gt;lengthsLength);
+//                for (i = 0; i &lt; path-&gt;lengthsLength; ++i) {
+//                    path-&gt;lengths[i] = readFloat(input) * self-&gt;scale;
+//                }
+//                if (nonessential) readInt(input); /* Skip color. */
+//                if (freeName) FREE(name);
+//                return attachment;
+            }
+            case SP_ATTACHMENT_POINT: {
+//                spAttachment* attachment = spAttachmentLoader_createAttachment(self-&gt;attachmentLoader, skin, type, name, 0);
+//                spPointAttachment* point = SUB_CAST(spPointAttachment, attachment);
+//                point-&gt;rotation = readFloat(input);
+//                point-&gt;x = readFloat(input) * self-&gt;scale;
+//                point-&gt;y = readFloat(input) * self-&gt;scale;
+//
+//                if (nonessential) {
+//                    readColor(input, &amp;point-&gt;color.r, &amp;point-&gt;color.g, &amp;point-&gt;color.b, &amp;point-&gt;color.a);
+//                }
+//                return attachment;
+            }
+            case SP_ATTACHMENT_CLIPPING: {
+//                int endSlotIndex = readVarint(input, 1);
+//                int vertexCount = readVarint(input, 1);
+//                spAttachment* attachment = spAttachmentLoader_createAttachment(self-&gt;attachmentLoader, skin, type, name, 0);
+//                spClippingAttachment* clip = SUB_CAST(spClippingAttachment, attachment);
+//                _readVertices(self, input, SUB_CAST(spVertexAttachment, attachment), vertexCount);
+//                if (nonessential) readInt(input); /* Skip color. */
+//                clip-&gt;endSlot = skeletonData-&gt;slots[endSlotIndex];
+//                spAttachmentLoader_configureAttachment(self-&gt;attachmentLoader, attachment);
+//                if (freeName) FREE(name);
+//                return attachment;
+            }
+        }
+        return 0;
+}
+</code></pre>
 <!-- content end -->
 </div>
 <br>
