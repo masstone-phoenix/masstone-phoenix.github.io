@@ -133,9 +133,9 @@ convert_imageset [FLAGS] ROOTFOLDER/ LISTFILE DB_NAME
 我们可以使用一个文件记录下生成的命令，方便下次生成时使用：
 
 ```
-DATA=examples/images
+DATA=boy_2000_20180521
 rm -rf $DATA/img_train_lmdb
-build/tools/convert_imageset --shuffle --resize_height=256 --resize_width=256 /home/moqi/caffe/examples/images/ $DATA/train.txt  $DATA/img_train_lmdb
+build/tools/convert_imageset --shuffle --resize_height=256 --resize_width=256 /home/ $DATA/train.txt  $DATA/img_train_lmdb
 ```
 
 ## 定义神经网络
@@ -294,9 +294,9 @@ with open("train.txt", "w") as text_file:
 
 <p>我们可以使用一个文件记录下生成的命令，方便下次生成时使用：</p>
 
-<pre><code>DATA=examples/images
+<pre><code>DATA=boy_2000_20180521
 rm -rf $DATA/img_train_lmdb
-build/tools/convert_imageset --shuffle --resize_height=256 --resize_width=256 /home/moqi/caffe/examples/images/ $DATA/train.txt  $DATA/img_train_lmdb
+build/tools/convert_imageset --shuffle --resize_height=256 --resize_width=256 /home/ $DATA/train.txt  $DATA/img_train_lmdb
 </code></pre>
 
 <h2 id="">定义神经网络</h2>
