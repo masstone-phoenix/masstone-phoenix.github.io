@@ -91,6 +91,25 @@ rm -rf $DATA/tmp.txt
 echo "Done.."
 ```
 
+我这里使用python读取json文件来生成train.txt：
+```
+import json
+from pprint import pprint
+
+jsonFileName = 'face_boy.json'
+picturesDirName = 'boy_2000_20180521'
+
+with open(jsonFileName) as f:
+    data = json.load(f)
+
+pprint(data)
+
+with open("train.txt", "w") as text_file:
+    for key, value in data.items():
+#         print("{} {}".format(key, value) )
+        print("{} {}".format(key, value), file=text_file)
+```
+
 有了上述文件后，就可以使用convert_imageset工具来生成lmdb文件了。
 
 ```
@@ -111,6 +130,13 @@ convert_imageset [FLAGS] ROOTFOLDER/ LISTFILE DB_NAME
 - LISTFILE: 图片文件列表清单，一般为一个txt文件，一行一张图片
 - DB_NAME: 最终生成的db文件存放目录
 
+我们可以使用一个文件记录下生成的命令，方便下次生成时使用：
+
+```
+DATA=examples/images
+rm -rf $DATA/img_train_lmdb
+build/tools/convert_imageset --shuffle --resize_height=256 --resize_width=256 /home/moqi/caffe/examples/images/ $DATA/train.txt  $DATA/img_train_lmdb
+```
 
 ## 定义神经网络
 
@@ -226,6 +252,25 @@ rm -rf $DATA/tmp.txt
 echo "Done.."
 </code></pre>
 
+<p>我这里使用python读取json文件来生成train.txt：</p>
+
+<pre><code>import json
+from pprint import pprint
+
+jsonFileName = 'face_boy.json'
+picturesDirName = 'boy_2000_20180521'
+
+with open(jsonFileName) as f:
+    data = json.load(f)
+
+pprint(data)
+
+with open("train.txt", "w") as text_file:
+    for key, value in data.items():
+#         print("{} {}".format(key, value) )
+        print("{} {}".format(key, value), file=text_file)
+</code></pre>
+
 <p>有了上述文件后，就可以使用convert_imageset工具来生成lmdb文件了。</p>
 
 <pre><code>convert_imageset [FLAGS] ROOTFOLDER/ LISTFILE DB_NAME
@@ -246,6 +291,13 @@ echo "Done.."
 <li>LISTFILE: 图片文件列表清单，一般为一个txt文件，一行一张图片</li>
 <li>DB_NAME: 最终生成的db文件存放目录</li>
 </ul>
+
+<p>我们可以使用一个文件记录下生成的命令，方便下次生成时使用：</p>
+
+<pre><code>DATA=examples/images
+rm -rf $DATA/img_train_lmdb
+build/tools/convert_imageset --shuffle --resize_height=256 --resize_width=256 /home/moqi/caffe/examples/images/ $DATA/train.txt  $DATA/img_train_lmdb
+</code></pre>
 
 <h2 id="">定义神经网络</h2>
 
