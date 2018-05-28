@@ -173,6 +173,47 @@ layer: {
 
 每个layer都有一些固定的选项，上面两个层的param参数的名字都是sharedweights，它们的参数是共享的（也就是Weight Sharing）。
 
+这里我们也可以从[model zoo](https://github.com/BVLC/caffe/wiki/Model-Zoo#facial-landmark-detection-with-tweaked-convolutional-neural-networks)里选择一个模型来进行迁移学习，只需要修改网格文件的输入层以及输出层就可以了。
+
+## 配置solver
+这个配置文件也是一个文本文件，以下是一个例子：
+
+```
+net: "model/contour.prototxt"
+test_iter: 1000
+test_interval: 1000
+base_lr: 0.01
+lr_policy: "step"
+gamma: 0.1
+stepsize: 200000
+display: 20
+max_iter: 450000
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 10000
+snapshot_prefix: "model/contour_train"
+solver_mode: CPU
+```
+
+```test_iter```是完成一次样本测试需要的迭代次数。如果有1000个测试样本，```batch_size```为25，那么需要40次才能完整的测试一遍。 所以```test_iter```为40；这个数要大于等于40。
+
+```test_interval``` 测试间隔。也就是每训练1000次，才进行一次测试。
+
+
+```
+base_lr: 0.01
+lr_policy: "step"
+gamma: 0.1
+stepsize: 200000
+```
+这几个可以放在一起理解，用于学习率的设置。只要是梯度下降法来求解优化，都会有一个学习率，也叫步长。```base_lr```用于设置基础学习率，在迭代的过程中，可以对基础学习率进行调整。怎么样进行调整，就是调整的策略，由```lr_policy```来设置。
+
+## 训练网络
+
+```
+caffe train -solver models/finetune_flickr_style/solver.prototxt -weights bvlc_reference_caffenet.caffemodel
+
+```
 <!-- markdown end -->
 </div>
 <div class="entry" id="main">
@@ -332,6 +373,46 @@ layer: {
 </code></pre>
 
 <p>每个layer都有一些固定的选项，上面两个层的param参数的名字都是sharedweights，它们的参数是共享的（也就是Weight Sharing）。</p>
+
+<p>这里我们也可以从<a href="https://github.com/BVLC/caffe/wiki/Model-Zoo#facial-landmark-detection-with-tweaked-convolutional-neural-networks">model zoo</a>里选择一个模型来进行迁移学习，只需要修改网格文件的输入层以及输出层就可以了。</p>
+
+<h2 id="solver">配置solver</h2>
+
+<p>这个配置文件也是一个文本文件，以下是一个例子：</p>
+
+<pre><code>net: "model/contour.prototxt"
+test_iter: 1000
+test_interval: 1000
+base_lr: 0.01
+lr_policy: "step"
+gamma: 0.1
+stepsize: 200000
+display: 20
+max_iter: 450000
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 10000
+snapshot_prefix: "model/contour_train"
+solver_mode: CPU
+</code></pre>
+
+<pre><code class="test_iter```是完成一次样本测试需要的迭代次数。如果有1000个测试样本，```batch_size```为25，那么需要40次才能完整的测试一遍。 所以```test_iter```为40；这个数要大于等于40。">
+</code></pre>
+
+<p>test_interval``` 测试间隔。也就是每训练1000次，才进行一次测试。</p>
+
+<pre><code>base_lr: 0.01
+lr_policy: "step"
+gamma: 0.1
+stepsize: 200000
+</code></pre>
+
+<p>这几个可以放在一起理解，用于学习率的设置。只要是梯度下降法来求解优化，都会有一个学习率，也叫步长。<code>base_lr</code>用于设置基础学习率，在迭代的过程中，可以对基础学习率进行调整。怎么样进行调整，就是调整的策略，由<code>lr_policy</code>来设置。</p>
+
+<h2 id="">训练网络</h2>
+
+<pre><code>caffe train -solver models/finetune_flickr_style/solver.prototxt -weights bvlc_reference_caffenet.caffemodel
+</code></pre>
 <!-- content end -->
 </div>
 <br>
