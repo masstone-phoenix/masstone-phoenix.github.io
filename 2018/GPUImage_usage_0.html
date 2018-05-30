@@ -132,7 +132,7 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
 ```
 - (void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex;
 ```
-函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，其中textureIndex是指当前节点的第几个texture使用输入图像的framebuffer，即OpenGL中fragment shader中的使用的texture的索引值。
+函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，**其中textureIndex是指当前节点的第几个texture使用输入图像的framebuffer，即OpenGL中fragment shader中的使用的texture的索引值。**
 
 ```
 - (void)newFrameReadyAtTime:(CMTime)frameTime atIndex:(NSInteger)textureIndex;
@@ -149,7 +149,7 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
     [self informTargetsAboutNewFrameAtTime:frameTime];
 }
 ```
-函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。其中的textureIndex是在调用addTarget:函数时计算并存储起来的，就是下一级节点的索引。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。
+函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。**其中的textureIndex是在调用addTarget:函数时计算并存储起来的，就是下一级节点的输入中使用此节点输出结果的texture索引**。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。
 
 ## GPUImageOutput
 GPUImageOutput是所有输出的超类，提供了管理targets的一些方法，以及输入图像比如newCGImageFromCurrentlyProcessedOutput的接口，具体的实现在子类中可以自定义。
@@ -157,7 +157,7 @@ GPUImageOutput是所有输出的超类，提供了管理targets的一些方法�
 ## GPUImageFilter
 这是所有filter的超类，同时是GPUImageOutput的子类，其中我们可以学习到自定义滤镜的一些操作，同时，它实现了newCGImageFromCurrentlyProcessedOutput等接口，可以直接进行使用。
 
-targets数组存储了此节点所连接的下层节点，targetTextureIndices数组中是下层节点中使用这个framebuffer的texture索引。
+这里解释一下上面提到的texture index的用途：targets数组存储了此节点所连接的下层节点，targetTextureIndices数组中是下层节点中使用这个framebuffer的texture索引。
 
 ```
 - (void)informTargetsAboutNewFrameAtTime:(CMTime)frameTime;
@@ -401,7 +401,7 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
 <pre><code>- (void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex;
 </code></pre>
 
-<p>函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，其中textureIndex是指当前节点的第几个texture使用输入图像的framebuffer，即OpenGL中fragment shader中的使用的texture的索引值。</p>
+<p>函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，<strong>其中textureIndex是指当前节点的第几个texture使用输入图像的framebuffer，即OpenGL中fragment shader中的使用的texture的索引值。</strong></p>
 
 <pre><code>- (void)newFrameReadyAtTime:(CMTime)frameTime atIndex:(NSInteger)textureIndex;
 {
@@ -418,7 +418,7 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
 }
 </code></pre>
 
-<p>函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。其中的textureIndex是在调用addTarget:函数时计算并存储起来的，就是下一级节点的索引。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。</p>
+<p>函数newFrameReadyAtTime:atIndex:是当前节点处理完图像后，推动数据流向下一级处理的函数。<strong>其中的textureIndex是在调用addTarget:函数时计算并存储起来的，就是下一级节点的输入中使用此节点输出结果的texture索引</strong>。它的工作很简单，先调用renderToTextureWithVertices:textureCoordinates:渲染图像，然后调用informTargetsAboutNewFrameAtTime:通知输出加入的所有targets。</p>
 
 <h2 id="gpuimageoutput">GPUImageOutput</h2>
 
@@ -428,7 +428,7 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
 
 <p>这是所有filter的超类，同时是GPUImageOutput的子类，其中我们可以学习到自定义滤镜的一些操作，同时，它实现了newCGImageFromCurrentlyProcessedOutput等接口，可以直接进行使用。</p>
 
-<p>targets数组存储了此节点所连接的下层节点，targetTextureIndices数组中是下层节点中使用这个framebuffer的texture索引。</p>
+<p>这里解释一下上面提到的texture index的用途：targets数组存储了此节点所连接的下层节点，targetTextureIndices数组中是下层节点中使用这个framebuffer的texture索引。</p>
 
 <pre><code>- (void)informTargetsAboutNewFrameAtTime:(CMTime)frameTime;
 {
