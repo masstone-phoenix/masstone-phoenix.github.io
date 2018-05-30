@@ -157,6 +157,54 @@ GPUImageOutput是所有输出的超类，提供了管理targets的一些方法�
 ## GPUImageFilter
 这是所有filter的超类，同时是GPUImageOutput的子类，其中我们可以学习到自定义滤镜的一些操作，同时，它实现了newCGImageFromCurrentlyProcessedOutput等接口，可以直接进行使用。
 
+targets数组存储了此节点所连接的下层节点，targetTextureIndices数组中是下层节点中使用这个framebuffer的texture索引。
+
+```
+- (void)informTargetsAboutNewFrameAtTime:(CMTime)frameTime;
+{
+    if (self.frameProcessingCompletionBlock != NULL)
+    {
+        self.frameProcessingCompletionBlock(self, frameTime);
+    }
+    
+    // Get all targets the framebuffer so they can grab a lock on it
+    for (id<GPUImageInput> currentTarget in targets)
+    {
+        if (currentTarget != self.targetToIgnoreForUpdates)
+        {
+            NSInteger indexOfObject = [targets indexOfObject:currentTarget];
+            NSInteger textureIndex = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
+
+            [self setInputFramebufferForTarget:currentTarget atIndex:textureIndex];
+            [currentTarget setInputSize:[self outputFrameSize] atIndex:textureIndex];
+        }
+    }
+    
+    // Release our hold so it can return to the cache immediately upon processing
+    [[self framebufferForOutput] unlock];
+    
+    if (usingNextFrameForImageCapture)
+    {
+//        usingNextFrameForImageCapture = NO;
+    }
+    else
+    {
+        [self removeOutputFramebuffer];
+    }    
+    
+    // Trigger processing last, so that our unlock comes first in serial execution, avoiding the need for a callback
+    for (id<GPUImageInput> currentTarget in targets)
+    {
+        if (currentTarget != self.targetToIgnoreForUpdates)
+        {
+            NSInteger indexOfObject = [targets indexOfObject:currentTarget];
+            NSInteger textureIndex = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
+            [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndex];
+        }
+    }
+}
+```
+
 # GPUImage的使用
 ## 滤镜已经有现成的
 
@@ -379,6 +427,53 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
 <h2 id="gpuimagefilter">GPUImageFilter</h2>
 
 <p>这是所有filter的超类，同时是GPUImageOutput的子类，其中我们可以学习到自定义滤镜的一些操作，同时，它实现了newCGImageFromCurrentlyProcessedOutput等接口，可以直接进行使用。</p>
+
+<p>targets数组存储了此节点所连接的下层节点，targetTextureIndices数组中是下层节点中使用这个framebuffer的texture索引。</p>
+
+<pre><code>- (void)informTargetsAboutNewFrameAtTime:(CMTime)frameTime;
+{
+    if (self.frameProcessingCompletionBlock != NULL)
+    {
+        self.frameProcessingCompletionBlock(self, frameTime);
+    }
+
+    // Get all targets the framebuffer so they can grab a lock on it
+    for (id&lt;GPUImageInput&gt; currentTarget in targets)
+    {
+        if (currentTarget != self.targetToIgnoreForUpdates)
+        {
+            NSInteger indexOfObject = [targets indexOfObject:currentTarget];
+            NSInteger textureIndex = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
+
+            [self setInputFramebufferForTarget:currentTarget atIndex:textureIndex];
+            [currentTarget setInputSize:[self outputFrameSize] atIndex:textureIndex];
+        }
+    }
+
+    // Release our hold so it can return to the cache immediately upon processing
+    [[self framebufferForOutput] unlock];
+
+    if (usingNextFrameForImageCapture)
+    {
+//        usingNextFrameForImageCapture = NO;
+    }
+    else
+    {
+        [self removeOutputFramebuffer];
+    }    
+
+    // Trigger processing last, so that our unlock comes first in serial execution, avoiding the need for a callback
+    for (id&lt;GPUImageInput&gt; currentTarget in targets)
+    {
+        if (currentTarget != self.targetToIgnoreForUpdates)
+        {
+            NSInteger indexOfObject = [targets indexOfObject:currentTarget];
+            NSInteger textureIndex = [[targetTextureIndices objectAtIndex:indexOfObject] integerValue];
+            [currentTarget newFrameReadyAtTime:frameTime atIndex:textureIndex];
+        }
+    }
+}
+</code></pre>
 
 <h1 id="gpuimage">GPUImage的使用</h1>
 
