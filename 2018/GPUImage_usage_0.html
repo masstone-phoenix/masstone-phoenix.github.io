@@ -30,7 +30,7 @@
 
 1. 比较Core Image的GPUImage
 1. GPUImage的一些基本知识，其中会对GPUImage的一些基础类进行分析
-1. GPUImage的使用——其实这部分可有可无，网上大多都是这个，在这里只是简单写一下，为了以后忘记时可以随机查阅。
+1. GPUImage的使用——其实这部分可有可无，网上大多都是这个，在这里只是简单写一下，为了以后忘记时可以随时查阅。
 
 # Core Image VS GPUImage
 对一个图片应用滤镜或其它算法（比如美白），直接想的到方法是使用OpenGL ES，但是直接上这个感觉“杀鸡用牛刀”，还有一个是其它不了解OpenGL的人没办法帮你review。于是就想到了iOS上现成的两个封装Core Image 和 GPUImage。以下对比一下它们各自的优势，共同点就不在描述了：
@@ -127,7 +127,7 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
 ```
 
 ## GPUImageInput
-这个协议定义了如何为链条中的一个节点是如何接收输入数据，以及如何推动数据向下一级节点流动的函数。
+这个协议定义了如何为链条中的一个节点是如何接收输入数据，以及如何推动数据向下一级节点流动的函数。除此之外，还有一个接口nextAvailableTextureIndex来获取当前节点的下一个可用texture的索引。
 
 ```
 - (void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex;
@@ -243,7 +243,7 @@ NSString *const kGPUImageColorMatrixFragmentShaderString = SHADER_STRING
 <ol>
 <li>比较Core Image的GPUImage</li>
 <li>GPUImage的一些基本知识，其中会对GPUImage的一些基础类进行分析</li>
-<li>GPUImage的使用——其实这部分可有可无，网上大多都是这个，在这里只是简单写一下，为了以后忘记时可以随机查阅。</li>
+<li>GPUImage的使用——其实这部分可有可无，网上大多都是这个，在这里只是简单写一下，为了以后忘记时可以随时查阅。</li>
 </ol>
 
 <h1 id="coreimagevsgpuimage">Core Image VS GPUImage</h1>
@@ -348,7 +348,7 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
 
 <h2 id="gpuimageinput">GPUImageInput</h2>
 
-<p>这个协议定义了如何为链条中的一个节点是如何接收输入数据，以及如何推动数据向下一级节点流动的函数。</p>
+<p>这个协议定义了如何为链条中的一个节点是如何接收输入数据，以及如何推动数据向下一级节点流动的函数。除此之外，还有一个接口nextAvailableTextureIndex来获取当前节点的下一个可用texture的索引。</p>
 
 <pre><code>- (void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex;
 </code></pre>
