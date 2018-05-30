@@ -132,7 +132,7 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
 ```
 - (void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex;
 ```
-函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，其中textureIndex是指当前节点的第几个输入图像的framebuffer。
+函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，其中textureIndex是指当前节点的第几个texture使用输入图像的framebuffer，即OpenGL中fragment shader中的使用的texture的索引值。
 
 ```
 - (void)newFrameReadyAtTime:(CMTime)frameTime atIndex:(NSInteger)textureIndex;
@@ -353,7 +353,7 @@ CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, (__bridge
 <pre><code>- (void)setInputFramebuffer:(GPUImageFramebuffer *)newInputFramebuffer atIndex:(NSInteger)textureIndex;
 </code></pre>
 
-<p>函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，其中textureIndex是指当前节点的第几个输入图像的framebuffer。</p>
+<p>函数setInputFramebuffer:atIndex:为当前节点设置输入的framebuffer，其中textureIndex是指当前节点的第几个texture使用输入图像的framebuffer，即OpenGL中fragment shader中的使用的texture的索引值。</p>
 
 <pre><code>- (void)newFrameReadyAtTime:(CMTime)frameTime atIndex:(NSInteger)textureIndex;
 {
