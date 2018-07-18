@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="Keywords" content="blog"/>
+    <meta name="Description" content="blog"/>
+    <title>Simple</title>
+    <link rel="shortcut icon" href="/static/favicon.png"/>
+    <link rel="stylesheet" type="text/css" href="/main.css" />
+</head>
+<body>
+<div class="main">
+    <div class="header">
+    	<ul id="pages">
+            <li><a href="/">home</a></li>
+            <li><a href="/#/tags">tags</a></li>
+            <li><a href="/#/archive">archive</a></li>
+    	</ul>
+    </div>
+	<div class="wrap-header">
+	<h1>
+    <a href="/" id="title"></a>
+	</h1>
+	</div>
+<div id="md" style="display: none;">
+<!-- markdown -->
+# 常用深度神经网络
+
+## LeNet
+最早的CNN网络，它能够识别0~9的手写数字，但是准确率与SVM相比，还是稍有逊色的。
+
+![](http://masstone-phoenix.github.io/image/MachineLearning/lenet.png)
+
+## AlexNet
+
+![](http://masstone-phoenix.github.io/image/MachineLearning/alexnet.png)
+
+这个模型获得了2012年Imagenet比赛的冠军。这个模型的意义比后面那些模型都大很多，首先它证明了CNN在复杂模型下的有效性，然后GPU实现使得训练在可接受的时间范围内得到结果，顺便推动了有监督DL的发展；其次，它首创性的引入了不同以往的激活函数——ReLU；最后，它提出了一种Dropout的方法来防止过拟合。
+
+
+## VGGNet
+
+![](https://qph.ec.quoracdn.net/main-qimg-ba81c87204be1a5d11d64a464bca39eb)
+
+它的主要创新是将size比较大的filter拆分成几个小的filter的级联。达到的效果是将错误率由AletNet的16.4%降低到了7.3%。
+
+它的详细组成：
+
+![](http://masstone-phoenix.github.io/image/MachineLearning/vgg.png)
+
+## GoogLenet
+![](http://masstone-phoenix.github.io/image/MachineLearning/googlenet.png)
+
+听名字就知道是由Google提出的，它的创新点在于：
+
+- 由于稀疏结构在BLAS和CuBlas上的计算性能不是最优的，使用密集计算来模拟稀疏结构：
+- 使用network in network来减少计算量：
+
+![](https://img-blog.csdn.net/20160225155336279)
+![](https://img-blog.csdn.net/20160225155351172)
+
+
+
+## ResNet
+![](http://masstone-phoenix.github.io/image/MachineLearning/resnet.png)
+![](http://masstone-phoenix.github.io/image/MachineLearning/res_block.png)
+
+这个模型是由微软提出的，它在imagenet上的错误率是3.57%，是目前最高的。这个模型的创新点在于加入skip网络，使用训练很深的网络成为可能。同时，这个模型也是所有模型中最深的，有152层。
+
+
+
+
+
+
+
+
+# 网络训练的指导思想
+
+1. 避免表达瓶颈，特别是在网络靠前的地方。 信息流前向传播过程中显然不能经过高度压缩的层，即表达瓶颈。从input到output，feature map的宽和高基本都会逐渐变小，但是不能一下子就变得很小。比如你上来就来个kernel = 7, stride = 5 ,这样显然不合适。
+另外输出的维度channel，一般来说会逐渐增多(每层的num_output)，否则网络会很难训练。（特征维度并不代表信息的多少，只是作为一种估计的手段）
+
+	这种情况一般发生在pooling层，字面意思是，pooling后特征图变小了，但有用信息不能丢，不能因为网络的漏斗形结构而产生表达瓶颈，	解决办法是作者提出了一种特征图缩小方法，更复杂的池化。
+
+2. 高维特征更易处理。 高维特征更易区分，会加快训练。
+
+3. 可以在低维嵌入上进行空间汇聚而无需担心丢失很多信息。 比如在进行3x3卷积之前，可以对输入先进行降维而不会产生严重的后果。假设信息可以被简单压缩，那么训练就会加快。
+
+4. 平衡网络的宽度与深度。
+<!-- markdown end -->
+</div>
+<div class="entry" id="main">
+<!-- content -->
+<h1 id="">常用深度神经网络</h1>
+
+<h2 id="lenet">LeNet</h2>
+
+<p>最早的CNN网络，它能够识别0~9的手写数字，但是准确率与SVM相比，还是稍有逊色的。</p>
+
+<p><img src="http://masstone-phoenix.github.io/image/MachineLearning/lenet.png" alt="" title=""></p>
+
+<h2 id="alexnet">AlexNet</h2>
+
+<p><img src="http://masstone-phoenix.github.io/image/MachineLearning/alexnet.png" alt="" title=""></p>
+
+<p>这个模型获得了2012年Imagenet比赛的冠军。这个模型的意义比后面那些模型都大很多，首先它证明了CNN在复杂模型下的有效性，然后GPU实现使得训练在可接受的时间范围内得到结果，顺便推动了有监督DL的发展；其次，它首创性的引入了不同以往的激活函数——ReLU；最后，它提出了一种Dropout的方法来防止过拟合。</p>
+
+<h2 id="vggnet">VGGNet</h2>
+
+<p><img src="https://qph.ec.quoracdn.net/main-qimg-ba81c87204be1a5d11d64a464bca39eb" alt="" title=""></p>
+
+<p>它的主要创新是将size比较大的filter拆分成几个小的filter的级联。达到的效果是将错误率由AletNet的16.4%降低到了7.3%。</p>
+
+<p>它的详细组成：</p>
+
+<p><img src="http://masstone-phoenix.github.io/image/MachineLearning/vgg.png" alt="" title=""></p>
+
+<h2 id="googlenet">GoogLenet</h2>
+
+<p><img src="http://masstone-phoenix.github.io/image/MachineLearning/googlenet.png" alt="" title=""></p>
+
+<p>听名字就知道是由Google提出的，它的创新点在于：</p>
+
+<ul>
+<li>由于稀疏结构在BLAS和CuBlas上的计算性能不是最优的，使用密集计算来模拟稀疏结构：</li>
+<li>使用network in network来减少计算量：</li>
+</ul>
+
+<p><img src="https://img-blog.csdn.net/20160225155336279" alt="" title="">
+<img src="https://img-blog.csdn.net/20160225155351172" alt="" title=""></p>
+
+<h2 id="resnet">ResNet</h2>
+
+<p><img src="http://masstone-phoenix.github.io/image/MachineLearning/resnet.png" alt="" title="">
+<img src="http://masstone-phoenix.github.io/image/MachineLearning/res_block.png" alt="" title=""></p>
+
+<p>这个模型是由微软提出的，它在imagenet上的错误率是3.57%，是目前最高的。这个模型的创新点在于加入skip网络，使用训练很深的网络成为可能。同时，这个模型也是所有模型中最深的，有152层。</p>
+
+<h1 id="">网络训练的指导思想</h1>
+
+<ol>
+<li><p>避免表达瓶颈，特别是在网络靠前的地方。 信息流前向传播过程中显然不能经过高度压缩的层，即表达瓶颈。从input到output，feature map的宽和高基本都会逐渐变小，但是不能一下子就变得很小。比如你上来就来个kernel = 7, stride = 5 ,这样显然不合适。
+另外输出的维度channel，一般来说会逐渐增多(每层的num_output)，否则网络会很难训练。（特征维度并不代表信息的多少，只是作为一种估计的手段）</p>
+
+<p>这种情况一般发生在pooling层，字面意思是，pooling后特征图变小了，但有用信息不能丢，不能因为网络的漏斗形结构而产生表达瓶颈，    解决办法是作者提出了一种特征图缩小方法，更复杂的池化。</p></li>
+<li><p>高维特征更易处理。 高维特征更易区分，会加快训练。</p></li>
+<li><p>可以在低维嵌入上进行空间汇聚而无需担心丢失很多信息。 比如在进行3x3卷积之前，可以对输入先进行降维而不会产生严重的后果。假设信息可以被简单压缩，那么训练就会加快。</p></li>
+<li><p>平衡网络的宽度与深度。</p></li>
+</ol>
+<!-- content end -->
+</div>
+<br>
+<br>
+    <div id="disqus_thread"></div>
+	<div class="footer">
+		<p>© Copyright 2014 by isnowfy, Designed by isnowfy</p>
+	</div>
+</div>
+<script src="main.js"></script>
+<script id="content" type="text/mustache">
+    <h1>{{title}}</h1>
+    <div class="tag">
+    {{date}}
+    {{#tags}}
+    <a href="/#/tag/{{name}}">#{{name}}</a>
+    {{/tags}}
+    </div>
+</script>
+<script id="pagesTemplate" type="text/mustache">
+    {{#pages}}
+    <li>
+        <a href="{{path}}">{{title}}</a>
+    </li>
+    {{/pages}}
+</script>
+<script>
+$(document).ready(function() {
+    $.ajax({
+        url: "main.json",
+        type: "GET",
+        dataType: "json",
+        success: function(data) {
+            $("#title").html(data.name);
+            var pagesTemplate = Hogan.compile($("#pagesTemplate").html());
+            var pagesHtml = pagesTemplate.render({"pages": data.pages});
+            $("#pages").append(pagesHtml);
+            //path
+            var path = "2018/deep_learning_tutorial_2.html";
+            //path end
+            var now = 0;
+            for (var i = 0; i < data.posts.length; ++i)
+                if (path == data.posts[i].path)
+                    now = i;
+            var post = data.posts[now];
+            var tmp = post.tags.split(" ");
+            var tags = [];
+            for (var i = 0; i < tmp.length; ++i)
+                if (tmp[i].length > 0)
+                    tags.push({"name": tmp[i]});
+            var contentTemplate = Hogan.compile($("#content").html());
+            var contentHtml = contentTemplate.render({"title": post.title, "tags": tags, "date": post.date});
+            $("#main").prepend(contentHtml);
+            if (data.disqus_shortname.length > 0) {
+                var disqus_shortname = data.disqus_shortname;
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            }
+        }
+    });
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ["\\(", "\\)"]], processEscapes: true}});
+</script>
+</body>
+</html>
