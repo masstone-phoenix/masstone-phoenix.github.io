@@ -48,7 +48,7 @@
 ![](http://masstone-phoenix.github.io/image/opengl/20170410152129489.png)
 图中绿色表示该流水线阶段是完全可编程控制的，黄色表示该流水线可以配置但不是可编程的，蓝色表示该流水线阶段是由GPU固定实现的，开发者没有任何控制权。实线表示该Shader必须由开发者编程实线，虚线表示该Shader是可选的。
 
-顶点着色器（Vertext Shader）是完全可编程的，它通常用于实现顶点的空间变换、顶点着色等功能。
+顶点着色器（Vertext Shader）是完全可编程的，它通常用于实现顶点的空间变换、顶点着色等功能。它必须完成一个工作：将顶点坐标从模型空间转到齐次裁剪空间NDC。
 
 曲面细分着色器（Tessellation Shader）是一个可选的着色器，它用于细分图元。
 
@@ -126,7 +126,7 @@ glBindObject(GL_WINDOW_TARGET, 0);
 <p><img src="http://masstone-phoenix.github.io/image/opengl/20170410152129489.png" alt="" title="">
 图中绿色表示该流水线阶段是完全可编程控制的，黄色表示该流水线可以配置但不是可编程的，蓝色表示该流水线阶段是由GPU固定实现的，开发者没有任何控制权。实线表示该Shader必须由开发者编程实线，虚线表示该Shader是可选的。</p>
 
-<p>顶点着色器（Vertext Shader）是完全可编程的，它通常用于实现顶点的空间变换、顶点着色等功能。</p>
+<p>顶点着色器（Vertext Shader）是完全可编程的，它通常用于实现顶点的空间变换、顶点着色等功能。它必须完成一个工作：将顶点坐标从模型空间转到齐次裁剪空间NDC。</p>
 
 <p>曲面细分着色器（Tessellation Shader）是一个可选的着色器，它用于细分图元。</p>
 
